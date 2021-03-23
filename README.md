@@ -21,7 +21,7 @@ Again please be sure to do the pull request for the Development Branch of the RS
 ```
 
 ## Currently all links point back to the github repository
-## <a href="https://github.com/ModernColdWar/RedStormRising">LUA files</a>
+## <a href="https://github.com/dcsredstormrising/RSR">LUA files</a>
 The RSR/RedStormRising repository contains all the lua files required to run the mission. Once tested, submited and approved they are sent to the server and loaded. All the scripts are loaded through the RSR.lua 
 ### <a href="https://github.com/ModernColdWar/RSR-Syria/blob/main/RSR/AWACS_Tankers.lua">AWACS-Tankers.lua</a>
 The <a href="https://github.com/ModernColdWar/RSR-Syria/blob/main/RSR/AWACS_Tankers.lua">AWACS-Tankers.lua</a> Contains moose snippets that generate an F10 menu to allow aircraft to call in AWACS and Tankers into the mission. 
