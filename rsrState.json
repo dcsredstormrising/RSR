@@ -1,0 +1,20 @@
+{
+  "baseOwnership": {
+    "Airbases": {
+      "blue": [ "Sochi-Adler", "Sukhumi-Babushara", "Batumi", "Senaki-Kolkhi", "Vaziani" ],
+      "neutral": [ "Novorossiysk", "Krymsk", "Krasnodar-Pashkovsky", "Gudauta", "Kobuleti", "Kutaisi", "Tbilisi-Lochini", "Soganlug", "Beslan" ],
+      "red": [ "Anapa-Vityazevo", "Krasnodar-Center", "Maykop-Khanskaya", "Gelendzhik", "Mineralnye Vody", "Nalchik", "Mozdok" ]
+    },
+    "FARPs": {
+      "blue": [],
+      "neutral": [ "MM75", "Gori", "Khashuri", "LM56", "MM69", "MN61", "Yugnoye", "Elhotovo", "Prohladniy", "Progress", "Pyatigorsk", "RedBeachhead", "Cherkessk", "FJ69", "GH17", "KN76", "Zugdidi", "GH03", "FJ03", "EJ78", "EJ45", "Tuapse", "EK57", "DK61", "DK65", "DL40", "BlueBeachhead", "Apsheronsk" ],
+      "red": []
+    },
+    "Ships": []
+  },
+  "ctld": {
+    "nextGroupId": 1,
+    "nextUnitId": 1
+  },
+  "persistentGroupData": []
+}
