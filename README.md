@@ -32,6 +32,6 @@ The <a href="https://github.com/dcsredstormrising/RSR/blob/main/CSAR.lua">CSAR.l
 ### <a href="https://github.com/dcsredstormrising/RSR/blob/main/Moose.lua">Moose.lua</a>
 ### <a href="https://github.com/dcsredstormrising/RSR/blob/main/SGS_RSR.lua">SGS_RSR.lua</a>
 ### <a href="https://github.com/dcsredstormrising/RSR/blob/main/UAV_Recon.lua">UAV-Recon.lua</a>
-### <a href="https://github.com/dcsredstormrising/RSR/blob/main/WeaponManager.lua">WeaponManager.lua</a>
+### <a href="https://github.com/dcsredstormrising/RSR/blob/main/weaponManager.lua">WeaponManager.lua</a>
 ### <a href="https://github.com/dcsredstormrising/RSR/blob/main/mist_4_4_90.lua">mist_4_4_90.lua</a>
 ### <a href="https://github.com/dcsredstormrising/RSR/blob/main/warehouseResupply.lua">warehouseResupply.lua</a>
