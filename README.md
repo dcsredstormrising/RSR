@@ -1,7 +1,7 @@
 # RSR
 A persistent PvP mission for DCS world.
 ## Test Client Setup
-Both of the github repository and the azure repositories have been reorganized so you can just download as a zip and extract into your DCS.OpenBeta saved games location, 
+You can just download this repository as a zip and extract into your DCS.OpenBeta saved games location, 
 and you should have everything you need independent of your coding enviroment. Once this is done, you will need to complete step #2 of the DCS Setup. Just doing these two 
 things will allow you to run the mission outside of the server. You can run it straight from the mission editor, but only make changes to the mission editor if you have completed
 the steps inside the Mission/readme.me
