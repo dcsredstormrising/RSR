@@ -27,7 +27,7 @@ The RSR/RedStormRising repository contains all the lua files required to run the
 The <a href="https://github.com/dcsredstormrising/RSR/blob/main/AWACS_Tankers.lua">AWACS-Tankers.lua</a> Contains moose snippets that generate an F10 menu to allow aircraft to call in AWACS and Tankers into the mission. 
 ### <a href="https://github.com/dcsredstormrising/RSR/blob/main/CSAR.lua">CSAR.lua</a>
 The <a href="https://github.com/dcsredstormrising/RSR/blob/main/CSAR.lua">CSAR.lua</a> script allows for downed pilots to be recovered, and thier life returned. We also use the CSAR script to manage pilots lifes on a per restart basis.
-### <a href="https://github.com/ModernColdWar/RSR-Syria/blob/main/RSR/EWRS.lua">EWRS.lua</a>
+### <a href="https://github.com/dcsredstormrising/RSR/blob/main/EWRS_OPM.lua">EWRS.lua</a>
 ### <a href="https://github.com/ModernColdWar/RSR-Syria/blob/main/RSR/JTAC_Designate.lua">JTAC-Designate.lua</a>
 ### <a href="https://github.com/ModernColdWar/RSR-Syria/blob/main/RSR/Moose.lua">Moose.lua</a>
 ### <a href="https://github.com/ModernColdWar/RSR-Syria/blob/main/RSR/SGS_RSR.lua">SGS_RSR.lua</a>
