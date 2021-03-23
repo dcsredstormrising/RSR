@@ -8,7 +8,7 @@ the steps inside the Mission/readme.me
 ## Clone RSR Repo
 If you would like to edit the RSR code, we request that you first clone the repo, then create a branch, and once the changes are ready do the pull request to the development branch of the RSR repo.  This will allow us to review the changes, and deploy them on the Test server.  Please update the serverSettings.lua with changes prior to submitting the pull request.
 ## Commit changes to Dev Branch
-Again please be sure to do the pull request for the Development Branch of the RSR-Syria repo.
+Again please be sure to do the pull request for the Development Branch of the RSR repo.
 ## DCS Setup
  1. From your install folder (not saved games), open `Scripts/MissionScripting.lua`
  2. Comment out all the lines in the do block below the sanitization function with `-\-`.  This allows the LUA engine access to the file system. It should look similar to:
