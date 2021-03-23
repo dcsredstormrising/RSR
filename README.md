@@ -5,11 +5,8 @@ You can just download this repository as a zip and extract into your DCS.OpenBet
 and you should have everything you need independent of your coding enviroment. Once this is done, you will need to complete step #2 of the DCS Setup. Just doing these two 
 things will allow you to run the mission outside of the server. You can run it straight from the mission editor, but only make changes to the mission editor if you have completed
 the steps inside the Mission/readme.me
-## Clone RSR-Syria Repo
-If you would like to edit some of the RSR code, we have transitioned all development work into Azure, this allows us to streamline the deployment onto both the test server and the main
-server with minimum effort. We request that you first clone the repo, then create a branch, and once the changes are ready do the pull request to the development branch
-of the RSR-Syria Repo, this will allow us to review the changes, and deploy them on the test server. You will then be provided with the password for RSR-West. Please update the 
-serverSettings.lua with changes prior to submitting the pull request.
+## Clone RSR Repo
+If you would like to edit the RSR code, we request that you first clone the repo, then create a branch, and once the changes are ready do the pull request to the development branch of the RSR repo.  This will allow us to review the changes, and deploy them on the Test server.  Please update the serverSettings.lua with changes prior to submitting the pull request.
 ## Commit changes to Dev Branch
 Again please be sure to do the pull request for the Development Branch of the RSR-Syria repo.
 ## DCS Setup
