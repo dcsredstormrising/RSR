@@ -3,3 +3,5 @@ rsrState.json
 **.sqlite
 **.vs
 .gitignore
+.vscode
+tools/RSR*
