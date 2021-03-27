@@ -2,8 +2,8 @@
 -- Name: Convoy Menu
 -- Author: Babushka (West#9009) with credit to Wildcat (Chandawg)
 -- Date Created: 3/23/2020
--- Date Modified: 3/22/2021 by Babushka (West#9009)
--- Will spawn a convoy based on the template in the miz, the command is wrapped it into the F10 menu option to be called by clients in Helos.
+-- Date Modified: 3/27/2021 by Babushka (West#9009)
+-- Will spawn a convoy based on template in Crimea. The command is wrapped it into the F10 menu option to be called by clients in Helos And Cargo.
 -- Babushka Changelog.
 -- 1. Fixed counters. The convoy limit can be set manually with the global ConvoyLimit.
 -- 2. Related to the counters, the init limit has been set up so that units spawn in individual groups with there unit count and group limit being equal to the convoy limit, but
@@ -17,17 +17,16 @@
 -- 7. Changed convoy spawning mechanic to have the clients hdg and pos stored at runtime of indexed alive clients. FilterStart as I understand it removes dynamically which will make
 -- despawned clients nil. This is likely related to any timer.scheduleFunction() errors with this function.
 -- TODO:
--- 1. Change anything named wrapper to table.
--- 2. Complete any FIXME:s.
--- 3. Add distance config options and adjust functions.
--- 4. Add config for discord invite URL.
+-- 1. Complete any FIXME:s.
+-- 2. Add distance config options and adjust functions.
+-- 3. Add config for discord invite URL.
 ---
 
 --- CONFIG ---
 -- Modify only stuff in this block.
 
 -- Number of spawned in groups at one time.
-ConvoyLimit = 2
+ConvoyLimit = 4
 
 -- DO NOT CHANGE FOR NOW. Number of allowed C130s per coalition to be spawned in at one time.
 TransportLimit = 1
@@ -44,7 +43,7 @@ ConvoyGroups = {
   "Convoy Group 8",  
   "Convoy Group 9",  
 }
---- END ---
+--- END CONFIG ---
 
 --- GLOBALS ---
 
@@ -71,9 +70,9 @@ _Coalitions.Red.TransportSpawn = SPAWN:New( "Red Transport" ):InitLimit(Transpor
 -- Event Handler Initialization
 EventHandler = EVENTHANDLER:New():HandleEvent( EVENTS.Birth ):HandleEvent( EVENTS.Land )
 
---- END ---
+--- END GLOBALS ---
 
---- Functions ---
+--- FUNCTIONS ---
 
 function SpawnTransport(hdg, pos, coalitionWrapper)
   local range = 185
@@ -105,18 +104,18 @@ function CONVOY_MENU(coalitionWrapper)
         local pos = group:GetPointVec2()
         local hdg = group:GetHeading()
 
-        ----Main Menu
+        -- Main Menu
         local ConvoyMenuRoot = MENU_GROUP:New( group, "Air Resupply" )
         
-        -- FIXME: Fix names here
+        -- Commands
         local SpawnTransportCommand = MENU_GROUP_COMMAND:New( group, "Spawn C130 Air Resupply", ConvoyMenuRoot, SpawnTransport, hdg, pos, coalitionWrapper)
         local GetRemainingCommand = MENU_GROUP_COMMAND:New( group, "Air Resupplies Remaining", ConvoyMenuRoot, function() 
           trigger.action.outTextForCoalition(coalitionWrapper.Number, "[TEAM] Has " .. coalitionWrapper.ConvoysLeft .. " Remaining Air Resupplies", 10)
         end)
         
-        ---- Enters log information
-        env.info("Player name: " ..thisClient:GetPlayerName())
-        env.info("Group Name: " ..group:GetName())       
+        -- Enters log information
+        --env.info("Player name: " ..thisClient:GetPlayerName())
+        --env.info("Group Name: " ..group:GetName())       
         
         function EventHandler:OnEventBirth( EventData )
           -- Defines name of unit being spawned in this function bracket for event only.
@@ -155,7 +154,7 @@ function CONVOY_MENU(coalitionWrapper)
   -- This timer will have the function run again as clients become alive and not nil. Runs every 1-2s per coalition number. Prevents same time execution to save resources.
   timer.scheduleFunction(CONVOY_MENU,coalitionWrapper,timer.getTime() + coalitionWrapper.Number)
 end
---- END ---
+--- END FUNCTIONS---
 
 --- EXECUTION ---
 
@@ -164,4 +163,4 @@ end
 CONVOY_MENU(_Coalitions.Red)
 CONVOY_MENU(_Coalitions.Blue)
 
---- END ---
+--- END EXECUTION ---
