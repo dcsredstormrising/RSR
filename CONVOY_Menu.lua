@@ -124,6 +124,7 @@ function CONVOY_MENU(coalitionWrapper)
           
           -- Test to see if it is a red convoy group has been born.
           if string.match(str, coalitionWrapper.String .. " " .. ConvoyGroups[1]) then
+            coalitionWrapper.ConvoysLeft = coalitionWrapper.ConvoysLeft - 1
             trigger.action.outTextForCoalition(coalitionWrapper.Number,"[TEAM] " ..thisClient:GetPlayerName().. "  Successfully Deployed a Convoy\nContact a Tactical Commander on Discord (discord.gg/fVg9gut) \n" 
             .. coalitionWrapper.String .. " team has " .. coalitionWrapper.ConvoysLeft .. " remaining Convoy units.", 10)
           -- If not, see if a transport has been born.
