@@ -1923,7 +1923,7 @@ function ctld.loadUnloadLogisticsCrate(_args)
                 (_closestBaseSide == _aircraftSideName) and
                 (_nearestLogisticsCentreBaseNameOrFOBgrid == _closestBaseName) then
 
-            ctld.displayMessageToGroup(_aircraft, "Logistics Centre already present.  Logistics Centre crate returned to base.", 10)
+            ctld.displayMessageToGroup(_aircraft, "Logistics Centre already present.  All crates returned to base.", 10)
             ctld.inTransitLogisticsCentreCrates[_aircraft:getName()] = nil --remove Logistics Centre crate from internal cargo
         end
     end
@@ -3226,6 +3226,12 @@ function ctld.unpackCrates(_arguments)
                         ctld.addEWRTask(_spawnedGroups)
                         --env.info("Added EWR")
                     end
+					
+					-- added for long range EWR as test
+					if _crate.details.unit == "55G6 EWR" then
+                        ctld.addEWRTask(_spawnedGroups)
+                        --env.info("Added EWR")
+                    end
 
                     local _quantityTxt = "1 "
                     local _plural = ""
@@ -3662,7 +3668,7 @@ function ctld.unloadInternalCrate (_args)
                         (_closestBaseSide == _heliSideName) and
                         (_nearestLogisticsCentreBaseNameOrFOBgrid == _closestBaseName) then
 
-                    ctld.displayMessageToGroup(_heli, "Logistics Centre already present.  Logistics Centre crate returned to base.", 10)
+                    ctld.displayMessageToGroup(_heli, "Logistics Centre already present.  All crates returned to base.", 10)
                     ctld.inTransitLogisticsCentreCrates[_heli:getName()] = nil
                 else
                     --unload logistics crate
@@ -4352,8 +4358,8 @@ function ctld.unpackAASystem(_heli, _nearestCrate, _nearbyCrates, _aaSystemTempl
 
                     _point = { x = _point.x + _xOffset, y = _point.y, z = _point.z + _yOffset }
 
-                    table.insert(_posArray, _point)
-                    table.insert(_typeArray, _name)
+                    table.insert(_posArray, _point)					
+					table.insert(_typeArray, _name)
                 end
             else
                 table.insert(_posArray, _systemPart.crate.crateUnit:getPoint())
@@ -4697,6 +4703,16 @@ Heading is definately output in radians
     --mist function
     _group.category = Group.Category.GROUND
     if _heli:getCoalition() == coalition.side.BLUE and _types[1] == "1L13 EWR" then
+        -- EWRs need to be from a country with numeric callsigns
+        -- see https://github.com/ModernColdWar/RedStormRising/issues/99
+        -- also see https://forums.eagle.ru/showthread.php?t=130723&page=4
+        _group.country = country.id.UKRAINE
+    else
+        _group.country = _heli:getCountry()
+    end
+	
+	-- added for long range EWR as test
+	if _heli:getCoalition() == coalition.side.BLUE and _types[1] == "EWR 55G6" then
         -- EWRs need to be from a country with numeric callsigns
         -- see https://github.com/ModernColdWar/RedStormRising/issues/99
         -- also see https://forums.eagle.ru/showthread.php?t=130723&page=4
@@ -5877,7 +5893,13 @@ end
 -- add menu for spawning crates
 function ctld.addCrateMenu(_rootPath, _crateTypeDescription, _unit, _groupId, _spawnableCrates, _weightMultiplier)
     local _crateRootPath = missionCommands.addSubMenuForGroup(_groupId, _crateTypeDescription, _rootPath)
-    for _subMenuName, _crates in pairs(_spawnableCrates) do
+		
+	--	Added by =AW=33COM in order to control the menu order
+	for _counter, _subMenuName in pairs(ctld.spawnableCratesOrdered) do
+		local _crates = _spawnableCrates[_subMenuName]
+		
+		--for _subMenuName, _crates in pairs(_spawnableCrates) do			
+		
         local _cratePath = missionCommands.addSubMenuForGroup(_groupId, _subMenuName, _crateRootPath)
         for _, _crate in pairs(_crates) do
 
@@ -6006,7 +6028,7 @@ function ctld.addF10MenuOptions(_unitName)
                     if _unitActions.crates then
 
                         if ctld.enableCrates then
-
+							
                             if ctld.unitCanCarryVehicles(_unit) == false then
                                 ctld.addCrateMenu(_rootPath, "Light crates", _unit, _groupId, ctld.spawnableCrates, 1)
                                 ctld.addCrateMenu(_rootPath, "Heavy crates", _unit, _groupId, ctld.spawnableCrates, ctld.heavyCrateWeightMultiplier)
@@ -7581,3 +7603,4 @@ env.info("CTLD.LUA LOADED")
 --            env.info(tostring(key))
 --            env.info(tostring(value))
 --        end
+
