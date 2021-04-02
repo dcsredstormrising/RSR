@@ -629,8 +629,8 @@ ctld.spawnableCrates = {
   ["Missiles"] = {	  
 		{ weight = 876, desc = "Scud-B", unit = "Scud_B", side = 1, cratesRequired = 4, unitQuantity = 3, internal = 1 },
 		-- Silkworm
-		{ weight = 721, desc = "Silkworm Radar", unit = "Silkworm_SR", side = 1, internal = 1 },
-		{ weight = 722, desc = "Silkworm Missile HY-2A", unit = "hy_launcher", side = 1, internal = 1 },		
+		{ weight = 721, desc = "Silkworm Radar", unit = "Silkworm_SR", internal = 1 },
+		{ weight = 722, desc = "Silkworm Missile HY-2A", unit = "hy_launcher", internal = 1 },		
     },
   ["Support"] = {
         { weight = 503, desc = "FOB/Logistics Repair", unit = "LogisticsCentre", internal = 1 },
