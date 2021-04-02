@@ -3223,14 +3223,12 @@ function ctld.unpackCrates(_arguments)
                     ctld.processCallback({ unit = _aircraft, crate = _crate, spawnedGroup = _spawnedGroups, action = "unpack" })
 
                     if _crate.details.unit == "1L13 EWR" then
-                        ctld.addEWRTask(_spawnedGroups)
-                        --env.info("Added EWR")
+                        ctld.addEWRTask(_spawnedGroups)                        
                     end
 					
 					-- added for long range EWR as test
 					if _crate.details.unit == "55G6 EWR" then
-                        ctld.addEWRTask(_spawnedGroups)
-                        --env.info("Added EWR")
+                        ctld.addEWRTask(_spawnedGroups)                        
                     end
 
                     local _quantityTxt = "1 "
