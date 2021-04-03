@@ -3,6 +3,7 @@ local log = logging.Logger:new("utils")
 
 local M = {}
 
+
 function M.getFilePath(filename)
     if env ~= nil then
         return lfs.writedir() .. [[Scripts\RSR\]] .. filename
