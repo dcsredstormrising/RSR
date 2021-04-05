@@ -5,3 +5,4 @@ rsrState.json
 .gitignore
 .vscode
 tools/RSR*
+.project
