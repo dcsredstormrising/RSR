@@ -629,7 +629,7 @@ ctld.spawnableCrates = {
         { weight = 881, desc = "SA-3 Repair", unit = "SA-3 Repair", side = 1, internal = 1 },
         { weight = 882, desc = "SA-10 Repair", unit = "SA-10 Repair", side = 1, internal = 1 },
         { weight = 883, desc = "Kub Repair", unit = "Kub Repair", side = 1, internal = 1 },
-        { weight = 884, desc = "Buk Repair", unit = "Buk Repair", internal = 1 },		
+        { weight = 884, desc = "Buk Repair", unit = "Buk Repair", side =1, internal = 1 },		
         { weight = 886, desc = "Hawk Repair", unit = "Hawk Repair", side = 2, internal = 1 },
 --        { weight = 887, desc = "Roland Repair", unit = "Roland Repair", side = 2, internal = 0 },
         { weight = 888, desc = "Patriot Repair", unit = "Patriot Repair", side = 2, internal = 1 },
