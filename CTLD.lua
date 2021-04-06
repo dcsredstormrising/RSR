@@ -74,7 +74,6 @@ end
 -- **************** Mission Editor Functions *********************
 -- ***************************************************************
 
-
 -----------------------------------------------------------------
 -- Spawn group at a trigger and set them as extractable. Usage:
 -- ctld.spawnGroupAtTrigger("groupside", number, "triggerName", radius)
@@ -129,7 +128,6 @@ function ctld.spawnGroupAtTrigger(_groupSide, _number, _triggerName, _searchRadi
     end
 end
 
-
 -----------------------------------------------------------------
 -- Spawn group at a Vec3 Point and set them as extractable. Usage:
 -- ctld.spawnGroupAtPoint("groupside", number,Vec3 Point, radius)
@@ -173,7 +171,6 @@ function ctld.spawnGroupAtPoint(_groupSide, _number, _point, _searchRadius)
     end
 end
 
-
 -- Preloads a transport with troops or vehicles
 -- replaces any troops currently on board
 function ctld.preLoadTransport(_unitName, _number, _troops)
@@ -188,7 +185,6 @@ function ctld.preLoadTransport(_unitName, _number, _troops)
         --        end
     end
 end
-
 
 -- Continuously counts the number of crates in a zone and sets the value of the passed in flag
 -- to the count amount
@@ -300,7 +296,6 @@ function ctld.createExtractZone(_zone, _flagNumber, _smoke)
     end
 end
 
-
 -- Removes an extraction zone
 --
 -- The smoke will take up to 5 minutes to disappear depending on the last time the smoke was activated
@@ -372,7 +367,6 @@ end
 -- CONTINUOUS TRIGGER FUNCTION
 -- This function will count the current number of extractable RED and BLUE
 -- UNITS in a zone and store the values in two flags
-
 -- Use: ctld.countDroppedUnitsInZone("Zone Name", flagBlue, flagRed)
 function ctld.countDroppedUnitsInZone(_zone, _blueFlag, _redFlag)
 
@@ -419,7 +413,6 @@ function ctld.countDroppedUnitsInZone(_zone, _blueFlag, _redFlag)
     --  env.info("Units in zone ".._blueCount.." ".._redCount)
 end
 
-
 -- Creates a radio beacon on a random UHF - VHF and HF/FM frequency for homing
 -- This WILL NOT WORK if you dont add beacon.ogg and beaconsilent.ogg to the mission!!!
 -- e.g. ctld.createRadioBeaconAtZone("beaconZone","red", 1440,"Waypoint 1") will create a beacon at trigger zone "beaconZone" for the Red side
@@ -449,7 +442,6 @@ function ctld.createRadioBeaconAtZone(_zone, _coalition, _batteryLife, _name)
         ctld.createRadioBeacon(_zonePos, 2, 2, _name, _batteryLife, false) --1440
     end
 end
-
 
 -- Activates a pickup zone
 -- Activates a pickup zone when called from a trigger
@@ -506,7 +498,6 @@ function ctld.activatePickupZone(_zoneName)
         end
     end
 end
-
 
 -- Deactivates a pickup zone
 -- Deactivates a pickup zone when called from a trigger
@@ -629,7 +620,6 @@ function ctld.activateWaypointZone(_zoneName)
     end
 end
 
-
 -- Deactivates a Waypoint zone
 -- Deactivates a Waypoint zone when called from a trigger
 -- EG: ctld.deactivateWaypointZone("wpzone3")
@@ -685,8 +675,6 @@ function ctld.unloadInProximityToEnemy(_unitName, _distance)
     return false
 
 end
-
-
 
 -- Unit will unload any units onboard if the unit is on the ground
 -- when this function is called
@@ -811,7 +799,6 @@ end
 -- ***************************************************************
 -- **************** BE CAREFUL BELOW HERE ************************
 -- ***************************************************************
-
 ctld.crateWait = {}
 ctld.crateMove = {}
 
@@ -3282,7 +3269,6 @@ function ctld.unpackCrates(_arguments)
     end
 end
 
-
 --[[
 	builds a logistics centre after unpacking a logistics centre crate
 	after loading internal cargo, ctld.unloadInternalCrate will prevent unloading in base area that already has logistics centre
@@ -4410,7 +4396,7 @@ function ctld.unpackAASystem(_heli, _nearestCrate, _nearbyCrates, _aaSystemTempl
     end
 end
 
---count the number of captured cities, sets the amount of allowed AA Systems
+-- get sets the amount of allowed AA Systems
 function ctld.getAllowedAASystems(_heli)
 
     if _heli:getCoalition() == 1 then
@@ -4733,8 +4719,6 @@ Heading is definately output in radians
 
     return _spawnedGroup
 end
-
-
 
 -- spawn normal group
 -- luacheck: push no unused
@@ -5352,6 +5336,7 @@ function ctld.inWaypointZone(_point, _coalition)
 
     return { inZone = false }
 end
+
 -- checks if logisitics centre still alive at a passed airbase/FARP
 function ctld.isLogisticsCentreAliveAt(_passedLogisiticsCentreBase)
 
@@ -5807,7 +5792,6 @@ function ctld.processCallback(_callbackArgs)
     end
 end
 
-
 -- checks the status of all AI troop carriers and auto loads and unloads troops
 -- as long as the troops are on the ground
 function ctld.checkAIStatus()
@@ -6190,8 +6174,6 @@ end
 
 
 ------------ JTAC -----------
-
-
 ctld.jtacLaserPoints = {}
 ctld.jtacIRPoints = {}
 ctld.jtacSmokeMarks = {}
@@ -6554,14 +6536,11 @@ function ctld.getCurrentUnit(_jtacUnit, _jtacGroupName)
     return nil
 end
 
-
 -- Find nearest enemy to JTAC that isn't blocked by terrain --mr: from CTLD GitHub: LOS doesn't include buildings or trees
 function ctld.findNearestVisibleEnemy(_jtacUnit, _targetType, _distance)
 
     --local startTime = os.clock()
-
     local _maxDistance = _distance or ctld.JTAC_maxDistance
-
     local _jtacPoint = _jtacUnit:getPoint()
     local _coa = _jtacUnit:getCoalition()
 
@@ -6744,9 +6723,7 @@ function ctld.alreadyTarget(_enemyUnit)
     return false
 end
 
-
 -- Returns only alive units from group but the group / unit may not be active
-
 function ctld.getGroup(groupName)
 
     local _groupUnits = Group.getByName(groupName)
@@ -7262,9 +7239,7 @@ ctld.droppedVehiclesRED = {} -- stores vehicle groups for c-130 / hercules
 ctld.droppedVehiclesBLUE = {} -- stores vehicle groups for c-130 / hercules
 
 ctld.inTransitTroops = {}
-
 ctld.inTransitLogisticsCentreCrates = {}
-
 ctld.inTransitSlingLoadCrates = {} -- stores crates that are being transported by helicopters for alternative to real slingload
 
 ctld.droppedLogisticsCentreCratesRED = {}
@@ -7462,7 +7437,6 @@ if ctld.allowRandomAiTeamPickups == true then
 end
 
 -- add total count
-
 for _, _loadGroup in pairs(ctld.loadableGroupsHelis) do
 
     _loadGroup.total = 0
@@ -7514,7 +7488,6 @@ for _, _loadGroup in pairs(ctld.loadableGroupsCargoPlanes) do
 end
 
 -- Scheduled functions (run cyclically) -- but hold execution for a second so we can override parts
-
 timer.scheduleFunction(ctld.checkAIStatus, nil, timer.getTime() + 1)
 timer.scheduleFunction(ctld.checkTransportStatus, nil, timer.getTime() + 5)
 

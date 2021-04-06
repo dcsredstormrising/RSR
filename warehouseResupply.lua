@@ -233,6 +233,22 @@ local function isUnitPlayerSlung(iniUnitName)
 
 end
 
+-- This is the function that allows us to distinquish between ships of the same type, but different location: MIZ ship, Warehouse ship.  
+-- everything works on the word: Resupply.  Once that word changes nothing will work.  This is similiar to the Player Slung unit check for tanks.
+-- =AW=33COM  I added this, becuase our ships worked at TYPE level, and we could not have multiple ships of the same type.  Now we can.
+local function isShipFromNavalWarehouse(iniUnitName)
+
+  local retVal = false
+  
+  if iniUnitName ~= nil then
+    if string.find(iniUnitName, "Resupply") then
+      retVal = true
+    end
+  end
+  
+  return retVal
+
+end
 
 ----Spawn unit at a warehouse when a unit dies
 function Warehouse_EventHandler:OnEventDead( EventData )
@@ -259,8 +275,17 @@ function Warehouse_EventHandler:OnEventDead( EventData )
 				warehouse.BlueNavalWarehouse:__AddRequest(1800, warehouse.BlueNavalWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Blue Type 052C", 1, WAREHOUSE.TransportType.SELFPROPELLED)
 				warehouse.BlueNavalWarehouse:__Save(5,nil,"BlueNavalWarehouse")
 			  elseif EventData.IniTypeName == 'CVN_73' then
-				warehouse.BlueNavalWarehouse:__AddRequest(1800, warehouse.BlueNavalWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Blue Carrier", 1, WAREHOUSE.TransportType.SELFPROPELLED)
-				warehouse.BlueNavalWarehouse:__Save(5,nil,"BlueNavalWarehouse")
+			  
+				local isFromNavalWarehouse = isShipFromNavalWarehouse(inspect(EventData.IniUnitName))	
+				
+				if isFromNavalWarehouse == true then
+					env.info("***=AW=33COM Naval Warehouse BLUE Unit: IniTypeName: ".. inspect(EventData.IniTypeName) .. " IniUnitName:" .. inspect(EventData.IniUnitName) .. " - Add to BLUE Naval Warehouse***")			  
+					warehouse.BlueNavalWarehouse:__AddRequest(1800, warehouse.BlueNavalWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Blue Carrier", 1, WAREHOUSE.TransportType.SELFPROPELLED)
+					warehouse.BlueNavalWarehouse:__Save(5,nil,"BlueNavalWarehouse")
+				else
+					env.info("***=AW=33COM Ship BLUE Unit: IniTypeName: ".. inspect(EventData.IniTypeName) .. " IniUnitName:" .. inspect(EventData.IniUnitName) .. " - DO NOT ADD to BLUE Naval Warehouse.  Ship comes from MIZ***")			
+				end
+				
 			  elseif EventData.IniTypeName == 'LHA_Tarawa' then
 				warehouse.BlueNavalWarehouse:__AddRequest(1800, warehouse.BlueNavalWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Blue Tarawa", 1, WAREHOUSE.TransportType.SELFPROPELLED)
 				warehouse.BlueNavalWarehouse:__Save(5,nil,"BlueNavalWarehouse")
@@ -275,8 +300,17 @@ function Warehouse_EventHandler:OnEventDead( EventData )
 				warehouse.RedNavalWarehouse:__AddRequest(1800, warehouse.RedNavalWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Red Molniya", 1, WAREHOUSE.TransportType.SELFPROPELLED)
 				warehouse.RedNavalWarehouse:__Save(5,nil,"RedNavalWarehouse")
 			  elseif EventData.IniTypeName == 'CV_1143_5' then
-				warehouse.RedNavalWarehouse:__AddRequest(1800, warehouse.RedNavalWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Red Carrier", 1, WAREHOUSE.TransportType.SELFPROPELLED)
-				warehouse.RedNavalWarehouse:__Save(5,nil,"RedNavalWarehouse")
+			  
+				local isFromNavalWarehouse = isShipFromNavalWarehouse(inspect(EventData.IniUnitName))	
+				
+				if isFromNavalWarehouse == true then
+					env.info("***=AW=33COM Naval Warehouse RED Unit: IniTypeName: ".. inspect(EventData.IniTypeName) .. " IniUnitName:" .. inspect(EventData.IniUnitName) .. " - Add to RED Naval Warehouse***")			
+					warehouse.RedNavalWarehouse:__AddRequest(1800, warehouse.RedNavalWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Red Carrier", 1, WAREHOUSE.TransportType.SELFPROPELLED)
+					warehouse.RedNavalWarehouse:__Save(5,nil,"RedNavalWarehouse")
+				else
+					env.info("***=AW=33COM Ship RED Unit: IniTypeName: ".. inspect(EventData.IniTypeName) .. " IniUnitName:" .. inspect(EventData.IniUnitName) .. " - DO NOT ADD to RED Naval Warehouse.  Ship comes from MIZ***")			
+				end
+				
 			  elseif EventData.IniTypeName == 'Type_071' then
 				warehouse.RedNavalWarehouse:__AddRequest(1800, warehouse.RedNavalWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Red Transport Dock", 1, WAREHOUSE.TransportType.SELFPROPELLED)
 				warehouse.RedNavalWarehouse:__Save(5,nil,"RedNavalWarehouse")	

@@ -97,7 +97,6 @@ ctld.maxDistanceFromCrate = 8.0 -- Maximum distance from from crate for hover
 ctld.hoverTime = 4 -- Time to hold hover above a crate for loading in seconds
 
 -- end of Simulated Sling load configuration
-
 -- AA SYSTEM CONFIG --
 -- Sets a limit on the number of active AA systems that can be built for RED.
 -- A system is counted as Active if its fully functional and has all parts
@@ -106,16 +105,19 @@ ctld.hoverTime = 4 -- Time to hold hover above a crate for loading in seconds
 -- to unpack them
 
 ctld.AASystemLimitRED = 20 -- Red side limit
-
 ctld.AASystemLimitBLUE = 20 -- Blue side limit
-
 ctld.aaSRLaunchers = 3 -- controls how many launchers to add to Short Range Missile systems when spawned.
 ctld.aaMRLaunchers = 4 -- controls how many launchers to add to Medium Range Missile systems when spawned.
 ctld.aaLRLaunchers = 5 -- controls how many launchers to add to Long Range Missile systems when spawned.
-
 ctld.launcherRadius = 100 -- distance from crate for spawned launchers
-
 --END AA SYSTEM CONFIG --
+
+-- ****************** SLING UNIT LIMIT ****************** 
+-- In order to create upper limit for how many units we have on the server, we decided to impose a 200 unit limit per side.
+-- And here is the code for limiting how many units can be slung by players during a round.
+-- We assume 1 sam is 1 unit.  2 tanks in a group (T55s) is 1 unit.  2 HQs is 1 unit.  Anything that we spawn as a set is 1 unit. 
+ctld.totalUnitLimitRED = 200
+ctld.totalUnitLimitBLUE = 200
 
 -- ***************** JTAC CONFIGURATION *****************
 
@@ -599,11 +601,7 @@ ctld.spawnableCrates = {
         { weight = 851, desc = "Hawk Launcher", unit = "Hawk ln", side = 2, internal = 1 },
         { weight = 852, desc = "Hawk Search Radar", unit = "Hawk sr", side = 2, internal = 1 },
         { weight = 853, desc = "Hawk Track Radar", unit = "Hawk tr", side = 2, internal = 1 },
-        { weight = 854, desc = "Hawk PCP", unit = "Hawk pcp", side = 2, internal = 1 }, -- Remove this if on 1.2
-    -- Blue Buk system
-        { weight = 892, desc = "Buk Launcher", unit = "SA-11 Buk LN 9A310M1", side = 2, internal = 1 },
-        { weight = 893, desc = "Buk Search Radar", unit = "SA-11 Buk SR 9S18M1", side = 2, internal = 1 },
-        { weight = 894, desc = "Buk CC Radar", unit = "SA-11 Buk CC 9S470M1", side = 2, internal = 1 },
+        { weight = 854, desc = "Hawk PCP", unit = "Hawk pcp", side = 2, internal = 1 },     
     },
   
   ["Long Range SAMs"] = {
