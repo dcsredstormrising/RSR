@@ -726,6 +726,9 @@ end
 -- e.g. ctld.spawnCrateAtZone("blue", 505,"triggerzone1") -- spawn a tow humvee at triggerzone1 for blue side
 --
 function ctld.spawnCrateAtZone(_side, _weight, _zone)
+  
+    env.info("***=AW=33COM ctld.spawnCrateAtZone")
+    
     local _spawnTrigger = trigger.misc.getZone(_zone) -- trigger to use as reference position
 
     if _spawnTrigger == nil then
@@ -771,6 +774,7 @@ end
 --
 function ctld.spawnCrateAtPoint(_side, _weight, _point)
 
+  env.info("***=AW=33COM ctld.spawnCrateAtPoint")
 
     local _crateType = ctld.crateLookupTable[tostring(_weight)]
 
@@ -821,6 +825,8 @@ end
 
 function ctld.spawnCrateStatic(_country, _unitId, _point, _name, _weight, _side, _internal)
     --Ironwulf2000 added _internal for internal crate carriage support
+	
+	env.info("***=AW=33COM ctld.spawnCrateStatic")
 
     local _crate
     local _spawnedCrate
@@ -959,7 +965,7 @@ function ctld.spawnCrateStatic(_country, _unitId, _point, _name, _weight, _side,
         _spawnedCrate = StaticObject.getByName(_crate["name"])
     end
 
-    -- { weight = 503, desc = "Logistics Centre crate", unit = "LogisticsCentre", internal = 1 }
+    -- { weight = 503, desc = "Logistics Centre crate", un it = "LogisticsCentre", internal = 1 }
     local _crateDetails = ctld.crateLookupTable[tostring(_weight)]
     _crateDetails.baseOfOrigin = _baseOfOriginFromName
 
@@ -1091,6 +1097,8 @@ end
 
 --only helos should be able to spawn crates (check ctld.unitActions in CTLD_config.lua)
 function ctld.spawnCrate(_arguments)
+
+  env.info("***=AW=33COM ctld.spawnCrate")
 
     local _status, _err = pcall(function(_args)
 
@@ -3087,6 +3095,8 @@ end
 ----
 function ctld.unpackCrates(_arguments)
 
+	env.info("***=AW=33COM ctld.unpackCrates")
+
     local _status, _err = pcall(function(_args)
 
         -- trigger.action.outText("Unpack Crates".._args[1],10)
@@ -3160,6 +3170,8 @@ function ctld.unpackCrates(_arguments)
 
                 --log:info("ctld.unpackCrates: _playerName: $1, _crate.name: $2, _crateBaseOfOrigin: $3, _crate: $4", _playerName, _crate.name, _crateBaseOfOrigin, _crate)
                 log:info("ctld.unpackCrates: _playerName: $1, _crate.name: $2, _crateBaseOfOrigin: $3", _playerName, _crate.name, _crateBaseOfOrigin)
+                log:info("ctld.unpackCrates: _crate.details: $1", inspect(_crate.details))
+                log:info("ctld.unpackCrates: _crate: $1", inspect(_crate))
 
                 if not ctld.isLogisticsCentreAliveAt(_crateBaseOfOrigin) then
                     local _azToCrate = ctld.getCompassBearing(_aircraft:getPoint(), _crate.crateUnit:getPoint())
@@ -4277,6 +4289,8 @@ end
 
 function ctld.unpackAASystem(_heli, _nearestCrate, _nearbyCrates, _aaSystemTemplate)
 
+	env.info("***=AW=33COM ctld.unpackAASystem")
+
     if ctld.rearmAASystem(_heli, _nearestCrate, _aaSystemTemplate) then
         -- rearmed hawk
         return
@@ -4502,6 +4516,7 @@ function ctld.repairAASystem(_heli, _nearestCrate, _aaSystem)
 end
 
 function ctld.unpackMultiCrate(_heli, _nearestCrate, _nearbyCrates)
+env.info("***=AW=33COM ctld.unpackMultiCrate")
 
     local _playerDetails = {} -- fill with dummy values for non-MP testing
     --[[
@@ -4616,6 +4631,7 @@ function ctld.unpackMultiCrate(_heli, _nearestCrate, _nearbyCrates)
 end
 
 function ctld.spawnCrateGroup(_heli, _positions, _types, _unitQuantity)
+	env.info("***=AW=33COM ctld.spawnCrateGroup")
     _unitQuantity = _unitQuantity or 1
     local _id = ctld.getNextGroupId()
     local _playerName = ctld.getPlayerNameOrType(_heli)

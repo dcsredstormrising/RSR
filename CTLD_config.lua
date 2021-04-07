@@ -1,3 +1,8 @@
+--ctld.spawnCrate
+--ctld.spawnCrateStatic
+--ctld.unpackCrates
+--ctld.spawnCrateGroup
+
 --[[
     Combat Troop and Logistics Drop
     Allows Huey, Mi-8 and C130 to transport troops internally and Helicopters to transport Logistic / Vehicle units to the field via sling-loads
@@ -25,7 +30,7 @@ ctld = {} -- DONT REMOVE!
 -- ************************************************************************
 
 ctld.staticBugWorkaround = false --  DCS had a bug where destroying statics would cause a crash. If this happens again, set this to TRUE
-ctld.debug = false -- Set true to turn off logistics distances, to test crates
+ctld.debug = true -- Set true to turn off logistics distances, to test crates
 ctld.disableAllSmoke = true -- if true, all smoke is diabled at pickup and drop off zones regardless of settings below. Leave false to respect settings below
 
 ctld.hoverPickup = false --  if set to false you can load internal crates with the F10 menu instead of hovering... Only if not using real crates!
@@ -521,7 +526,7 @@ ctld.spawnableCrates = {
     ["IFVs & Light Vehicles"] = {
 	
 		-- RED
-        { weight = 800, desc = "BTR-80", unit = "BTR-80", side = 1, cratesRequired = 1, unitQuantity = 2, internal = 1 },
+        { weight = 800, desc = "BTR-80", unit = "BTR-80", side = 1, cratesRequired = 1, unitQuantity = 3, internal = 1 },
 		{ weight = 700, desc = "BTR-82A", unit = "BTR-82A", side = 1, cratesRequired = 1, unitQuantity = 2, internal = 1 },
 		{ weight = 701, desc = "BTR-RD", unit = "BTR-RD", side = 1, cratesRequired = 1, unitQuantity = 2, internal = 1 },				
 		{ weight = 702, desc = "IFV BMD-1", unit = "BMD-1", side = 1, cratesRequired = 1, unitQuantity = 2, internal = 1 },
@@ -531,10 +536,10 @@ ctld.spawnableCrates = {
         { weight = 804, desc = "IFV ZBD04A", unit = "ZBD04A", side = 1, cratesRequired = 1, unitQuantity = 1, internal = 1 },
         		
 		-- BLUE
-		{ weight = 726, desc = "AAV7", unit = "AAV7", side = 2, cratesRequired = 1, unitQuantity = 2, internal = 1 },		
-		{ weight = 703, desc = "HMMWV Armament", unit = "M1043 HMMWV Armament", side = 2, cratesRequired = 1, unitQuantity = 2, internal = 1 },
+		  { weight = 726, desc = "AAV7", unit = "AAV7", side = 2, cratesRequired = 1, unitQuantity = 2, internal = 1 },		
+		  { weight = 703, desc = "HMMWV Armament", unit = "M1043 HMMWV Armament", side = 2, cratesRequired = 1, unitQuantity = 2, internal = 1 },
         { weight = 807, desc = "HMMWV TOW", unit = "M1045 HMMWV TOW", side = 2, cratesRequired = 1, unitQuantity = 2, internal = 1 },
-        { weight = 808, desc = "IFV Marder", unit = "Marder", side = 2, cratesRequired = 1, unitQuantity = 2, internal = 1 },				
+        { weight = 808, desc = "IFV Marder", unit = "Marder", side = 2, cratesRequired = 1, unitQuantity = 3, internal = 1 },				
 		{ weight = 740, desc = "LAV-25", unit = "LAV-25", side = 2, cratesRequired = 1, unitQuantity = 2, internal = 1 },
 		{ weight = 741, desc = "MCV-80", unit = "MCV-80", side = 2, cratesRequired = 1, unitQuantity = 1, internal = 1 },		
 		{ weight = 704, desc = "Stryker ICV", unit = "M1126 Stryker ICV", side = 2, cratesRequired = 1, unitQuantity = 2, internal = 1 },
@@ -548,7 +553,7 @@ ctld.spawnableCrates = {
 		-- RED
         { weight = 814, desc = "T-55", unit = "T-55", side = 1, cratesRequired = 1, unitQuantity = 1, internal = 1 },
         { weight = 815, desc = "T-72", unit = "T-72B", side = 1, cratesRequired = 2, unitQuantity = 1, internal = 1 },
-		{ weight = 739, desc = "T-72B3", unit = "T-72B3", side = 1, cratesRequired = 5, unitQuantity = 1, internal = 1 },
+		    { weight = 739, desc = "T-72B3", unit = "T-72B3", side = 1, cratesRequired = 5, unitQuantity = 1, internal = 1 },
         { weight = 816, desc = "T-80UD", unit = "T-80UD", side = 1, cratesRequired = 3, unitQuantity = 1, internal = 1 },
         { weight = 817, desc = "T-90", unit = "T-90", side = 1, cratesRequired = 3, unitQuantity = 1, internal = 1 },
         { weight = 818, desc = "ZTZ-96B", unit = "ZTZ96B", side = 1, cratesRequired = 3, unitQuantity = 1, internal = 1 },
@@ -557,7 +562,7 @@ ctld.spawnableCrates = {
 		-- BLUE
         { weight = 820, desc = "Leopard 1A3", unit = "Leopard1A3", side = 2, cratesRequired = 1, unitQuantity = 1, internal = 1 },
         { weight = 821, desc = "Merkava", unit = "Merkava_Mk4", side = 2, cratesRequired = 2, unitQuantity = 1, internal = 1 },
-        { weight = 822, desc = "Leopard 2", unit = "Leopard-2", side = 2, cratesRequired = 2, unitQuantity = 1, internal = 1 },
+        { weight = 822, desc = "Leopard 2", unit = "Leopard-2", side = 2, cratesRequired = 3, unitQuantity = 1, internal = 1 },
         { weight = 823, desc = "Challenger II", unit = "Challenger2", side = 2, cratesRequired = 3, unitQuantity = 1, internal = 1 },
         { weight = 824, desc = "M1A2 Abrams", unit = "M-1 Abrams", side = 2, cratesRequired = 4, unitQuantity = 1, internal = 1 },
     },
@@ -567,18 +572,24 @@ ctld.spawnableCrates = {
 		--RED        		
         { weight = 830, desc = "SA-9 Strela-1", unit = "Strela-1 9P31", side = 1, cratesRequired = 1, unitQuantity = 2, internal = 1 },
         { weight = 831, desc = "SA-13 Strela-10", unit = "Strela-10M3", side = 1, cratesRequired = 1, unitQuantity = 1, internal = 1 },
-		{ weight = 829, desc = "SA-8 Osa 9A33", unit = "Osa 9A33 ln", side = 1, cratesRequired = 1, internal = 1 },
+		    { weight = 829, desc = "SA-8 Osa 9A33", unit = "Osa 9A33 ln", side = 1, cratesRequired = 1, internal = 1 },
         { weight = 832, desc = "SA-15 Tor", unit = "Tor 9A331", side = 1, cratesRequired = 2, unitQuantity = 1, internal = 1 },
         { weight = 833, desc = "SA-19 Tunguska", unit = "2S6 Tunguska", side = 1, cratesRequired = 2, unitQuantity = 1, internal = 1 },
-        { weight = 834, desc = "HQ-7", unit = "HQ-7_LN_SP", side = 1, cratesRequired = 1, unitQuantity = 1, internal = 1 },
+        { weight = 834, desc = "HQ-7 Launcher - Alone", unit = "HQ-7_LN_SP", side = 1, cratesRequired = 1, unitQuantity = 1, internal = 1, isStandalone = 1},
+        { weight = 755, desc = "HQ-7 Launchers", unit = "HQ-7_LN_SP", side = 1, internal = 1 },
+        { weight = 756, desc = "HQ-7 Search Radar", unit = "HQ-7_STR_SP", side = 1, internal = 1 },
 		
 		--BLUE
         { weight = 707, desc = "M48 Chaparral", unit = "M48 Chaparral", side = 2, cratesRequired = 1, unitQuantity = 1, internal = 1 },		
         { weight = 840, desc = "M1097 Avenger", unit = "M1097 Avenger", side = 2, cratesRequired = 1, unitQuantity = 1, internal = 1 },
-        { weight = 841, desc = "M6 Linebacker", unit = "M6 Linebacker", side = 2, cratesRequired = 2, unitQuantity = 1, internal = 1 },
-        { weight = 842, desc = "Crotale", unit = "HQ-7_LN_SP", side = 2, cratesRequired = 1, unitQuantity = 1, internal = 1 },
+        { weight = 841, desc = "M6 Linebacker", unit = "M6 Linebacker", side = 2, cratesRequired = 2, unitQuantity = 1, internal = 1 },        
         { weight = 839, desc = "SA-15 Tor", unit = "Tor 9A331", side = 2, cratesRequired = 2, unitQuantity = 1, internal = 1 },
-        { weight = 855, desc = "Roland Launcher", unit = "Roland ADS", side = 2, cratesRequired = 1, unitQuantity = 1, internal = 1 },
+        { weight = 855, desc = "Roland Launcher - Alone", unit = "Roland ADS", side = 2, cratesRequired = 1, unitQuantity = 1, internal = 1, isStandalone = 1 },                
+        { weight = 757, desc = "Roland Launchers", unit = "Roland ADS", side = 2, internal = 1 },
+        { weight = 758, desc = "Roland Radar", unit = "Roland Radar", side = 2, internal = 1 },        
+        { weight = 842, desc = "Crotale Launcher - Alone", unit = "HQ-7_LN_SP", side = 2, cratesRequired = 1, unitQuantity = 1, internal = 1, isStandalone = 1},        
+        { weight = 752, desc = "Crotale Launchers", unit = "HQ-7_LN_SP", side = 2, internal = 1 },
+        { weight = 753, desc = "Crotale Search Radar", unit = "HQ-7_STR_SP", side = 2, internal = 1 },        
     },
 
     ["Medium Range SAMs"] = {   
@@ -594,10 +605,10 @@ ctld.spawnableCrates = {
         { weight = 849, desc = "Buk Search Radar", unit = "SA-11 Buk SR 9S18M1", side = 1, internal = 1 },
         { weight = 850, desc = "Buk CC Radar", unit = "SA-11 Buk CC 9S470M1", side = 1, internal = 1 },
     -- Raipier System
-		{ weight = 708, desc = "Rapier Blindfire Radar", unit = "rapier_fsa_blindfire_radar", side = 2, internal = 1 },
-		{ weight = 709, desc = "Rapier Optical Tracker", unit = "rapier_fsa_optical_tracker_unit", side = 2, internal = 1 },
-		{ weight = 710, desc = "Rapier Launcher", unit = "rapier_fsa_launcher", side = 2, internal = 1 },				
-	-- Hawk System
+		    { weight = 708, desc = "Rapier Blindfire Radar", unit = "rapier_fsa_blindfire_radar", side = 2, internal = 1 },
+		    { weight = 709, desc = "Rapier Optical Tracker", unit = "rapier_fsa_optical_tracker_unit", side = 2, internal = 1 },
+		    { weight = 710, desc = "Rapier Launcher", unit = "rapier_fsa_launcher", side = 2, internal = 1 },				
+	 -- Hawk System
         { weight = 851, desc = "Hawk Launcher", unit = "Hawk ln", side = 2, internal = 1 },
         { weight = 852, desc = "Hawk Search Radar", unit = "Hawk sr", side = 2, internal = 1 },
         { weight = 853, desc = "Hawk Track Radar", unit = "Hawk tr", side = 2, internal = 1 },
@@ -622,19 +633,21 @@ ctld.spawnableCrates = {
         { weight = 868, desc = "S-300PS 54K6 CP", unit = "S-300PS 54K6 cp", side = 1, internal = 1 },
         { weight = 869, desc = "S-300PS 5P85D LN", unit = "S-300PS 5P85D ln", side = 1, internal = 1 },
         { weight = 870, desc = "S-300PS 5P85C LN", unit = "S-300PS 5P85C ln", side = 1, internal = 1 },    
-    ------------------------------------------------------------
+    
     },
 	["SAM Repairs"] = {	
 		{ weight = 880, desc = "SA-2 Repair", unit = "SA-2 Repair", side = 1, internal = 1 },
-        { weight = 881, desc = "SA-3 Repair", unit = "SA-3 Repair", side = 1, internal = 1 },
-        { weight = 882, desc = "SA-10 Repair", unit = "SA-10 Repair", side = 1, internal = 1 },
-        { weight = 883, desc = "Kub Repair", unit = "Kub Repair", side = 1, internal = 1 },
-        { weight = 884, desc = "Buk Repair", unit = "Buk Repair", side =1, internal = 1 },		
-        { weight = 886, desc = "Hawk Repair", unit = "Hawk Repair", side = 2, internal = 1 },
---        { weight = 887, desc = "Roland Repair", unit = "Roland Repair", side = 2, internal = 0 },
-        { weight = 888, desc = "Patriot Repair", unit = "Patriot Repair", side = 2, internal = 1 },
+    { weight = 881, desc = "SA-3 Repair", unit = "SA-3 Repair", side = 1, internal = 1 },
+    { weight = 882, desc = "SA-10 Repair", unit = "SA-10 Repair", side = 1, internal = 1 },
+    { weight = 883, desc = "Kub Repair", unit = "Kub Repair", side = 1, internal = 1 },
+    { weight = 884, desc = "Buk Repair", unit = "Buk Repair", side = 1, internal = 1 },		
+    { weight = 886, desc = "Hawk Repair", unit = "Hawk Repair", side = 2, internal = 1 },
+    { weight = 887, desc = "Roland Repair", unit = "Roland Repair", side = 2, internal = 1 },
+    { weight = 888, desc = "Patriot Repair", unit = "Patriot Repair", side = 2, internal = 1 },
 		{ weight = 728, desc = "Rapier Repair", unit = "Rapier Repair", side = 2, internal = 1 },
 		{ weight = 729, desc = "Silkworm Repair", unit = "Silkworm Repair", internal = 1 },
+		{ weight = 754, desc = "HQ-7 Repair", unit = "HQ-7 Repair", side = 1, internal = 1 },
+		{ weight = 759, desc = "Crotale Repair", unit = "HQ-7 Repair", side = 2, internal = 1 },
 	},
 		
     ["Missiles"] = {	  
@@ -666,27 +679,17 @@ ctld.jtacUnitTypes = {
 
 --- Tells CTLD What multipart AA Systems there are and what parts they need
 -- A New system added here also needs the launcher added
-ctld.AASystemTemplate = {
-    --{
-    --    name = "HQ-7 SAM System",
-    --    count = 2,
-    --    parts = {
-    --        { name = "HQ-7 Self-Propelled ln", desc = "HQ-7_LN_SP", launcher = true },
-    --        { name = "HQ-7 Self-Propelled str", desc = "HQ-7_STR_SP" },
-    --    },
-    --    repair = "HQ-7 Repair",
-    --    systemType = "SR",
-    --},
- --[[
+ctld.AASystemTemplate = {    
     {
-        name = "Flak 18 AAA Battery",
-        count = 1,
+        name = "HQ-7 Full System",
+        count = 2,
         parts = {
-            {name = "flak18", desc = "Flak 18 AAA Battery", launcher = true},         
+            { name = "HQ-7_LN_SP", desc = "HQ-7 Launchers", launcher = true },  
+            { name = "HQ-7_STR_SP", desc = "HQ-7 Search Track Radar" },                        
         },
-        repair = "Flak 18 Repair",
-    },  
-    
+        repair = "HQ-7 Repair",
+        systemType = "SR",
+    }, 
     {
         name = "Roland SAM System",
         count = 2,
@@ -696,8 +699,7 @@ ctld.AASystemTemplate = {
         },
         repair = "Roland Repair",
         systemType = "SR",
-    },
-    --]]	
+    },    
     {
         name = "Hawk SAM System",
         count = 4,
