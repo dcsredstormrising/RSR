@@ -111,6 +111,7 @@ ctld.hoverTime = 4 -- Time to hold hover above a crate for loading in seconds
 
 ctld.AASystemLimitRED = 20 -- Red side limit
 ctld.AASystemLimitBLUE = 20 -- Blue side limit
+ctld.aaSR2Launchers = 2 -- controls how many launchers to add to Short Range Missile systems: Roland, HQ when spawned.
 ctld.aaSRLaunchers = 3 -- controls how many launchers to add to Short Range Missile systems when spawned.
 ctld.aaMRLaunchers = 4 -- controls how many launchers to add to Medium Range Missile systems when spawned.
 ctld.aaLRLaunchers = 5 -- controls how many launchers to add to Long Range Missile systems when spawned.
@@ -575,21 +576,21 @@ ctld.spawnableCrates = {
 		    { weight = 829, desc = "SA-8 Osa 9A33", unit = "Osa 9A33 ln", side = 1, cratesRequired = 1, internal = 1 },
         { weight = 832, desc = "SA-15 Tor", unit = "Tor 9A331", side = 1, cratesRequired = 2, unitQuantity = 1, internal = 1 },
         { weight = 833, desc = "SA-19 Tunguska", unit = "2S6 Tunguska", side = 1, cratesRequired = 2, unitQuantity = 1, internal = 1 },
-        { weight = 834, desc = "HQ-7 Launcher - Alone", unit = "HQ-7_LN_SP", side = 1, cratesRequired = 1, unitQuantity = 1, internal = 1, isStandalone = 1},
-        { weight = 755, desc = "HQ-7 Launchers", unit = "HQ-7_LN_SP", side = 1, internal = 1 },
-        { weight = 756, desc = "HQ-7 Search Radar", unit = "HQ-7_STR_SP", side = 1, internal = 1 },
+        { weight = 834, desc = "HQ-7 Launcher - Single", unit = "HQ-7_LN_SP", side = 1, cratesRequired = 1, unitQuantity = 1, internal = 1, isStandalone = true },
+        { weight = 755, desc = "HQ-7 Launcher", unit = "HQ-7_LN_SP", side = 1, internal = 1, isStandalone = false },
+        { weight = 756, desc = "HQ-7 Search Radar", unit = "HQ-7_STR_SP", side = 1, internal = 1, isStandalone = false },
 		
 		--BLUE
         { weight = 707, desc = "M48 Chaparral", unit = "M48 Chaparral", side = 2, cratesRequired = 1, unitQuantity = 1, internal = 1 },		
         { weight = 840, desc = "M1097 Avenger", unit = "M1097 Avenger", side = 2, cratesRequired = 1, unitQuantity = 1, internal = 1 },
         { weight = 841, desc = "M6 Linebacker", unit = "M6 Linebacker", side = 2, cratesRequired = 2, unitQuantity = 1, internal = 1 },        
         { weight = 839, desc = "SA-15 Tor", unit = "Tor 9A331", side = 2, cratesRequired = 2, unitQuantity = 1, internal = 1 },
-        { weight = 855, desc = "Roland Launcher - Alone", unit = "Roland ADS", side = 2, cratesRequired = 1, unitQuantity = 1, internal = 1, isStandalone = 1 },                
-        { weight = 757, desc = "Roland Launchers", unit = "Roland ADS", side = 2, internal = 1 },
-        { weight = 758, desc = "Roland Radar", unit = "Roland Radar", side = 2, internal = 1 },        
-        { weight = 842, desc = "Crotale Launcher - Alone", unit = "HQ-7_LN_SP", side = 2, cratesRequired = 1, unitQuantity = 1, internal = 1, isStandalone = 1},        
-        { weight = 752, desc = "Crotale Launchers", unit = "HQ-7_LN_SP", side = 2, internal = 1 },
-        { weight = 753, desc = "Crotale Search Radar", unit = "HQ-7_STR_SP", side = 2, internal = 1 },        
+        { weight = 855, desc = "Roland Launcher - Single", unit = "Roland ADS", side = 2, cratesRequired = 1, unitQuantity = 1, internal = 1, isStandalone = true },                
+        { weight = 757, desc = "Roland Launcher", unit = "Roland ADS", side = 2, internal = 1, isStandalone = false },
+        { weight = 758, desc = "Roland Radar", unit = "Roland Radar", side = 2, internal = 1, isStandalone = false },
+        { weight = 842, desc = "Crotale Launcher - Single", unit = "HQ-7_LN_SP", side = 2, cratesRequired = 1, unitQuantity = 1, internal = 1, isStandalone = true },        
+        { weight = 752, desc = "Crotale Launcher", unit = "HQ-7_LN_SP", side = 2, internal = 1, isStandalone = false },
+        { weight = 753, desc = "Crotale Search Radar", unit = "HQ-7_STR_SP", side = 2, internal = 1, isStandalone = false },
     },
 
     ["Medium Range SAMs"] = {   
@@ -642,12 +643,12 @@ ctld.spawnableCrates = {
     { weight = 883, desc = "Kub Repair", unit = "Kub Repair", side = 1, internal = 1 },
     { weight = 884, desc = "Buk Repair", unit = "Buk Repair", side = 1, internal = 1 },		
     { weight = 886, desc = "Hawk Repair", unit = "Hawk Repair", side = 2, internal = 1 },
-    { weight = 887, desc = "Roland Repair", unit = "Roland Repair", side = 2, internal = 1 },
+    { weight = 887, desc = "Roland Repair", unit = "Roland Repair", side = 2, internal = 1, isStandalone = false },
     { weight = 888, desc = "Patriot Repair", unit = "Patriot Repair", side = 2, internal = 1 },
 		{ weight = 728, desc = "Rapier Repair", unit = "Rapier Repair", side = 2, internal = 1 },
 		{ weight = 729, desc = "Silkworm Repair", unit = "Silkworm Repair", internal = 1 },
-		{ weight = 754, desc = "HQ-7 Repair", unit = "HQ-7 Repair", side = 1, internal = 1 },
-		{ weight = 759, desc = "Crotale Repair", unit = "HQ-7 Repair", side = 2, internal = 1 },
+		{ weight = 754, desc = "HQ-7 Repair", unit = "HQ-7 Repair", side = 1, internal = 1, isStandalone = false },
+		{ weight = 759, desc = "Crotale Repair", unit = "HQ-7 Repair", side = 2, internal = 1, isStandalone = false },
 	},
 		
     ["Missiles"] = {	  
@@ -688,7 +689,7 @@ ctld.AASystemTemplate = {
             { name = "HQ-7_STR_SP", desc = "HQ-7 Search Track Radar" },                        
         },
         repair = "HQ-7 Repair",
-        systemType = "SR",
+        systemType = "SR2",
     }, 
     {
         name = "Roland SAM System",
@@ -698,7 +699,7 @@ ctld.AASystemTemplate = {
             { name = "Roland Radar", desc = "Roland Radar" },
         },
         repair = "Roland Repair",
-        systemType = "SR",
+        systemType = "SR2",
     },    
     {
         name = "Hawk SAM System",

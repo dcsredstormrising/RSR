@@ -3180,10 +3180,25 @@ function ctld.unpackCrates(_arguments)
                 end
 
                 local _aaTemplate = ctld.getAATemplate(_crate.details.unit)
-
+                
+                log:info("ctld._aaTemplate: _aaTemplate: $1", inspect(_aaTemplate))
+                log:info("ctld.isStandalone: isStandalone: $1", inspect(_crate.details.isStandalone))
+                
+                if _crate.details.isStandalone == false then
+                  env.info("This is FALSE: isStandalone")
+                end
+                
                 if _aaTemplate then
+                  env.info("This is TRUE: _aaTemplate")                
+                end
+                
+                                
+                if _aaTemplate and _crate.details.isStandalone == false then
+
+                    env.info("This is an AA Template SAM")
 
                     if _crate.details.unit == _aaTemplate.repair then
+                        env.info("This is an AA Repair Logic")
                         ctld.repairAASystem(_aircraft, _crate, _aaTemplate)
                     else
                         ctld.unpackAASystem(_aircraft, _crate, _crates, _aaTemplate)
@@ -3193,12 +3208,16 @@ function ctld.unpackCrates(_arguments)
                     -- is multi crate?
                 elseif _crate.details.cratesRequired ~= nil and _crate.details.cratesRequired > 1 then
                     -- multicrate
+                    
+                    env.info("This is Multi Crate")
 
                     ctld.unpackMultiCrate(_aircraft, _crate, _crates)
 
                     return
 
                 else
+                    env.info("This is Single Crate")
+                
                     -- single crate
                     local _cratePoint = _crate.crateUnit:getPoint()
                     local _crateName = _crate.crateUnit:getName()
@@ -4181,6 +4200,8 @@ function ctld.aaGetLaunchersFromType(_aaTemplate)
 
     if _aaTemplate.systemType == "SR" then
         return ctld.aaSRLaunchers
+    elseif _aaTemplate.systemType == "SR2" then
+        return ctld.aaSR2Launchers
     elseif _aaTemplate.systemType == "MR" then
         return ctld.aaMRLaunchers
     elseif _aaTemplate.systemType == "LR" then
@@ -4469,6 +4490,8 @@ function ctld.countCompleteAASystems(_heli)
 end
 
 function ctld.repairAASystem(_heli, _nearestCrate, _aaSystem)
+
+env.info("***=AW=33COM ctld.repairAASystem")
 
     -- find nearest COMPLETE AA system
     local _nearestHawk = ctld.findNearestAASystem(_heli, _aaSystem)
