@@ -726,6 +726,7 @@ end
 -- e.g. ctld.spawnCrateAtZone("blue", 505,"triggerzone1") -- spawn a tow humvee at triggerzone1 for blue side
 --
 function ctld.spawnCrateAtZone(_side, _weight, _zone)
+      
     local _spawnTrigger = trigger.misc.getZone(_zone) -- trigger to use as reference position
 
     if _spawnTrigger == nil then
@@ -770,7 +771,6 @@ end
 --
 --
 function ctld.spawnCrateAtPoint(_side, _weight, _point)
-
 
     local _crateType = ctld.crateLookupTable[tostring(_weight)]
 
@@ -821,7 +821,7 @@ end
 
 function ctld.spawnCrateStatic(_country, _unitId, _point, _name, _weight, _side, _internal)
     --Ironwulf2000 added _internal for internal crate carriage support
-
+	
     local _crate
     local _spawnedCrate
 
@@ -959,7 +959,7 @@ function ctld.spawnCrateStatic(_country, _unitId, _point, _name, _weight, _side,
         _spawnedCrate = StaticObject.getByName(_crate["name"])
     end
 
-    -- { weight = 503, desc = "Logistics Centre crate", unit = "LogisticsCentre", internal = 1 }
+    -- { weight = 503, desc = "Logistics Centre crate", un it = "LogisticsCentre", internal = 1 }
     local _crateDetails = ctld.crateLookupTable[tostring(_weight)]
     _crateDetails.baseOfOrigin = _baseOfOriginFromName
 
@@ -3160,7 +3160,7 @@ function ctld.unpackCrates(_arguments)
 
                 --log:info("ctld.unpackCrates: _playerName: $1, _crate.name: $2, _crateBaseOfOrigin: $3, _crate: $4", _playerName, _crate.name, _crateBaseOfOrigin, _crate)
                 log:info("ctld.unpackCrates: _playerName: $1, _crate.name: $2, _crateBaseOfOrigin: $3", _playerName, _crate.name, _crateBaseOfOrigin)
-
+                
                 if not ctld.isLogisticsCentreAliveAt(_crateBaseOfOrigin) then
                     local _azToCrate = ctld.getCompassBearing(_aircraft:getPoint(), _crate.crateUnit:getPoint())
                     ctld.displayMessageToGroup(_aircraft, "WARNING: Supplying logisitics centre at " .. _crateBaseOfOrigin .. " for crate (" .. _azToCrate .. "," .. _crate.dist .. "m) destroyed.  Unable to unpack crate.", 20)
@@ -3168,10 +3168,10 @@ function ctld.unpackCrates(_arguments)
                 end
 
                 local _aaTemplate = ctld.getAATemplate(_crate.details.unit)
+                                
+                if _aaTemplate and _crate.details.isStandalone == false then
 
-                if _aaTemplate then
-
-                    if _crate.details.unit == _aaTemplate.repair then
+                    if _crate.details.unit == _aaTemplate.repair then                        
                         ctld.repairAASystem(_aircraft, _crate, _aaTemplate)
                     else
                         ctld.unpackAASystem(_aircraft, _crate, _crates, _aaTemplate)
@@ -3181,12 +3181,13 @@ function ctld.unpackCrates(_arguments)
                     -- is multi crate?
                 elseif _crate.details.cratesRequired ~= nil and _crate.details.cratesRequired > 1 then
                     -- multicrate
-
+                    
                     ctld.unpackMultiCrate(_aircraft, _crate, _crates)
 
                     return
 
                 else
+                
                     -- single crate
                     local _cratePoint = _crate.crateUnit:getPoint()
                     local _crateName = _crate.crateUnit:getName()
@@ -4169,6 +4170,8 @@ function ctld.aaGetLaunchersFromType(_aaTemplate)
 
     if _aaTemplate.systemType == "SR" then
         return ctld.aaSRLaunchers
+    elseif _aaTemplate.systemType == "SR2" then
+        return ctld.aaSR2Launchers
     elseif _aaTemplate.systemType == "MR" then
         return ctld.aaMRLaunchers
     elseif _aaTemplate.systemType == "LR" then
@@ -4616,6 +4619,7 @@ function ctld.unpackMultiCrate(_heli, _nearestCrate, _nearbyCrates)
 end
 
 function ctld.spawnCrateGroup(_heli, _positions, _types, _unitQuantity)
+	
     _unitQuantity = _unitQuantity or 1
     local _id = ctld.getNextGroupId()
     local _playerName = ctld.getPlayerNameOrType(_heli)
