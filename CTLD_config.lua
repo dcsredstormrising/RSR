@@ -30,7 +30,7 @@ ctld = {} -- DONT REMOVE!
 -- ************************************************************************
 
 ctld.staticBugWorkaround = false --  DCS had a bug where destroying statics would cause a crash. If this happens again, set this to TRUE
-ctld.debug = true -- Set true to turn off logistics distances, to test crates
+ctld.debug = false -- Set true to turn off logistics distances, to test crates
 ctld.disableAllSmoke = true -- if true, all smoke is diabled at pickup and drop off zones regardless of settings below. Leave false to respect settings below
 
 ctld.hoverPickup = false --  if set to false you can load internal crates with the F10 menu instead of hovering... Only if not using real crates!
@@ -585,26 +585,26 @@ ctld.spawnableCrates = {
         { weight = 840, desc = "M1097 Avenger", unit = "M1097 Avenger", side = 2, cratesRequired = 1, unitQuantity = 1, internal = 1 },
         { weight = 841, desc = "M6 Linebacker", unit = "M6 Linebacker", side = 2, cratesRequired = 2, unitQuantity = 1, internal = 1 },        
         { weight = 839, desc = "SA-15 Tor", unit = "Tor 9A331", side = 2, cratesRequired = 2, unitQuantity = 1, internal = 1 },
-        { weight = 855, desc = "Roland Launcher - Single", unit = "Roland ADS", side = 2, cratesRequired = 1, unitQuantity = 1, internal = 1, isStandalone = true },                
-        { weight = 757, desc = "Roland Launcher", unit = "Roland ADS", side = 2, internal = 1, isStandalone = false },
-        { weight = 758, desc = "Roland Radar", unit = "Roland Radar", side = 2, internal = 1, isStandalone = false },
         { weight = 842, desc = "Crotale Launcher - Single", unit = "HQ-7_LN_SP", side = 2, cratesRequired = 1, unitQuantity = 1, internal = 1, isStandalone = true },        
         { weight = 752, desc = "Crotale Launcher", unit = "HQ-7_LN_SP", side = 2, internal = 1, isStandalone = false },
         { weight = 753, desc = "Crotale Search Radar", unit = "HQ-7_STR_SP", side = 2, internal = 1, isStandalone = false },
+        { weight = 855, desc = "Roland Launcher - Single", unit = "Roland ADS", side = 2, cratesRequired = 1, unitQuantity = 1, internal = 1, isStandalone = true },                
+        { weight = 757, desc = "Roland Launcher", unit = "Roland ADS", side = 2, internal = 1, isStandalone = false },
+        { weight = 758, desc = "Roland Radar", unit = "Roland Radar", side = 2, internal = 1, isStandalone = false },        
     },
 
     ["Medium Range SAMs"] = {   
-    -- SA-3 system
-        { weight = 843, desc = "SA-3 Launcher", unit = "5p73 s-125 ln", side = 1, internal = 1 },
-        { weight = 844, desc = "SA-3 Search Radar", unit = "p-19 s-125 sr", side = 1, internal = 1 },
-        { weight = 845, desc = "SA-3 Track Radar", unit = "snr s-125 tr", side = 1, internal = 1 },
-    -- Kub system
-        { weight = 846, desc = "Kub Launcher", unit = "Kub 2P25 ln", side = 1, internal = 1 },
-        { weight = 847, desc = "Kub Radar", unit = "Kub 1S91 str", side = 1, internal = 1 },    
     -- Buk system
         { weight = 848, desc = "Buk Launcher", unit = "SA-11 Buk LN 9A310M1", side = 1, internal = 1 },
         { weight = 849, desc = "Buk Search Radar", unit = "SA-11 Buk SR 9S18M1", side = 1, internal = 1 },
         { weight = 850, desc = "Buk CC Radar", unit = "SA-11 Buk CC 9S470M1", side = 1, internal = 1 },
+    -- Kub system
+        { weight = 846, desc = "Kub Launcher", unit = "Kub 2P25 ln", side = 1, internal = 1 },
+        { weight = 847, desc = "Kub Radar", unit = "Kub 1S91 str", side = 1, internal = 1 },    
+    -- SA-3 system
+        { weight = 843, desc = "SA-3 Launcher", unit = "5p73 s-125 ln", side = 1, internal = 1 },
+        { weight = 844, desc = "SA-3 Search Radar", unit = "p-19 s-125 sr", side = 1, internal = 1 },
+        { weight = 845, desc = "SA-3 Track Radar", unit = "snr s-125 tr", side = 1, internal = 1 },
     -- Raipier System
 		    { weight = 708, desc = "Rapier Blindfire Radar", unit = "rapier_fsa_blindfire_radar", side = 2, internal = 1 },
 		    { weight = 709, desc = "Rapier Optical Tracker", unit = "rapier_fsa_optical_tracker_unit", side = 2, internal = 1 },
@@ -637,18 +637,19 @@ ctld.spawnableCrates = {
     
     },
 	["SAM Repairs"] = {	
+		{ weight = 884, desc = "Buk Repair", unit = "Buk Repair", side = 1, internal = 1 },
+		{ weight = 754, desc = "HQ-7 Repair", unit = "HQ-7 Repair", side = 1, internal = 1, isStandalone = false },
+		{ weight = 883, desc = "Kub Repair", unit = "Kub Repair", side = 1, internal = 1 },
 		{ weight = 880, desc = "SA-2 Repair", unit = "SA-2 Repair", side = 1, internal = 1 },
     { weight = 881, desc = "SA-3 Repair", unit = "SA-3 Repair", side = 1, internal = 1 },
-    { weight = 882, desc = "SA-10 Repair", unit = "SA-10 Repair", side = 1, internal = 1 },
-    { weight = 883, desc = "Kub Repair", unit = "Kub Repair", side = 1, internal = 1 },
-    { weight = 884, desc = "Buk Repair", unit = "Buk Repair", side = 1, internal = 1 },		
+    { weight = 882, desc = "SA-10 Repair", unit = "SA-10 Repair", side = 1, internal = 1 },    
+    		
+    { weight = 759, desc = "Crotale Repair", unit = "HQ-7 Repair", side = 2, internal = 1, isStandalone = false },
     { weight = 886, desc = "Hawk Repair", unit = "Hawk Repair", side = 2, internal = 1 },
-    { weight = 887, desc = "Roland Repair", unit = "Roland Repair", side = 2, internal = 1, isStandalone = false },
     { weight = 888, desc = "Patriot Repair", unit = "Patriot Repair", side = 2, internal = 1 },
-		{ weight = 728, desc = "Rapier Repair", unit = "Rapier Repair", side = 2, internal = 1 },
+    { weight = 728, desc = "Rapier Repair", unit = "Rapier Repair", side = 2, internal = 1 },
+    { weight = 887, desc = "Roland Repair", unit = "Roland Repair", side = 2, internal = 1, isStandalone = false },
 		{ weight = 729, desc = "Silkworm Repair", unit = "Silkworm Repair", internal = 1 },
-		{ weight = 754, desc = "HQ-7 Repair", unit = "HQ-7 Repair", side = 1, internal = 1, isStandalone = false },
-		{ weight = 759, desc = "Crotale Repair", unit = "HQ-7 Repair", side = 2, internal = 1, isStandalone = false },
 	},
 		
     ["Missiles"] = {	  
