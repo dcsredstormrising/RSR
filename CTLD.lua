@@ -7262,6 +7262,7 @@ ctld.droppedLogisticsCentreCratesBLUE = {}
 --ctld.FOBlogisticCentreObjects = {} -- stores fully built fobs 
 
 ctld.completeAASystems = {} -- stores complete spawned groups from multiple crates
+ctld.completeAASystemsTag = "AASystem"
 
 ctld.FOBbeacons = {} -- stores FOB radio beacon details, refreshed every 60 seconds
 
