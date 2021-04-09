@@ -4389,9 +4389,9 @@ function ctld.unpackAASystem(_heli, _nearestCrate, _nearbyCrates, _aaSystemTempl
         -- HAWK / BUK READY!
         table.insert(_typeArray, "__completeAASystems")  -- this is how we tag our AA systems in order to recreate them after mission restart.  This will allow us to repair sams all the time.
         
-        env.info("**=AW=33COM ctld.completeAASystemsTag: ", inspect("__completeAASystems"))
-        env.info("**=AW=33COM typeArray: ", inspect(_typeArray))
-        env.info("**=AW=33COM typeArray[2]: ", inspect(_typeArray[2]))
+        env.info("**=AW=33COM ctld.completeAASystemsTag: " .. inspect("__completeAASystems"))
+        env.info("**=AW=33COM typeArray: " .. inspect(_typeArray))
+        env.info("**=AW=33COM typeArray[2]: " .. inspect(_typeArray[2]))
                 
         local _spawnedGroup = ctld.spawnCrateGroup(_heli, _posArray, _typeArray)
 
@@ -4632,14 +4632,14 @@ function ctld.spawnCrateGroup(_heli, _positions, _types, _unitQuantity)
     -- this is the place where we define if the crate is part of the AA system, if we put that in the name, we will be able to recreate the 
     -- ctld.completeAASystems table and be able to always repair sams. _types[2] is the value that passes the ctld.completeAASystemsTag
     if _types[2] ~= nil then
-        env.info("**=AW=33COM YES type 2 is here", inspect(_types[2]))    
+        env.info("**=AW=33COM YES type 2 is here" .. inspect(_types[2]))    
       _groupName = 'CTLD_' .. _types[1] .. '_' .. _id .. ' (' .. _playerName .. ')'.. _types[2] -- encountered some issues with using "type #number" on some servers
     else
-       env.info("**=AW=33COM NO type 2 is not here", inspect(_types[2]))
+       env.info("**=AW=33COM NO type 2 is not here" .. inspect(_types[2]))
       _groupName = 'CTLD_' .. _types[1] .. '_' .. _id .. ' (' .. _playerName .. ')' -- encountered some issues with using "type #number" on some servers
     end
     
-    log:info("**=AW=33COM ", _groupName)    
+    env.info("**=AW=33COM " .. _groupName)    
     log:info("_playerName: $1, _groupName: $2", _playerName, _groupName)
     
     local _group = {
