@@ -4627,7 +4627,7 @@ function ctld.spawnCrateGroup(_heli, _positions, _types, _unitQuantity, _isAASys
     -- this is the place where we define if the crate is part of the AA system, if we put that in the name, we will be able to recreate the 
     -- ctld.completeAASystems table and be able to always repair sams. _types[2] is the value that passes the ctld.completeAASystemsTag
     if _isAASystem then
-        env.info("**=AW=33COM YES type 2 is here" .. inspect(_types[2]))    
+        env.info("**=AW=33COM YES, is this AASystem: " .. inspect(_isAASystem)) 
       _groupName = 'CTLD_' .. _types[1] .. '_' .. _id .. ' (' .. _playerName .. ')' .. ctld.completeAASystemsTag -- encountered some issues with using "type #number" on some servers
     end
        
