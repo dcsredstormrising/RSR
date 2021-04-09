@@ -13,22 +13,8 @@
     "Ships": []
   },
   "ctld": {
-    "nextGroupId": 2,
-    "nextUnitId": 4
+    "nextGroupId": 1,
+    "nextUnitId": 1
   },
-  "persistentGroupData": [ {
-    "category": "vehicle",
-    "coalition": "blue",
-    "coalitionId": 2,
-    "countryId": 2,
-    "name": "CTLD_MCV-80_2 (=AW=33COM)",
-    "units": [ {
-      "heading": 1.0177026013024,
-      "name": "Unpacked MCV-80 #4",
-      "skill": "Excellent",
-      "type": "MCV-80",
-      "x": -355931.18749999,
-      "y": 617240.125
-    } ]
-  } ]
+  "persistentGroupData": []
 }
