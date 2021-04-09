@@ -4345,18 +4345,18 @@ function ctld.unpackAASystem(_heli, _nearestCrate, _nearbyCrates, _aaSystemTempl
 
                     _point = { x = _point.x + _xOffset, y = _point.y, z = _point.z + _yOffset }
 
-                    table.insert(_posArray, _point)					
-					table.insert(_typeArray, _name)
+                    table.insert(_posArray, _point)
+                    table.insert(_typeArray, _name)					
                 end
             else
                 table.insert(_posArray, _systemPart.crate.crateUnit:getPoint())
                 table.insert(_typeArray, _name)
             end
+            
         end
     end
 
     local _activeLaunchers = ctld.countCompleteAASystems(_heli)
-
     local _allowed = ctld.getAllowedAASystems(_heli)
 
     env.info("Active: " .. _activeLaunchers .. " Allowed: " .. _allowed)
@@ -4387,6 +4387,12 @@ function ctld.unpackAASystem(_heli, _nearestCrate, _nearbyCrates, _aaSystemTempl
         end
 
         -- HAWK / BUK READY!
+        table.insert(_typeArray, "__completeAASystems")  -- this is how we tag our AA systems in order to recreate them after mission restart.  This will allow us to repair sams all the time.
+        
+        env.info("**=AW=33COM ctld.completeAASystemsTag: ", inspect("__completeAASystems"))
+        env.info("**=AW=33COM typeArray: ", inspect(_typeArray))
+        env.info("**=AW=33COM typeArray[2]: ", inspect(_typeArray[2]))
+                
         local _spawnedGroup = ctld.spawnCrateGroup(_heli, _posArray, _typeArray)
 
         ctld.completeAASystems[_spawnedGroup:getName()] = ctld.getAASystemDetails(_spawnedGroup, _aaSystemTemplate)
@@ -4618,12 +4624,24 @@ function ctld.unpackMultiCrate(_heli, _nearestCrate, _nearbyCrates)
 end
 
 function ctld.spawnCrateGroup(_heli, _positions, _types, _unitQuantity)
-	
+	   
     _unitQuantity = _unitQuantity or 1
     local _id = ctld.getNextGroupId()
     local _playerName = ctld.getPlayerNameOrType(_heli)
-    local _groupName = 'CTLD_' .. _types[1] .. '_' .. _id .. ' (' .. _playerName .. ')' -- encountered some issues with using "type #number" on some servers
+    local _groupName = ""    
+    -- this is the place where we define if the crate is part of the AA system, if we put that in the name, we will be able to recreate the 
+    -- ctld.completeAASystems table and be able to always repair sams. _types[2] is the value that passes the ctld.completeAASystemsTag
+    if _types[2] ~= nil then
+        env.info("**=AW=33COM YES type 2 is here", inspect(_types[2]))    
+      _groupName = 'CTLD_' .. _types[1] .. '_' .. _id .. ' (' .. _playerName .. ')'.. _types[2] -- encountered some issues with using "type #number" on some servers
+    else
+       env.info("**=AW=33COM NO type 2 is not here", inspect(_types[2]))
+      _groupName = 'CTLD_' .. _types[1] .. '_' .. _id .. ' (' .. _playerName .. ')' -- encountered some issues with using "type #number" on some servers
+    end
+    
+    log:info("**=AW=33COM ", _groupName)    
     log:info("_playerName: $1, _groupName: $2", _playerName, _groupName)
+    
     local _group = {
         ["visible"] = false,
         -- ["groupId"] = _id,
@@ -4631,14 +4649,14 @@ function ctld.spawnCrateGroup(_heli, _positions, _types, _unitQuantity)
         ["units"] = {},
 --                ["y"] = _positions[1].z,
 --                ["x"] = _positions[1].x,
-        ["name"] = _groupName,
+        ["name"] = _groupName,        
         ["playerCanDrive"] = true,
         ["task"] = {},
     }
     if #_positions == 1 then
         for _i = 1, _unitQuantity do
             local _unitId = ctld.getNextUnitId()
-            local _details = { type = _types[1], unitId = _unitId, name = string.format("Unpacked %s #%i", _types[1], _unitId) }
+            local _details = { type = _types[1], unitId = _unitId, name = string.format("Unpacked %s #%i", _types[1], _unitId) } -- we rely on that "Unpacked" name somewhere else in order to know if the unit is from CTLD
 --            local _offset = (_i - 1) * 40 + 10
 --            local _offset = (_i - 1) * 10 + 10
             local _playerHeading = mist.getHeading(_heli)
@@ -4667,7 +4685,7 @@ Heading is definately output in radians
     else
         for _i, _pos in ipairs(_positions) do
             local _unitId = ctld.getNextUnitId()
-            local _details = { type = _types[_i], unitId = _unitId, name = string.format("Unpacked %s #%i", _types[_i], _unitId) }
+            local _details = { type = _types[_i], unitId = _unitId, name = string.format("Unpacked %s #%i", _types[_i], _unitId) } -- we rely on that "Unpacked" name somewhere else in order to know if the unit is from CTLD
             local _playerHeading = mist.getHeading(_heli)
 --[[
 Heading is definately output in radians

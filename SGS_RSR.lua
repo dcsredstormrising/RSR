@@ -30,6 +30,9 @@
  --Statics are not included. See 'Simple Static Saving' for a solution
  --Routes are not saved. Uncomment lines 148-153 if you wish to keep them, but they won't activate them on restart. It is impossible to query a group for it's current
  --route, only for the original route it recieved from the Mission Editor. Therefore a DCS limitation.
+ 
+ local inspect = require("inspect")
+ 
  -----------------------------------
  --Configurable for user:
  SaveScheduleUnits=60 --how many seconds between each check of all the units.
@@ -108,7 +111,8 @@ if file_exists("SaveUnits_RSR.lua") then --Script has been run before, so we nee
   --AllGroups = SET_GROUP:New():FilterCategories("ground"):FilterActive(true):FilterStart()
   --AllGroups = SET_GROUP:New():FilterPrefixes( "Re-enforcements " ):FilterActive(true):FilterStart()
   --AllGroups = SET_GROUP:New():FilterPrefixes( {"Re-enforcements ", "CTLD"} ):FilterActive(true):FilterStart()
-  AllGroups = SET_GROUP:New():FilterPrefixes( {"Re-enforcements", "Red Start","Blue Start", "Resupply ", " Convoy", "Dropped Group ","CTLD"} ):FilterActive(true):FilterStart()
+  --AllGroups = SET_GROUP:New():FilterPrefixes( {"Re-enforcements", "Red Start","Blue Start", "Resupply ", " Convoy", "Dropped Group ","CTLD"} ):FilterActive(true):FilterStart()
+  AllGroups = SET_GROUP:New():FilterPrefixes( {"CTLD"} ):FilterActive(true):FilterStart()
   
   
     AllGroups:ForEachGroup(function (grp)
@@ -178,7 +182,7 @@ else --Save File does not exist we start a fresh table, no spawns needed
     --:FilterPrefixes( {"Re-enforcements ", "Blue Campaign Start ", "Red Campaign Start "} )
     --:FilterActive(true)
     --:FilterStart()
-  AllGroups = SET_GROUP:New():FilterPrefixes( {"Re-enforcements", "Red Start","Blue Start", "Resupply ", " Convoy", "Dropped Group ","CTLD"} ):FilterActive(true):FilterStart()
+  AllGroups = SET_GROUP:New():FilterPrefixes( {"CTLD"} ):FilterActive(true):FilterStart()
 
 
 --BlueTransportGroups = SET_GROUP:New()
@@ -192,9 +196,9 @@ end
 --THE SAVING SCHEDULE
 SCHEDULER:New( nil, function()
   AllGroups:ForEachGroupAlive(function (grp)
-  local DCSgroup = Group.getByName(grp:GetName() )
+  local DCSgroup = Group.getByName(grp:GetName())
   local size = DCSgroup:getSize()
-
+      
 _unittable={}
 
 for i = 1, size do
@@ -205,7 +209,7 @@ local tmpTable =
     ["type"]=grp:GetUnit(i):GetTypeName(),
     ["transportable"]=true,
     ["unitID"]=grp:GetUnit(i):GetID(),
-    ["skill"]="Excellent",
+    ["skill"]="Excellent",    
     ["y"]=grp:GetUnit(i):GetVec2().y,
     ["x"]=grp:GetUnit(i):GetVec2().x,
     ["name"]=grp:GetUnit(i):GetName(),
@@ -222,7 +226,7 @@ SaveUnits_RSR[grp:GetName()] =
    ["SpawnCoalitionID"]=grp:GetCountry(),
    ["tasks"]={}, 
    ["CategoryID"]=grp:GetCategory(),
-   ["task"]="Ground Nothing",
+   ["task"]="Ground Nothing",   
    ["route"]={}, 
    ["groupId"]=grp:GetID(),
    ["units"]= _unittable,

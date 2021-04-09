@@ -12,7 +12,6 @@ require("Moose")
 require("CTLD")
 require("CSAR")
 local logging = require("logging")
-
 local log = logging.Logger:new("RSR")
 
 local rsrConfig = require("RSR_config")
