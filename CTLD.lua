@@ -4387,13 +4387,7 @@ function ctld.unpackAASystem(_heli, _nearestCrate, _nearbyCrates, _aaSystemTempl
         end
 
         -- HAWK / BUK READY!
-        table.insert(_typeArray, "__completeAASystems")  -- this is how we tag our AA systems in order to recreate them after mission restart.  This will allow us to repair sams all the time.
-        
-        env.info("**=AW=33COM ctld.completeAASystemsTag: " .. inspect("__completeAASystems"))
-        env.info("**=AW=33COM typeArray: " .. inspect(_typeArray))
-        env.info("**=AW=33COM typeArray[2]: " .. inspect(_typeArray[2]))
-                
-        local _spawnedGroup = ctld.spawnCrateGroup(_heli, _posArray, _typeArray)
+        local _spawnedGroup = ctld.spawnCrateGroup(_heli, _posArray, _typeArray, 1, true)
 
         ctld.completeAASystems[_spawnedGroup:getName()] = ctld.getAASystemDetails(_spawnedGroup, _aaSystemTemplate)
 		    log:info("ctld.completeAASystems: $1", inspect(ctld.completeAASystems, { newline = " ", indent = "" }))
@@ -4623,22 +4617,20 @@ function ctld.unpackMultiCrate(_heli, _nearestCrate, _nearbyCrates)
     end
 end
 
-function ctld.spawnCrateGroup(_heli, _positions, _types, _unitQuantity)
+function ctld.spawnCrateGroup(_heli, _positions, _types, _unitQuantity, _isAASystem)
 	   
     _unitQuantity = _unitQuantity or 1
     local _id = ctld.getNextGroupId()
     local _playerName = ctld.getPlayerNameOrType(_heli)
-    local _groupName = ""    
+    local _groupName = 'CTLD_' .. _types[1] .. '_' .. _id .. ' (' .. _playerName .. ')' -- encountered some issues with using "type #number" on some servers   
+     
     -- this is the place where we define if the crate is part of the AA system, if we put that in the name, we will be able to recreate the 
     -- ctld.completeAASystems table and be able to always repair sams. _types[2] is the value that passes the ctld.completeAASystemsTag
-    if _types[2] ~= nil then
+    if _isAASystem then
         env.info("**=AW=33COM YES type 2 is here" .. inspect(_types[2]))    
-      _groupName = 'CTLD_' .. _types[1] .. '_' .. _id .. ' (' .. _playerName .. ')'.. _types[2] -- encountered some issues with using "type #number" on some servers
-    else
-       env.info("**=AW=33COM NO type 2 is not here" .. inspect(_types[2]))
-      _groupName = 'CTLD_' .. _types[1] .. '_' .. _id .. ' (' .. _playerName .. ')' -- encountered some issues with using "type #number" on some servers
+      _groupName = 'CTLD_' .. _types[1] .. '_' .. _id .. ' (' .. _playerName .. ')' .. ctld.completeAASystemsTag -- encountered some issues with using "type #number" on some servers
     end
-    
+       
     env.info("**=AW=33COM " .. _groupName)    
     log:info("_playerName: $1, _groupName: $2", _playerName, _groupName)
     

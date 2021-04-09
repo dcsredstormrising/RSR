@@ -94,6 +94,8 @@ ctld.heavyCrateWeightMultiplier = 3 -- weight multiplier applied to the weight o
 ctld.ewrFrequencyRed = 124
 ctld.ewrFrequencyBlue = 124
 
+ctld.completeAASystemsTag = ""
+
 -- Simulated Sling load configuration
 
 ctld.minimumHoverHeight = 7.5 -- Lowest allowable height for crate hover
