@@ -32,7 +32,36 @@
  --route, only for the original route it recieved from the Mission Editor. Therefore a DCS limitation.
  
  local inspect = require("inspect")
+ require("CTLD")
  
+ -- Here we update the AA System in CTLD upon each session start.
+ local function LoadAllExistingSystemsIntoCTLD(_spawnedGroup)
+    
+    if _spawnedGroup ~= nil then    
+      local _systemDetails = {}
+      
+      env.info("***=AW=33COM _spawnedGroup Save File: " .. inspect(_spawnedGroup:getName()))  
+            
+      local _units = _spawnedGroup:getUnits()
+      local _aaSystemTemplate      
+            
+      for _, _unit in pairs(_units) do             
+        if _ == 1 then
+          env.info('running: 1 ')  
+          _aaSystemTemplate = ctld.getAATemplate(_unit:getTypeName())      
+        end
+                
+        table.insert(_systemDetails, { point = _unit:getPoint(), unit = _unit:getTypeName(), name = _unit:getName(), system = _aaSystemTemplate })        
+      end
+            
+      env.info('Final Table: ' .. inspect(_systemDetails))                
+      env.info("***=AW=33COM Units End:")
+      
+    else
+      env.info("***=AW=33COM _spawnedGroup is empty in Save File")
+    end
+ end 
+  
  -----------------------------------
  --Configurable for user:
  SaveScheduleUnits=60 --how many seconds between each check of all the units.
@@ -116,19 +145,8 @@ if file_exists("SaveUnits_RSR.lua") then --Script has been run before, so we nee
   
 -- testing =AW=33COM
 --local _spawnedGroup = Group.getByName(mist.dynAdd(_group).name)
-local _spawnedGroup = Group.getByName("Blue Start-1 AASystem")  
-env.info("***=AW=33COM _spawnedGroup Save File: " .. inspect(_spawnedGroup:GetName()))
-
-env.info("***=AW=33COM Units Start:")
-
-    local _units = _spawnedGroup:getUnits()
-    
-    for _, _unit in pairs(_units) do
-        env.info('{ point = ' .. _unit:getPoint() .. ', unit = ' .. _unit:getTypeName().. ', name = ' .. _unit:getName() .. '}')        
-    end
-    
-env.info("***=AW=33COM Units End:")
-
+local _spawnedGroup = Group.getByName("Blue Start-5 AASystem")
+LoadAllExistingSystemsIntoCTLD(_spawnedGroup)
   
     AllGroups:ForEachGroup(function (grp)
       grp:Destroy()
@@ -198,21 +216,6 @@ else --Save File does not exist we start a fresh table, no spawns needed
     --:FilterActive(true)
     --:FilterStart()
   AllGroups = SET_GROUP:New():FilterPrefixes( {"CTLD","Blue Start"} ):FilterActive(true):FilterStart()
-    
--- testing =AW=33COM
---local _spawnedGroup = Group.getByName(mist.dynAdd(_group).name)
-local _spawnedGroup = Group.getByName("Blue Start-1 AASystem")  
-env.info("***=AW=33COM _spawnedGroup First File: " .. inspect(_spawnedGroup:GetName()))
-env.info("***=AW=33COM Units Start:")
-
-    local _units = _spawnedGroup:getUnits()
-    
-    for _, _unit in pairs(_units) do
-        env.info('{ point = ' .. _unit:getPoint() .. ', unit = ' .. _unit:getTypeName().. ', name = ' .. _unit:getName() .. '}')        
-    end
-    
-env.info("***=AW=33COM Units End:")
-
 
 --BlueTransportGroups = SET_GROUP:New()
 --  :FilterCoalitions( "blue" )

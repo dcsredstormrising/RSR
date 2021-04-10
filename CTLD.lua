@@ -30,7 +30,6 @@ local utils = require("utils")
 local rsrConfig = require("RSR_config")
 local baseOwnershipCheck = require("baseOwnershipCheck")
 local logisticsManager = require("logisticsManager")
-
 local log = logging.Logger:new("CTLD")
 
 --ctld.minimumDeployDistance = 600 -- minimum distance from a friendly pickup zone where you can deploy a crate
@@ -7591,7 +7590,6 @@ for _coalitionName, _coalitionData in pairs(env.mission.coalition) do
     end
 end
 env.info("END search for crates")
-
 env.info("CTLD.LUA LOADED")
 
 
