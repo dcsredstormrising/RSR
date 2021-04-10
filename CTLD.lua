@@ -4388,13 +4388,25 @@ function ctld.unpackAASystem(_heli, _nearestCrate, _nearbyCrates, _aaSystemTempl
 
         -- HAWK / BUK READY!
         local _spawnedGroup = ctld.spawnCrateGroup(_heli, _posArray, _typeArray, 1, true)
-
+        
+        env.info("******=AW=33COM _spawnedGroup ******")
+        env.info(inspect(_spawnedGroup))
+        env.info("******=AW=33COM ******")
+        
+        env.info("******=AW=33COM _aaSystemTemplate ******")
+        env.info(inspect(_aaSystemTemplate))
+        env.info("******=AW=33COM ******")
+        
         ctld.completeAASystems[_spawnedGroup:getName()] = ctld.getAASystemDetails(_spawnedGroup, _aaSystemTemplate)
 		    log:info("ctld.completeAASystems: $1", inspect(ctld.completeAASystems, { newline = " ", indent = "" }))
         ctld.processCallback({ unit = _heli, crate = _nearestCrate, spawnedGroup = _spawnedGroup, action = "unpack" })
 
         trigger.action.outTextForCoalition(_heli:getCoalition(), "[TEAM] " .. ctld.getPlayerNameOrType(_heli) .. " successfully deployed a full " .. _aaSystemTemplate.name .. " to the field. \n\nAA Active System limit is: " .. _allowed .. "\nActive: " .. (_activeLaunchers + 1), 10)
         log:info("$1 unpacked a $2", ctld.getPlayerNameOrType(_heli), _aaSystemTemplate.name)
+        
+        env.info("******=AW=33COM ctld.completeAASystems ******")
+        env.info(inspect(ctld.completeAASystems))
+        env.info("******=AW=33COM ******")
     end
 end
 
