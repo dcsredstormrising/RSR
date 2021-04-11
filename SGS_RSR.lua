@@ -32,39 +32,45 @@
  --route, only for the original route it recieved from the Mission Editor. Therefore a DCS limitation.
  
  local inspect = require("inspect")
- require("CTLD")
- 
+  
  -- Here we update the AA System in CTLD upon each session start.
  local function LoadAllExistingSystemsIntoCTLD(_spawnedGroup)
     
-    if _spawnedGroup ~= nil then    
-      local _systemDetails = {}
+    if _spawnedGroup ~= nil and _spawnedGroup:getUnits() ~= nil and _spawnedGroup:getUnits()[1] ~= nil then
+    
+      local _units = _spawnedGroup:getUnits()  
+      local _firstUnitType = _units[1]:getTypeName()      
+    
+      env.info("***=AW=33COM _spawnedGroup Name From Saved File: " .. inspect(_spawnedGroup:getName()))
+      env.info("***=AW=33COM _spawnedGroup Type Name From Saved File: " .. inspect(_firstUnitType))
       
-      env.info("***=AW=33COM _spawnedGroup Save File: " .. inspect(_spawnedGroup:getName()))  
-            
-      local _units = _spawnedGroup:getUnits()
-      local _aaSystemTemplate      
-            
-      for _, _unit in pairs(_units) do             
-        if _ == 1 then
-          env.info('running: 1 ')  
-          _aaSystemTemplate = ctld.getAATemplate(_unit:getTypeName())      
-        end
-                
-        table.insert(_systemDetails, { point = _unit:getPoint(), unit = _unit:getTypeName(), name = _unit:getName(), system = _aaSystemTemplate })        
-      end
-            
-      env.info('Final Table: ' .. inspect(_systemDetails))                
+      local _aaSystemDetails = ctld.getAASystemDetails(_spawnedGroup, ctld.getAATemplate(_firstUnitType))      
+      ctld.completeAASystems[_spawnedGroup:getName()] = _aaSystemDetails
+      
+      env.info("******=AW=33COM ctld.completeAASystems ******")
+      env.info(inspect(ctld.completeAASystems))      
       env.info("***=AW=33COM Units End:")
       
+      --ctld.getAASystemDetails(_spawnedGroup, _aaSystemTemplate)      
+      --local _units = _spawnedGroup:getUnits()      
+            
+      --for _, _unit in pairs(_units) do             
+--        if _ == 1 then
+    --      env.info('running: 1 ')  
+  --        _aaSystemTemplate = ctld.getAATemplate(_unit:getTypeName())      
+      --  end
+                
+        --table.insert(_systemDetails, { point = _unit:getPoint(), unit = _unit:getTypeName(), name = _unit:getName(), system = _aaSystemTemplate })
+                
+      --end
     else
-      env.info("***=AW=33COM _spawnedGroup is empty in Save File")
+      env.info("***=AW=33COM _spawnedGroup is empty in Saved File")
     end
  end 
   
  -----------------------------------
  --Configurable for user:
- SaveScheduleUnits=60 --how many seconds between each check of all the units.
+ SaveScheduleUnits=120 --how many seconds between each check of all the units.
  -----------------------------------
  --Do not edit below here
  -----------------------------------
@@ -135,7 +141,7 @@ end
 --SCRIPT START
 env.info("Loaded Simple Group Saving, by Pikey, 2018, version " .. version)
 
-if file_exists("SaveUnits_RSR.lua") then --Script has been run before, so we need to load the save
+if file_exists("SaveUnits_RSR.lua") then --Script has been run before, so we need to load the saved items
   env.info("Existing database, loading from File.")
   --AllGroups = SET_GROUP:New():FilterCategories("ground"):FilterActive(true):FilterStart()
   --AllGroups = SET_GROUP:New():FilterPrefixes( "Re-enforcements " ):FilterActive(true):FilterStart()
