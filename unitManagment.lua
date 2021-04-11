@@ -10,13 +10,8 @@ WakeUpSet = SET_GROUP:New():FilterPrefixes( {"Red Start","Blue Start", "Resupply
 SCHEDULER:New( nil, function()
    WakeUpSet:ForEachGroup(
    function( MooseGroup )
-    local chance = math.random(1,99)
-     if chance > 1 then
-        MooseGroup:OptionAlarmStateRed()
---        MooseGroup:CommandEPLRS(true, 3)
-     else
-        MooseGroup: OptionAlarmStateGreen()
-     end
+--        MooseGroup:OptionAlarmStateRed()
+--      MooseGroup:CommandEPLRS(true, 3)
     end)
 
 end, {}, 40)

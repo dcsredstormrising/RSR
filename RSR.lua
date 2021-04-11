@@ -37,7 +37,6 @@ local UAV_Designate = require("UAV_Designate")
 local warehouseResupply = require("warehouseResupply")
 local UAV_Recon = require("UAV_Recon")
 local botBases = require("botBases")
---local unitManagment = require("unitManagment") -- must run almost at the end
 local CONVOY_MENU = require("CONVOY_Menu")
 require("weaponManager")
 require("EWRS_OPM")
