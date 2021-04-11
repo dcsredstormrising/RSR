@@ -610,10 +610,10 @@ ctld.spawnableCrates = {
 		    { weight = 709, desc = "Rapier Optical Tracker", unit = "rapier_fsa_optical_tracker_unit", side = 2, internal = 1 },
 		    { weight = 710, desc = "Rapier Launcher", unit = "rapier_fsa_launcher", side = 2, internal = 1 },				
 	 -- Hawk System
-        { weight = 851, desc = "Hawk Launcher", unit = "Hawk ln", side = 2, internal = 1 },
-        { weight = 852, desc = "Hawk Search Radar", unit = "Hawk sr", side = 2, internal = 1 },
-        { weight = 853, desc = "Hawk Track Radar", unit = "Hawk tr", side = 2, internal = 1 },
-        { weight = 854, desc = "Hawk PCP", unit = "Hawk pcp", side = 2, internal = 1 },     
+        { weight = 851, desc = "Hawk Launcher", unit = "Hawk ln", side = 2, internal = 1, isStandalone = false },
+        { weight = 852, desc = "Hawk Search Radar", unit = "Hawk sr", side = 2, internal = 1, isStandalone = false },
+        { weight = 853, desc = "Hawk Track Radar", unit = "Hawk tr", side = 2, internal = 1, isStandalone = false },
+        { weight = 854, desc = "Hawk PCP", unit = "Hawk pcp", side = 2, internal = 1, isStandalone = false },     
     },
   
   ["Long Range SAMs"] = {
@@ -645,7 +645,7 @@ ctld.spawnableCrates = {
     { weight = 882, desc = "SA-10 Repair", unit = "SA-10 Repair", side = 1, internal = 1 },    
     		
     { weight = 759, desc = "Crotale Repair", unit = "HQ-7 Repair", side = 2, internal = 1, isStandalone = false },
-    { weight = 886, desc = "Hawk Repair", unit = "Hawk Repair", side = 2, internal = 1 },
+    { weight = 886, desc = "Hawk Repair", unit = "Hawk Repair", side = 2, internal = 1, isStandalone = false},
     { weight = 888, desc = "Patriot Repair", unit = "Patriot Repair", side = 2, internal = 1 },
     { weight = 728, desc = "Rapier Repair", unit = "Rapier Repair", side = 2, internal = 1 },
     { weight = 887, desc = "Roland Repair", unit = "Roland Repair", side = 2, internal = 1, isStandalone = false },
