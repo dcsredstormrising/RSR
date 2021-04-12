@@ -2997,7 +2997,15 @@ function ctld.findNearestAASystem(_heli, _aaSystem)
 
     local _closestHawkGroup = nil
     local _shortestDistance = -1
-
+    
+      env.info("******=AW=33COM ctld.findNearestAASystem: _aaSystem ******")
+      env.info(inspect(_aaSystem))      
+      env.info("***=AW=33COM End:")
+      
+      env.info("******=AW=33COM ctld.findNearestAASystem: ctld.completeAASystems ******")
+      env.info(inspect(ctld.completeAASystems))
+      env.info("***=AW=33COM End:")
+    
     for _groupName, _hawkDetails in pairs(ctld.completeAASystems) do
 
         local _hawkGroup = Group.getByName(_groupName)

@@ -38,11 +38,10 @@ local warehouseResupply = require("warehouseResupply")
 local UAV_Recon = require("UAV_Recon")
 local botBases = require("botBases")
 local CONVOY_MENU = require("CONVOY_Menu")
-require("weaponManager")
+--require("weaponManager")
 require("EWRS_OPM")
 ----STILL NEEDS TESTED (3-19-2021)----
 --local EasyStats = require("EasyStats")
-----DELETE BELOW AFTER A COUPLE OF WEEKS (3-19-2021)----
 local AWACS_Tankers = require("AWACS_Tankers")
 local AI_CAP = require("AI_CAP")
 

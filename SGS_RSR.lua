@@ -47,22 +47,10 @@
       local _aaSystemDetails = ctld.getAASystemDetails(_spawnedGroup, ctld.getAATemplate(_firstUnitType))      
       ctld.completeAASystems[_spawnedGroup:getName()] = _aaSystemDetails
       
-      env.info("******=AW=33COM ctld.completeAASystems ******")
+      env.info("******=AW=33COM sgs_rsr.LoadAllExistingSystemsIntoCTLD: ctld.completeAASystems ******")
       env.info(inspect(ctld.completeAASystems))      
-      env.info("***=AW=33COM Units End:")
-      
-      --ctld.getAASystemDetails(_spawnedGroup, _aaSystemTemplate)      
-      --local _units = _spawnedGroup:getUnits()      
-            
-      --for _, _unit in pairs(_units) do             
---        if _ == 1 then
-    --      env.info('running: 1 ')  
-  --        _aaSystemTemplate = ctld.getAATemplate(_unit:getTypeName())      
-      --  end
-                
-        --table.insert(_systemDetails, { point = _unit:getPoint(), unit = _unit:getTypeName(), name = _unit:getName(), system = _aaSystemTemplate })
-                
-      --end
+      env.info("***=AW=33COM End:")
+
     else
       env.info("***=AW=33COM _spawnedGroup is empty in Saved File")
     end
@@ -147,12 +135,19 @@ if file_exists("SaveUnits_RSR.lua") then --Script has been run before, so we nee
   --AllGroups = SET_GROUP:New():FilterPrefixes( "Re-enforcements " ):FilterActive(true):FilterStart()
   --AllGroups = SET_GROUP:New():FilterPrefixes( {"Re-enforcements ", "CTLD"} ):FilterActive(true):FilterStart()
   --AllGroups = SET_GROUP:New():FilterPrefixes( {"Re-enforcements", "Red Start","Blue Start", "Resupply ", " Convoy", "Dropped Group ","CTLD"} ):FilterActive(true):FilterStart()
-  AllGroups = SET_GROUP:New():FilterPrefixes( {"CTLD","Blue Start"} ):FilterActive(true):FilterStart()
+  AllGroups = SET_GROUP:New():FilterPrefixes( {"CTLD","Blue Start"} ):FilterActive(true):FilterOnce()
   
--- testing =AW=33COM
---local _spawnedGroup = Group.getByName(mist.dynAdd(_group).name)
-local _spawnedGroup = Group.getByName("Blue Start-5 AASystem")
-LoadAllExistingSystemsIntoCTLD(_spawnedGroup)
+  
+  -- logic to load saved AASystems into CTLD
+  local _aaSystemGroups = SET_GROUP:New():FilterPrefixes( {"AASystem"} ):FilterActive(true):FilterOnce()  
+  
+  _aaSystemGroups:ForEachGroup(function (grp)
+  
+    env.info("***=AW=33COM grp:GetName(): ".. inspect(grp:GetName()))
+    local _spawnedGroup = Group.getByName(grp:GetName())
+    LoadAllExistingSystemsIntoCTLD(_spawnedGroup)
+    
+  end)
   
     AllGroups:ForEachGroup(function (grp)
       grp:Destroy()
@@ -221,7 +216,18 @@ else --Save File does not exist we start a fresh table, no spawns needed
     --:FilterPrefixes( {"Re-enforcements ", "Blue Campaign Start ", "Red Campaign Start "} )
     --:FilterActive(true)
     --:FilterStart()
-  AllGroups = SET_GROUP:New():FilterPrefixes( {"CTLD","Blue Start"} ):FilterActive(true):FilterStart()
+  AllGroups = SET_GROUP:New():FilterPrefixes( {"CTLD","Blue Start"} ):FilterActive(true):FilterOnce()
+  
+  -- logic to load saved AASystems into CTLD
+  local _aaSystemGroups = SET_GROUP:New():FilterPrefixes( {"AASystem"} ):FilterActive(true):FilterOnce()  
+  
+  _aaSystemGroups:ForEachGroup(function (grp)
+  
+    env.info("***=AW=33COM grp:GetName(): ".. inspect(grp:GetName()))
+    local _spawnedGroup = Group.getByName(grp:GetName())
+    LoadAllExistingSystemsIntoCTLD(_spawnedGroup)
+    
+  end)
 
 --BlueTransportGroups = SET_GROUP:New()
 --  :FilterCoalitions( "blue" )
