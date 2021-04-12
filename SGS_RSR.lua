@@ -135,11 +135,11 @@ if file_exists("SaveUnits_RSR.lua") then --Script has been run before, so we nee
   --AllGroups = SET_GROUP:New():FilterPrefixes( "Re-enforcements " ):FilterActive(true):FilterStart()
   --AllGroups = SET_GROUP:New():FilterPrefixes( {"Re-enforcements ", "CTLD"} ):FilterActive(true):FilterStart()
   --AllGroups = SET_GROUP:New():FilterPrefixes( {"Re-enforcements", "Red Start","Blue Start", "Resupply ", " Convoy", "Dropped Group ","CTLD"} ):FilterActive(true):FilterStart()
-  AllGroups = SET_GROUP:New():FilterPrefixes( {"CTLD","Blue Start"} ):FilterActive(true):FilterOnce()
+  AllGroups = SET_GROUP:New():FilterPrefixes( {"CTLD","Blue Start"} ):FilterActive(true):FilterStart()
   
   
   -- logic to load saved AASystems into CTLD
-  local _aaSystemGroups = SET_GROUP:New():FilterPrefixes( {"AASystem"} ):FilterActive(true):FilterOnce()  
+  local _aaSystemGroups = SET_GROUP:New():FilterPrefixes( {"AASystem"} ):FilterActive(true):FilterStart()  
   
   _aaSystemGroups:ForEachGroup(function (grp)
   
@@ -216,10 +216,10 @@ else --Save File does not exist we start a fresh table, no spawns needed
     --:FilterPrefixes( {"Re-enforcements ", "Blue Campaign Start ", "Red Campaign Start "} )
     --:FilterActive(true)
     --:FilterStart()
-  AllGroups = SET_GROUP:New():FilterPrefixes( {"CTLD","Blue Start"} ):FilterActive(true):FilterOnce()
+  AllGroups = SET_GROUP:New():FilterPrefixes( {"CTLD","Blue Start"} ):FilterActive(true):FilterStart()
   
   -- logic to load saved AASystems into CTLD
-  local _aaSystemGroups = SET_GROUP:New():FilterPrefixes( {"AASystem"} ):FilterActive(true):FilterOnce()  
+  local _aaSystemGroups = SET_GROUP:New():FilterPrefixes( {"AASystem"} ):FilterActive(true):FilterStart()  
   
   _aaSystemGroups:ForEachGroup(function (grp)
   
@@ -287,5 +287,5 @@ end)
 newMissionStr = IntegratedserializeWithCycles("SaveUnits_RSR",SaveUnits_RSR) --save the Table as a serialised type with key SaveUnits
 writemission(newMissionStr, "SaveUnits_RSR.lua")--write the file from the above to SaveUnits.lua
 SaveUnits_RSR={}--clear the table for a new write.
-env.info("Data saved.")
+env.info("Data saved SGS_RSR.")
 end, {}, 1, SaveScheduleUnits)
