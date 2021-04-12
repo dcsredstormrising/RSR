@@ -36,20 +36,20 @@
  -- Here we update the AA System in CTLD upon each session start.
  local function LoadAllExistingSystemsIntoCTLD(_spawnedGroup)
     
+    env.info("***=AW=33COM LoadAllExistingSystemsIntoCTLD 1")
+        
     if _spawnedGroup ~= nil and _spawnedGroup:getUnits() ~= nil and _spawnedGroup:getUnits()[1] ~= nil then
     
       local _units = _spawnedGroup:getUnits()  
       local _firstUnitType = _units[1]:getTypeName()      
     
-      env.info("***=AW=33COM _spawnedGroup Name From Saved File: " .. inspect(_spawnedGroup:getName()))
-      env.info("***=AW=33COM _spawnedGroup Type Name From Saved File: " .. inspect(_firstUnitType))
-      
+      env.info("***=AW=33COM _spawnedGroup Name From Saved File: " .. inspect(_spawnedGroup:getName()))            
       local _aaSystemDetails = ctld.getAASystemDetails(_spawnedGroup, ctld.getAATemplate(_firstUnitType))      
       ctld.completeAASystems[_spawnedGroup:getName()] = _aaSystemDetails
       
-      env.info("******=AW=33COM sgs_rsr.LoadAllExistingSystemsIntoCTLD: ctld.completeAASystems ******")
-      env.info(inspect(ctld.completeAASystems))      
-      env.info("***=AW=33COM End:")
+      --env.info("******=AW=33COM sgs_rsr.LoadAllExistingSystemsIntoCTLD: ctld.completeAASystems ******")
+      --env.info(inspect(ctld.completeAASystems))      
+      --env.info("***=AW=33COM End:")
 
     else
       env.info("***=AW=33COM _spawnedGroup is empty in Saved File")
@@ -58,13 +58,13 @@
   
  -----------------------------------
  --Configurable for user:
- SaveScheduleUnits=120 --how many seconds between each check of all the units.
+ SaveScheduleUnits=60 --how many seconds between each check of all the units.
  -----------------------------------
  --Do not edit below here
  -----------------------------------
  local version = "1.1 - March 2020"
  
- function IntegratedbasicSerialize(s)
+ function IntegratedbasicSerialize(s)  
     if s == nil then
       return "\"\""
     else
@@ -77,7 +77,7 @@
   end
   
 -- imported slmod.serializeWithCycles (Speed)
-  function IntegratedserializeWithCycles(name, value, saved)
+  function IntegratedserializeWithCycles(name, value, saved)  
     local basicSerialize = function (o)
       if type(o) == "number" then
         return tostring(o)
@@ -113,23 +113,21 @@
     end
   end
 
-function file_exists(name) --check if the file already exists for writing
+function file_exists(name) --check if the file already exists for writing    
     if lfs.attributes(name) then
     return true
     else
     return false end 
 end
 
-function writemission(data, file)--Function for saving to file (commonly found)
+function writemission(data, file)--Function for saving to file (commonly found)  
   File = io.open(file, "w")
   File:write(data)
   File:close()
 end
 
 --SCRIPT START
-env.info("Loaded Simple Group Saving, by Pikey, 2018, version " .. version)
-
-if file_exists("SaveUnits_RSR.lua") then --Script has been run before, so we need to load the saved items
+if file_exists("SaveUnits_RSR.lua") then --Script has been run before, so we need to load the saved items    
   env.info("Existing database, loading from File.")
   --AllGroups = SET_GROUP:New():FilterCategories("ground"):FilterActive(true):FilterStart()
   --AllGroups = SET_GROUP:New():FilterPrefixes( "Re-enforcements " ):FilterActive(true):FilterStart()
@@ -141,12 +139,9 @@ if file_exists("SaveUnits_RSR.lua") then --Script has been run before, so we nee
   -- logic to load saved AASystems into CTLD
   local _aaSystemGroups = SET_GROUP:New():FilterPrefixes( {"AASystem"} ):FilterActive(true):FilterStart()  
   
-  _aaSystemGroups:ForEachGroup(function (grp)
-  
-    env.info("***=AW=33COM grp:GetName(): ".. inspect(grp:GetName()))
+  _aaSystemGroups:ForEachGroup(function (grp)  
     local _spawnedGroup = Group.getByName(grp:GetName())
-    LoadAllExistingSystemsIntoCTLD(_spawnedGroup)
-    
+    LoadAllExistingSystemsIntoCTLD(_spawnedGroup)    
   end)
   
     AllGroups:ForEachGroup(function (grp)
@@ -175,10 +170,8 @@ tempTable =
    ["heading"]=SaveUnits_RSR[k]["units"][i]["heading"],
    ["playerCanDrive"]=true,  --hardcoded but easily changed.  
   }
-
       table.insert(units,tempTable)
     end --end unit for loop
-
 
 groupData = 
 
@@ -207,6 +200,7 @@ groupData =
   end --end Group for loop
 
 else --Save File does not exist we start a fresh table, no spawns needed
+
   SaveUnits_RSR={}
   --AllGroups = SET_GROUP:New():FilterCategories("ground"):FilterActive(true):FilterStart()
   --AllGroups = SET_GROUP:New():FilterPrefixes( {"SAM", "MBT", "APC", "IFV"} ):FilterActive(true):FilterStart()
@@ -221,20 +215,10 @@ else --Save File does not exist we start a fresh table, no spawns needed
   -- logic to load saved AASystems into CTLD
   local _aaSystemGroups = SET_GROUP:New():FilterPrefixes( {"AASystem"} ):FilterActive(true):FilterStart()  
   
-  _aaSystemGroups:ForEachGroup(function (grp)
-  
-    env.info("***=AW=33COM grp:GetName(): ".. inspect(grp:GetName()))
+  _aaSystemGroups:ForEachGroup(function (grp)  
     local _spawnedGroup = Group.getByName(grp:GetName())
-    LoadAllExistingSystemsIntoCTLD(_spawnedGroup)
-    
+    LoadAllExistingSystemsIntoCTLD(_spawnedGroup)    
   end)
-
---BlueTransportGroups = SET_GROUP:New()
---  :FilterCoalitions( "blue" )
---  :FilterPrefixes( {"Transport", "Helos", "Cargo", "APC", "IFV"} )
---  :FilterStart()
-------This activates
-
 end
 
 --THE SAVING SCHEDULE
@@ -242,7 +226,7 @@ SCHEDULER:New( nil, function()
   AllGroups:ForEachGroupAlive(function (grp)
   local DCSgroup = Group.getByName(grp:GetName())
   local size = DCSgroup:getSize()
-      
+        
 _unittable={}
 
 for i = 1, size do
