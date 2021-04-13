@@ -13,7 +13,7 @@ local _redTypes = {"Roland", "Tor"}
 -- might be that Moose is the problem here not DCS and that's why the big performance hit every 15 sec
 -- This sets EPRLS on for Medium and Long range sams only
 GroupsForEPLRS = SET_GROUP:New():FilterCategoryGround():FilterPrefixes( {"Red Start","Blue Start", "CTLD"} ):FilterActive():FilterOnce()
-local _eplrsTypes = {"Hawk", "Buk", "Kub", "p-19", "SNR_75V", "Patriot", "S-300PS", "snr s-125"}
+local _eplrsTypes = {"Roland", "Tor", "rapier", "Hawk", "Buk", "Kub", "p-19", "SNR_75V", "Patriot", "S-300PS", "snr s-125"}
 
 SCHEDULER:New( nil, function()
 
