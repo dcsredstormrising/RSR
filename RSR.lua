@@ -44,6 +44,7 @@ require("EWRS_OPM")
 --local EasyStats = require("EasyStats")
 local AWACS_Tankers = require("AWACS_Tankers")
 local AI_CAP = require("AI_CAP")
+local unitManagment = require("unitManagment")
 
 slotBlocker.onMissionStart()
 baseCapturedHandler.register()

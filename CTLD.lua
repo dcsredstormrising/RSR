@@ -4494,13 +4494,17 @@ function ctld.repairAASystem(_heli, _nearestCrate, _aaSystem)
             table.insert(_types, _part.unit)
         end
         
-        --remove old system
+        --remove old system        
         ctld.completeAASystems[_nearestHawk.group:getName()] = nil
         _nearestHawk.group:destroy()
+        
+        env.info("**=AW=33COM ctld.repairAASystem Removing AASystem " .. inspect(_nearestHawk.group:getName()))
 
         local _spawnedGroup = ctld.spawnCrateGroup(_heli, _points, _types, 1, true)
 
         ctld.completeAASystems[_spawnedGroup:getName()] = ctld.getAASystemDetails(_spawnedGroup, _aaSystem)
+        
+        env.info("**=AW=33COM ctld.repairAASystem Adding AASystem " .. inspect(ctld.getAASystemDetails(_spawnedGroup, _aaSystem)))
 
         ctld.processCallback({ unit = _heli, crate = _nearestCrate, spawnedGroup = _spawnedGroup, action = "repair" })
 
