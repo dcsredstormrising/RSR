@@ -7,10 +7,11 @@ local inspect = require("inspect")
 
 --This allows us to set TOR and Rolands to RED state
 GroupsSetToRed = SET_GROUP:New():FilterCategoryGround():FilterPrefixes( {"Red Start","Blue Start", "CTLD"} ):FilterActive():FilterOnce()
+local _redTypes = {"Roland", "Tor"}
 
 -- This sets EPRLS on for Medium and Long range sams only
 GroupsForEPLRS = SET_GROUP:New():FilterCategoryGround():FilterPrefixes( {"Red Start","Blue Start", "CTLD"} ):FilterActive():FilterOnce()
-
+local _eplrsTypes = {"Roland", "Tor", "Hawk", "Buk", "rapier", "Kub", "p-19", "SNR_75V", "Patriot", "S-300PS", "snr s-125"}
 
 SCHEDULER:New( nil, function()
 
@@ -27,12 +28,11 @@ SCHEDULER:New( nil, function()
           
           if _units ~= nil then
           
-            local _unitTypeName = _units[1]:getTypeName()            
-            local _redTypes = {"Roland", "Tor"}
+            local _unitTypeName = _units[1]:getTypeName()
             
-            for _, item in ipairs (_eplrsTypes) do
-              if string.find(_unitTypeName, item) then
-                env.info("**=AW=33COM GroupsSetToRed Found: " ..inspect(item) .. " in " .. inspect(_unitTypeName))
+            for _, redType in ipairs (_redTypes) do
+              if string.find(_unitTypeName, redType) then
+                env.info("**=AW=33COM GroupsSetToRed Found: " ..inspect(redType) .. " in " .. inspect(_unitTypeName))
                 grp:OptionAlarmStateRed()
               end
             end
@@ -54,8 +54,7 @@ SCHEDULER:New( nil, function()
           
           if _units ~= nil then
           
-            local _unitTypeName = _units[1]:getTypeName()            
-            local _eplrsTypes = {"Roland", "Tor", "Hawk", "Buk", "rapier", "Kub", "p-19", "SNR_75V", "Patriot", "S-300PS", "snr s-125"}
+            local _unitTypeName = _units[1]:getTypeName()
             
             for _, eplrsType in ipairs (_eplrsTypes) do
               if string.find(_unitTypeName, eplrsType) then
@@ -78,5 +77,5 @@ SCHEDULER:New( nil, function()
     ctld.LoadAllExistingSystemsIntoCTLD(_spawnedGroup)    
   end)
    
-   
-end, {}, 30)  
+end, {}, 30)
+  
