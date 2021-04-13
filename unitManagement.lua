@@ -9,9 +9,11 @@ local inspect = require("inspect")
 GroupsSetToRed = SET_GROUP:New():FilterCategoryGround():FilterPrefixes( {"Red Start","Blue Start", "CTLD"} ):FilterActive():FilterOnce()
 local _redTypes = {"Roland", "Tor"}
 
+-- can not run this due to performance until we figure out what is Moose doing with this: grp:CommandEPLRS(true, 3)
+-- might be that Moose is the problem here not DCS and that's why the big performance hit every 15 sec
 -- This sets EPRLS on for Medium and Long range sams only
 GroupsForEPLRS = SET_GROUP:New():FilterCategoryGround():FilterPrefixes( {"Red Start","Blue Start", "CTLD"} ):FilterActive():FilterOnce()
-local _eplrsTypes = {"Roland", "Tor", "Hawk", "Buk", "rapier", "Kub", "p-19", "SNR_75V", "Patriot", "S-300PS", "snr s-125"}
+local _eplrsTypes = {"Hawk", "Buk", "Kub", "p-19", "SNR_75V", "Patriot", "S-300PS", "snr s-125"}
 
 SCHEDULER:New( nil, function()
 
@@ -41,6 +43,9 @@ SCHEDULER:New( nil, function()
      end
    end) 
    
+   -- this is nice to have but setting any kind of EPLRS brings down the server every 15 seconds. Does not matter if we set 1 unit ON or 1000 units.  Same behavior
+   -- it might be the way Moose does it.
+   
    env.info("**=AW=33COM GroupsForEPLRS Scheduler")
    GroupsForEPLRS:ForEachGroup(
       function( grp )    
@@ -59,13 +64,15 @@ SCHEDULER:New( nil, function()
             for _, eplrsType in ipairs (_eplrsTypes) do
               if string.find(_unitTypeName, eplrsType) then
                -- env.info("**=AW=33COM GroupsForEPLRS Found: " ..inspect(eplrsType) .. " in " .. inspect(_unitTypeName))
-                grp:CommandEPLRS(true, 3)
+                grp:CommandEPLRS(true, 0)
               end
             end
           end
         end                          
      end
    end)
+   
+   
   
   -- this must run after State is reconstructed in order to load correct AASystem.  Otherwise you will load old miz level systems from default position and with different names.
   -- when we repair a static AASystem, it's name changes to a player name.  That's why we must get the player name for the unit from the State.  Hence the big delay.   
