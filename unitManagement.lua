@@ -13,7 +13,7 @@ local _redTypes = {"Roland", "Tor"}
 -- might be that Moose is the problem here not DCS and that's why the big performance hit every 15 sec
 -- This sets EPRLS on for Medium and Long range sams only
 GroupsForEPLRS = SET_GROUP:New():FilterCategoryGround():FilterPrefixes( {"Red Start","Blue Start", "CTLD"} ):FilterActive():FilterOnce()
-local _eplrsTypes = {"Roland", "Tor", "rapier", "Hawk", "Buk", "Kub", "p-19", "SNR_75V", "Patriot", "S-300PS", "snr s-125"}
+local _eplrsTypes = {"Hawk", "Buk", "Kub", "p-19", "SNR_75V", "Patriot", "S-300PS", "snr s-125"}
 
 SCHEDULER:New( nil, function()
 
@@ -44,8 +44,7 @@ SCHEDULER:New( nil, function()
    end) 
    
    -- this is nice to have but setting any kind of EPLRS brings down the server every 15 seconds. Does not matter if we set 1 unit ON or 1000 units.  Same behavior
-   -- it might be the way Moose does it.
-   
+   -- it might be the way Moose does it.   
    env.info("**=AW=33COM GroupsForEPLRS Scheduler")
    GroupsForEPLRS:ForEachGroup(
       function( grp )    
@@ -71,12 +70,11 @@ SCHEDULER:New( nil, function()
         end                          
      end
    end)
-   
-   
-  
+    
+  -- logic to load saved AASystems into CTLD. This fixes the problem of static sams not being part of CTLD.  Now they are. This fixes half the problem, 
+  -- the other problem is CTLD Repair was written for 1 session.  It has to be rewritten in order to repair systems through out the entire round.  
   -- this must run after State is reconstructed in order to load correct AASystem.  Otherwise you will load old miz level systems from default position and with different names.
-  -- when we repair a static AASystem, it's name changes to a player name.  That's why we must get the player name for the unit from the State.  Hence the big delay.   
-  -- logic to load saved AASystems into CTLD
+  -- when we repair a static AASystem, it's name changes to a player name.     
   local _aaSystemGroups = SET_GROUP:New():FilterCategoryGround():FilterPrefixes( {"AASystem"} ):FilterActive(true):FilterOnce()  
   
   _aaSystemGroups:ForEachGroup(function (grp)  
