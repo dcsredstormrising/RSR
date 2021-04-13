@@ -9,6 +9,7 @@ local inspect = require("inspect")
 GroupsSetToRed = SET_GROUP:New():FilterCategoryGround():FilterPrefixes( {"Red Start","Blue Start", "Resupply ", " Convoy", "CTLD"} ):FilterActive():FilterOnce()
 
 SCHEDULER:New( nil, function()
+  env.info("**=AW=33COM GroupsSetToRed Scheduler")
    GroupsSetToRed:ForEachGroup(
    function( grp )    
     if grp ~= nil and grp:getUnits() ~= nil and grp:getUnits()[1] ~= nil then        
@@ -28,10 +29,11 @@ SCHEDULER:New( nil, function()
 end, {}, 40)
 
 -- This sets EPRLS on for Medium and Long range sams only
-GroupsSetToRed = SET_GROUP:New():FilterCategoryGround():FilterPrefixes( {"Red Start","Blue Start", "CTLD"} ):FilterActive():FilterOnce()
+GroupsForEPLRS = SET_GROUP:New():FilterCategoryGround():FilterPrefixes( {"Red Start","Blue Start", "CTLD"} ):FilterActive():FilterOnce()
 
 SCHEDULER:New( nil, function()
-   GroupsSetToRed:ForEachGroup(
+env.info("**=AW=33COM GroupsForEPLRS Scheduler")
+   GroupsForEPLRS:ForEachGroup(
    function( grp )
       grp:CommandEPLRS(true, 3)    
       
