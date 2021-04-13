@@ -3007,13 +3007,21 @@ function ctld.findNearestAASystem(_heli, _aaSystem)
       env.info("***=AW=33COM End:")
     
     for _groupName, _hawkDetails in pairs(ctld.completeAASystems) do
-
+          
+      env.info("******=AW=33COM ctld.findNearestAASystem: _groupName:" .. inspect(_groupName))
+    
         local _hawkGroup = Group.getByName(_groupName)
+        
+        env.info("******=AW=33COM ctld.findNearestAASystem: _hawkGroup:" .. inspect(_groupName))
 
-        --  env.info(_groupName..": "..mist.utils.tableShow(_hawkDetails))
         if _hawkGroup ~= nil and _hawkGroup:getCoalition() == _heli:getCoalition() and _hawkDetails[1].system.name == _aaSystem.name then
+        
+          env.info("******=AW=33COM ctld.findNearestAASystem: _aaSystem.name:" .. inspect(_aaSystem.name))        
+          env.info("******=AW=33COM ctld.findNearestAASystem: _hawkDetails[1].system.name:" .. inspect(_hawkDetails[1].system.name))
 
             local _units = _hawkGroup:getUnits()
+            
+            env.info("******=AW=33COM ctld.findNearestAASystem: _units: " .. inspect(_units))
 
             for _, _leader in pairs(_units) do
 
@@ -7258,6 +7266,30 @@ function ctld.getPositionString(_unit)
 
     return " @ " .. _latLngStr .. " - MGRS " .. _mgrsString
 end
+
+-- Here we update the AA System in CTLD upon each session start.
+function ctld.LoadAllExistingSystemsIntoCTLD(_spawnedGroup)
+    
+    env.info("***=AW=33COM LoadAllExistingSystemsIntoCTLD")
+        
+    if _spawnedGroup ~= nil and _spawnedGroup:getUnits() ~= nil and _spawnedGroup:getUnits()[1] ~= nil then
+    
+      local _units = _spawnedGroup:getUnits()  
+      local _firstUnitType = _units[1]:getTypeName()      
+    
+      env.info("***=AW=33COM _spawnedGroup Name: " .. inspect(_spawnedGroup:getName()))            
+      local _aaSystemDetails = ctld.getAASystemDetails(_spawnedGroup, ctld.getAATemplate(_firstUnitType))      
+      ctld.completeAASystems[_spawnedGroup:getName()] = _aaSystemDetails
+      
+      --env.info("******=AW=33COM sgs_rsr.LoadAllExistingSystemsIntoCTLD: ctld.completeAASystems ******")
+      --env.info(inspect(ctld.completeAASystems))      
+      --env.info("***=AW=33COM End:")
+
+    else
+      env.info("***=AW=33COM _spawnedGroup is empty")
+    end
+ end 
+
 
 
 -- ***************** SETUP SCRIPT ****************
