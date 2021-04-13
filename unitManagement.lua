@@ -7,9 +7,13 @@ local inspect = require("inspect")
 
 --This allows us to set TOR and Rolands to RED state
 GroupsSetToRed = SET_GROUP:New():FilterCategoryGround():FilterPrefixes( {"Red Start","Blue Start", "CTLD"} ):FilterActive():FilterOnce()
-local _redTypes = {"Roland", "Tor"}
+
+-- This sets EPRLS on for Medium and Long range sams only
+GroupsForEPLRS = SET_GROUP:New():FilterCategoryGround():FilterPrefixes( {"Red Start","Blue Start", "CTLD"} ):FilterActive():FilterOnce()
+
 
 SCHEDULER:New( nil, function()
+
   env.info("**=AW=33COM GroupsSetToRed Scheduler")
    GroupsSetToRed:ForEachGroup(
    function( grp )    
@@ -23,9 +27,10 @@ SCHEDULER:New( nil, function()
           
           if _units ~= nil then
           
-            local _unitTypeName = _units[1]:getTypeName()
+            local _unitTypeName = _units[1]:getTypeName()            
+            local _redTypes = {"Roland", "Tor"}
             
-            for _, item in pairs(_eplrsTypes) do
+            for _, item in ipairs (_eplrsTypes) do
               if string.find(_unitTypeName, item) then
                 env.info("**=AW=33COM GroupsSetToRed Found: " ..inspect(item) .. " in " .. inspect(_unitTypeName))
                 grp:OptionAlarmStateRed()
@@ -35,14 +40,8 @@ SCHEDULER:New( nil, function()
         end                          
      end
    end) 
-end, {}, 30)
-
--- This sets EPRLS on for Medium and Long range sams only
-GroupsForEPLRS = SET_GROUP:New():FilterCategoryGround():FilterPrefixes( {"Red Start","Blue Start", "CTLD"} ):FilterActive():FilterOnce()
-local _eplrsTypes = {"Roland", "Tor", "Hawk", "Buk", "rapier", "Kub", "p-19", "SNR_75V", "Patriot", "S-300PS", "snr s-125"}
-
-SCHEDULER:New( nil, function()
-env.info("**=AW=33COM GroupsForEPLRS Scheduler")
+   
+   env.info("**=AW=33COM GroupsForEPLRS Scheduler")
    GroupsForEPLRS:ForEachGroup(
       function( grp )    
     if grp ~= nil then    
@@ -55,9 +54,10 @@ env.info("**=AW=33COM GroupsForEPLRS Scheduler")
           
           if _units ~= nil then
           
-            local _unitTypeName = _units[1]:getTypeName()
+            local _unitTypeName = _units[1]:getTypeName()            
+            local _eplrsTypes = {"Roland", "Tor", "Hawk", "Buk", "rapier", "Kub", "p-19", "SNR_75V", "Patriot", "S-300PS", "snr s-125"}
             
-            for _, eplrsType in pairs(_eplrsTypes) do
+            for _, eplrsType in ipairs (_eplrsTypes) do
               if string.find(_unitTypeName, eplrsType) then
                 env.info("**=AW=33COM GroupsForEPLRS Found: " ..inspect(eplrsType) .. " in " .. inspect(_unitTypeName))
                 grp:CommandEPLRS(true, 3)
@@ -67,13 +67,9 @@ env.info("**=AW=33COM GroupsForEPLRS Scheduler")
         end                          
      end
    end)
-end, {}, 30)
-
-
--- this must run after State is reconstructed in order to load correct AASystem.  Otherwise you will load old miz level systems from default position and with different names.
--- when we repair a static AASystem, it's name changes to a player name.  That's why we must get the player name for the unit from the State.  Hence the big delay.
-SCHEDULER:New( nil, function()
-
+  
+  -- this must run after State is reconstructed in order to load correct AASystem.  Otherwise you will load old miz level systems from default position and with different names.
+  -- when we repair a static AASystem, it's name changes to a player name.  That's why we must get the player name for the unit from the State.  Hence the big delay.   
   -- logic to load saved AASystems into CTLD
   local _aaSystemGroups = SET_GROUP:New():FilterCategoryGround():FilterPrefixes( {"AASystem"} ):FilterActive(true):FilterOnce()  
   
@@ -82,10 +78,5 @@ SCHEDULER:New( nil, function()
     ctld.LoadAllExistingSystemsIntoCTLD(_spawnedGroup)    
   end)
    
-end, {}, 10)
-
-
-
-
-  
-    
+   
+end, {}, 30)  
