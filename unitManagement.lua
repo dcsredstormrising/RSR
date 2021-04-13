@@ -32,7 +32,7 @@ SCHEDULER:New( nil, function()
             
             for _, redType in ipairs (_redTypes) do
               if string.find(_unitTypeName, redType) then
-                env.info("**=AW=33COM GroupsSetToRed Found: " ..inspect(redType) .. " in " .. inspect(_unitTypeName))
+                --env.info("**=AW=33COM GroupsSetToRed Found: " ..inspect(redType) .. " in " .. inspect(_unitTypeName))
                 grp:OptionAlarmStateRed()
               end
             end
@@ -58,7 +58,7 @@ SCHEDULER:New( nil, function()
             
             for _, eplrsType in ipairs (_eplrsTypes) do
               if string.find(_unitTypeName, eplrsType) then
-                env.info("**=AW=33COM GroupsForEPLRS Found: " ..inspect(eplrsType) .. " in " .. inspect(_unitTypeName))
+               -- env.info("**=AW=33COM GroupsForEPLRS Found: " ..inspect(eplrsType) .. " in " .. inspect(_unitTypeName))
                 grp:CommandEPLRS(true, 3)
               end
             end
