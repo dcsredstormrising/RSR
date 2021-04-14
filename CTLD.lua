@@ -1096,7 +1096,7 @@ function ctld.IsGroupLimitReached(_args, _crateType, _coalition)
         -- we must remove ctld.UnitTypesOutsideOfGroupLimit (fuel trucks, EWRs, JTAC, CC crates are not part of the limit) from the list and then count it 
         _playerSlungUnits:RemoveGroupsByName(_groupOfUnitsNotPartOfLimit)
         
-        if _playerSlungUnits:Count() < ctld.GroupLimitCount then
+        if _playerSlungUnits:Count() <= ctld.GroupLimitCount then
           _limitReached = false  
           env.info("**=AW=33COM ctld.IsCrateLimitReached ctld.GroupLimitCount is less after removal of some groups : " .. inspect(_playerSlungUnits:Count()))  
         end
@@ -1116,14 +1116,15 @@ function ctld.getGroupsByUnitType(_playerSlungUnits, _unitTypes)
   local _groups
 
   if (_playerSlungUnits ~= nil) then
-    _playerSlungUnits:ForEachGroup(
+      _playerSlungUnits:ForEachGroup(
       function(grp)
         local _units = grp:GetUnits()
-        if _units ~= nil then
-          for _, _unit in pairs (_units) do
-            local _unitTypeName = _unit:GetTypeName()
-            if ctld.UnitTypesOutsideOfGroupLimit._unitTypeName then
-              _groups.AddGroup(_unit.GetGroup)
+        if _units ~= nil then          
+          for _, _unit in pairs (_units) do            
+            local _unitTypeName = _unit:GetTypeName()                        
+            if ctld.UnitTypesOutsideOfGroupLimit[_unitTypeName] then
+              env.info("**=AW=33COM 5 ***")
+              _groups.AddGroup(_unit.GetGroup())
               break
             end
           end
@@ -1133,7 +1134,6 @@ function ctld.getGroupsByUnitType(_playerSlungUnits, _unitTypes)
   
   return _groups  
 end
-
 
 --only helos should be able to spawn crates (check ctld.unitActions in CTLD_config.lua)
 function ctld.spawnCrate(_arguments)
