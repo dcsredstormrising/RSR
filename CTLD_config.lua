@@ -118,13 +118,17 @@ ctld.aaLRLaunchers = 5 -- controls how many launchers to add to Long Range Missi
 ctld.launcherRadius = 100 -- distance from crate for spawned launchers
 --END AA SYSTEM CONFIG --
 
+
 -- ****************** SLING GROUP LIMIT ****************** 
 -- In order to create upper limit for how many units we have on the server, we decided to impose a 200 unit limit per side.
 -- And here is the code for limiting how many units can be slung by players during a round.
 -- We assume 1 sam is 1 unit.  2 tanks in a group (T55s) is 1 unit.  2 HQs is 1 unit.  Anything that we spawn as a set is 1 unit.
 -- Basically the limit is by number of groups 
 ctld.GroupLimitCount = 5  -- RED/BLUE side total group limit
+
+-- units in the table below are not counted towards the ctld.GroupLimitCount.  True next to the unit is required for speed
 ctld.UnitTypesOutsideOfGroupLimit = {['Kub Repair']=true,['HQ-7 Repair']=true,['Buk Repair']=true,['SA-2 Repair']=true,['SA-3 Repair']=true,['SA-10 Repair']=true,['Hawk Repair']=true,['Patriot Repair']=true,['Rapier Repair']=true,['Roland Repair']=true,['Silkworm Repair']=true,['Tigr_233036']=true,['Hummer']=true,['M 818']=true,['M978 HEMTT Tanker']=true,['KAMAZ Truck']=true,['ATZ-10']=true,['1L13 EWR']=true,['55G6 EWR']=true,['LogisticsCentre']=true}
+
 
 -- ***************** JTAC CONFIGURATION *****************
 
