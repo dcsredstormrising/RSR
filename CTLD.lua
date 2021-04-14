@@ -1075,9 +1075,15 @@ function ctld.IsGroupLimitReached(_args, _crateType, _coalition)
   end
   
   if _limitReached == true then
+  
+    local _coalitionName = "red"
+    
+    if _coalition == 2 then
+      _coalitionName = "blue"
+    end
     
     -- gets all player slung units   
-    local _playerSlungUnits = SET_GROUP:New():FilterCategoryGround():FilterCoalitions(_coalition):FilterPrefixes("CTLD"):FilterActive():FilterOnce()
+    local _playerSlungUnits = SET_GROUP:New():FilterCategoryGround():FilterCoalitions(_coalitionName):FilterPrefixes("CTLD"):FilterActive():FilterOnce()
     
     if _playerSlungUnits ~= nil then
       if _playerSlungUnits:Count() < ctld.GroupLimitCount then
