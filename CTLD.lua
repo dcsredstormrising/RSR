@@ -1061,19 +1061,17 @@ end
 function ctld.IsGroupLimitReached(_args, _crateType, _coalition)
 
   local _limitReached = true -- we assume the worst and try to prove the opposite is true
-  
-  env.info("**=AW=33COM ctld.IsCrateLimitReached _coalition: " .. inspect(_coalition))
-  env.info("**=AW=33COM ctld.IsCrateLimitReached _crateType: " .. inspect(_crateType))  
-  env.info("**=AW=33COM ctld.IsCrateLimitReached _crateType.unit: " .. inspect(_crateType.unit))
-    
-  for _, _unitType in ipairs (ctld.UnitTypesOutsideOfGroupLimit) do
-    if _crateType.unit == _unitType then
+      
+  -- check to see if the unit we are trying to spawn is allowed no matter what the limit
+  for _, _unitType in pairs (ctld.UnitTypesOutsideOfGroupLimit) do      
+    if ctld.UnitTypesOutsideOfGroupLimit[_crateType.unit] then    
       _limitReached = false
-      env.info("**=AW=33COM ctld.IsCrateLimitReached Unit from outside : " .. inspect(_unitType))  
+      env.info("**=AW=33COM ctld.IsCrateLimitReached Unit from outside : " .. inspect(_crateType.unit))  
       break
     end
   end
   
+  -- since the unit we are spawning is not from the unlimited table of units (jtac, cc, support, etc), we need to keep checking for other conditions
   if _limitReached == true then
   
     local _coalitionName = "red"
@@ -1139,8 +1137,7 @@ end
 
 --only helos should be able to spawn crates (check ctld.unitActions in CTLD_config.lua)
 function ctld.spawnCrate(_arguments)
-
-    env.info("**=AW=33COM ctld.spawnCrate")        
+     
     local _status, _err = pcall(function(_args)
 
         -- use the cargo weight to guess the type of unit as no way to add description :(
