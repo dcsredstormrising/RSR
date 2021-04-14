@@ -1120,12 +1120,12 @@ function ctld.getGroupsByUnitType(_playerSlungUnits, _unitTypes)
   if (_playerSlungUnits ~= nil) then
     _playerSlungUnits:ForEachGroup(
       function(grp)
-        local _units = grp:getUnits()
+        local _units = grp:GetUnits()
         if _units ~= nil then
           for _, _unit in pairs (_units) do
-            local _unitTypeName = _unit:getTypeName()
+            local _unitTypeName = _unit:GetTypeName()
             if ctld.UnitTypesOutsideOfGroupLimit._unitTypeName then
-              _groups.AddGroup(_unit.getGroup)
+              _groups.AddGroup(_unit.GetGroup)
               break
             end
           end
@@ -1135,6 +1135,7 @@ function ctld.getGroupsByUnitType(_playerSlungUnits, _unitTypes)
   
   return _groups  
 end
+
 
 --only helos should be able to spawn crates (check ctld.unitActions in CTLD_config.lua)
 function ctld.spawnCrate(_arguments)
@@ -1147,10 +1148,9 @@ function ctld.spawnCrate(_arguments)
         local _internal = _args[3] == 1 and 1 or 0
         local _heli = ctld.getTransportUnit(_args[1])
         
-       if ctld.IsGroupLimitReached(_args, _crateType, _heli:getCoalition()) == false then
-          ctld.displayMessageToGroup(_heli, "Slig as much as you need.", 1)
-       else
-          ctld.displayMessageToGroup(_heli, "Your team can no longer sling. Shelter limit reached. You can only pickup JTAC, Logistic Center and Repair crates.", 1)-- message to player he can't sling units except JTAC, CC, Repair crates
+       if ctld.IsGroupLimitReached(_args, _crateType, _heli:getCoalition()) == true then          
+          ctld.displayMessageToGroup(_heli, "Shelter limit reached. You can only pickup JTAC, Logistics Center, Repair, and Support crates.", 10)-- message to player he can't sling units except JTAC, CC, Repair crates
+          return
        end
 
         --{_inBaseZoneAndRSRrepairRadius,_inFOBexclusionZone,_closestBaseSideDist,_baseType}
