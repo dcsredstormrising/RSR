@@ -820,6 +820,8 @@ end
 
 function ctld.spawnCrateStatic(_country, _unitId, _point, _name, _weight, _side, _internal)
     --Ironwulf2000 added _internal for internal crate carriage support
+    
+    env.info("**=AW=33COM ctld.spawnCrateStatic")
 	
     local _crate
     local _spawnedCrate
@@ -882,39 +884,6 @@ function ctld.spawnCrateStatic(_country, _unitId, _point, _name, _weight, _side,
 
             ["shape_name"] = "ammo_box_cargo",
             ["type"] = "ammo_cargo",
-
-            ["shape_name"] = "barrels_cargo",
-            ["type"] = "barrels_cargo",
-
-            ["shape_name"] = "f_bar_cargo",
-            ["type"] = "f_bar_cargo",
-
-            ["shape_name"] = "fueltank_cargo",
-            ["type"] = "fueltank_cargo",
-
-            ["shape_name"] = "iso_container_cargo",
-            ["type"] = "iso_container",
-
-            ["shape_name"] = "iso_container_small_cargo",
-            ["type"] = "iso_container_small",
-
-            ["shape_name"] = "oiltank_cargo",
-            ["type"] = "oiltank_cargo",
-
-            ["shape_name"] = "pipes_big_cargo",
-            ["type"] = "pipes_big_cargo",
-
-            ["shape_name"] = "pipes_small_cargo",
-            ["type"] = "pipes_small_cargo",
-
-            ["shape_name"] = "tetrapod_cargo",
-            ["type"] = "tetrapod_cargo",
-
-            ["shape_name"] = "trunks_long_cargo",
-            ["type"] = "trunks_long_cargo",
-
-            ["shape_name"] = "trunks_small_cargo",
-            ["type"] = "trunks_small_cargo",
         ]]--
 
         if ctld.slingLoad and _internal ~= 1 then
@@ -1088,17 +1057,95 @@ function ctld.spawnLogisticsCentre(_point, _name, _sideName, _baseORfob, _baseOR
     return _spawnedLogiCentreObject
 end
 
+-- We check if group sling limit is reached here
+function ctld.IsGroupLimitReached(_args, _crateType, _coalition)
+
+  local _limitReached = true -- we assume the worst and try to prove the opposite is true
+  
+  env.info("**=AW=33COM ctld.IsCrateLimitReached _coalition: " .. inspect(_coalition))
+  env.info("**=AW=33COM ctld.IsCrateLimitReached _crateType: " .. inspect(_crateType))  
+  env.info("**=AW=33COM ctld.IsCrateLimitReached _crateType.unit: " .. inspect(_crateType.unit))
+    
+  for _, _unitType in ipairs (ctld.UnitTypesOutsideOfGroupLimit) do
+    if _crateType.unit == _unitType then
+      _limitReached = false
+      env.info("**=AW=33COM ctld.IsCrateLimitReached Unit from outside : " .. inspect(_unitType))  
+      break
+    end
+  end
+  
+  if _limitReached == true then
+    
+    -- gets all player slung units   
+    local _playerSlungUnits = SET_GROUP:New():FilterCategoryGround():FilterCoalitions(_coalition):FilterPrefixes("CTLD"):FilterActive():FilterOnce()
+    
+    if _playerSlungUnits ~= nil then
+      if _playerSlungUnits:Count() < ctld.GroupLimitCount then
+        _limitReached = false
+        env.info("**=AW=33COM ctld.IsCrateLimitReached ctld.GroupLimitCount is less than allowed already : " .. inspect(_playerSlungUnits:Count()))  
+      else
+        -- here we must deduct all ctld.UnitTypesOutsideOfGroupLimit from total
+        env.info("**=AW=33COM ctld.IsCrateLimitReached ctld.GroupLimitCount is more than allowed, we need to filter : " .. inspect(_playerSlungUnits:Count()))  
+        
+        local _groupOfUnitsNotPartOfLimit = ctld.getGroupsByUnitType(_playerSlungUnits, ctld.UnitTypesOutsideOfGroupLimit)
+        
+        -- we must remove ctld.UnitTypesOutsideOfGroupLimit (fuel trucks, EWRs, JTAC, CC crates are not part of the limit) from the list and then count it 
+        _playerSlungUnits:RemoveGroupsByName(_groupOfUnitsNotPartOfLimit)
+        
+        if _playerSlungUnits:Count() < ctld.GroupLimitCount then
+          _limitReached = false  
+          env.info("**=AW=33COM ctld.IsCrateLimitReached ctld.GroupLimitCount is less after removal of some groups : " .. inspect(_playerSlungUnits:Count()))  
+        end
+      end
+    end
+  end
+      
+  return _limitReached
+end
+
+-- fetches groups based on unit type
+-- @_playerSlungUnits groups of units
+-- @_unitTypes Unit types that interest you
+-- you can pass an array of unit types
+function ctld.getGroupsByUnitType(_playerSlungUnits, _unitTypes)
+
+  local _groups
+
+  if (_playerSlungUnits ~= nil) then
+    _playerSlungUnits:ForEachGroup(
+      function(grp)
+        local _units = grp:getUnits()
+        if _units ~= nil then
+          for _, _unit in pairs (_units) do
+            local _unitTypeName = _unit:getTypeName()
+            if ctld.UnitTypesOutsideOfGroupLimit._unitTypeName then
+              _groups.AddGroup(_unit.getGroup)
+              break
+            end
+          end
+        end
+      end)
+  end
+  
+  return _groups  
+end
+
 --only helos should be able to spawn crates (check ctld.unitActions in CTLD_config.lua)
 function ctld.spawnCrate(_arguments)
 
+    env.info("**=AW=33COM ctld.spawnCrate")        
     local _status, _err = pcall(function(_args)
 
         -- use the cargo weight to guess the type of unit as no way to add description :(
-
         local _crateType = ctld.crateLookupTable[tostring(_args[2])]
-        --Ironwulf2000 added
         local _internal = _args[3] == 1 and 1 or 0
         local _heli = ctld.getTransportUnit(_args[1])
+        
+       if ctld.IsGroupLimitReached(_args, _crateType, _heli:getCoalition()) == false then
+          ctld.displayMessageToGroup(_heli, "Slig as much as you need.", 1)
+       else
+          ctld.displayMessageToGroup(_heli, "Your team can no longer sling. Shelter limit reached. You can only pickup JTAC, Logistic Center and Repair crates.", 1)-- message to player he can't sling units except JTAC, CC, Repair crates
+       end
 
         --{_inBaseZoneAndRSRrepairRadius,_inFOBexclusionZone,_closestBaseSideDist,_baseType}
         local _baseProximity = ctld.baseProximity(_heli)
