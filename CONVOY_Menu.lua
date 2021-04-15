@@ -18,21 +18,30 @@
 -- despawned clients nil. This is likely related to any timer.scheduleFunction() errors with this function.
 -- TODO:
 -- 1. Complete any FIXME:s.
--- 2. Add distance config options and adjust functions.
+-- 2. Make Pos dynamic at SpawnTransport runtime. i.e. lookup group provided to function then re-grab vec2 data. 
 -- 3. Add config for discord invite URL.
 ---
 
 --- CONFIG ---
 -- Modify only stuff in this block.
 
+-- Discord URL
+local DISCORD = "discord.gg/fVg9gut"
+
 -- Number of spawned in groups at one time.
-ConvoyLimit = 4
+local ConvoyLimit = 4
+
+-- Range from player of spawned groups.
+local RANGE = 185
 
 -- DO NOT CHANGE FOR NOW. Number of allowed C130s per coalition to be spawned in at one time.
-TransportLimit = 1
+local TransportLimit = 1
+
+-- Delay in seconds before destroying a group.
+local DELAY = 10
 
 -- This defines the group names in ME without coalition prefix. This is less code than requesting a set of groups and iterating.
-ConvoyGroups = {
+local ConvoyGroups = {
   "Convoy Group 1",
   "Convoy Group 2",  
   "Convoy Group 3",  
@@ -45,122 +54,145 @@ ConvoyGroups = {
 }
 --- END CONFIG ---
 
---- GLOBALS ---
+--- LOCAL VARIABLES ---
 
--- Coalition Table to automate menus into one function for both coalitions.
-_Coalitions = {
-  Red = {Number = 1, String = 'Red', Clients = nil, ConvoysLeft = ConvoyLimit, TransportGroup = nil, TransportSpawn = nil, ConvoySpawns = {}}, 
-  Blue = {Number = 2, String = 'Blue', Clients = nil, ConvoysLeft = ConvoyLimit, TransportGroup = nil, TransportSpawn = nil, ConvoySpawns = {}}
+-- COALITION TABLE [1] Red [2] Blue
+local _Coalitions = {
+  {Number = 1, String = 'Red', ConvoysLeft = ConvoyLimit, TransportGroup = nil, TransportSpawn = nil, ConvoySpawns = {}, Queue = nil}, 
+  {Number = 2, String = 'Blue', ConvoysLeft = ConvoyLimit, TransportGroup = nil, TransportSpawn = nil, ConvoySpawns = {}, Queue = nil}
 }
 
--- Which bulk clients to include for blue and red coalitions. 
-_Coalitions.Blue.Clients = SET_CLIENT:New():FilterCoalitions("blue"):FilterPrefixes({" Blue Cargo", " Blue Helos"}):FilterStart()
-_Coalitions.Red.Clients = SET_CLIENT:New():FilterCoalitions("red"):FilterPrefixes({" Red Cargo", " Red Helos"}):FilterStart()
-
--- Creates a SPAWN object for each group in the convoys per coalition. #array is shorthand for the length of an array. This does not work with tables with key, value pairs.
+-- CONVOY GROUP SPAWNS
 for i=1, #ConvoyGroups do 
-  _Coalitions.Blue.ConvoySpawns[i] = SPAWN:New( "Blue " .. ConvoyGroups[i] ):InitLimit(ConvoyLimit,ConvoyLimit)
-  _Coalitions.Red.ConvoySpawns[i] = SPAWN:New( "Red " .. ConvoyGroups[i] ):InitLimit(ConvoyLimit,ConvoyLimit)
+  _Coalitions[1].ConvoySpawns[i] = SPAWN:New( "Red " .. ConvoyGroups[i] ):InitLimit(ConvoyLimit,ConvoyLimit)
+  _Coalitions[2].ConvoySpawns[i] = SPAWN:New( "Blue " .. ConvoyGroups[i] ):InitLimit(ConvoyLimit,ConvoyLimit)
 end
 
--- C130 SPAWNs
-_Coalitions.Blue.TransportSpawn = SPAWN:New( "Blue Transport" ):InitLimit(TransportLimit,ConvoyLimit)    
-_Coalitions.Red.TransportSpawn = SPAWN:New( "Red Transport" ):InitLimit(TransportLimit,ConvoyLimit)
+-- TRANSPORT SPAWNs
+_Coalitions[1].TransportSpawn = SPAWN:New( "Red Convoy Transport" ):InitLimit(TransportLimit,ConvoyLimit)
+_Coalitions[2].TransportSpawn = SPAWN:New( "Blue Convoy Transport" ):InitLimit(TransportLimit,ConvoyLimit)
 
 -- Event Handler Initialization
-EventHandler = EVENTHANDLER:New():HandleEvent( EVENTS.Birth ):HandleEvent( EVENTS.Land )
+--local EventHandler = EVENTHANDLER:New():HandleEvent( EVENTS.Birth ):HandleEvent( EVENTS.Land)
 
---- END GLOBALS ---
+--- END LOCAL VARIABLES ---
 
 --- FUNCTIONS ---
 
-function SpawnTransport(hdg, pos, coalitionWrapper)
-  local range = 185
-  local spawnPt = pos:Translate(range, hdg, true)
-  local spawnVec2 = spawnPt:GetVec2() 
-  coalitionWrapper.TransportGroup = coalitionWrapper.TransportSpawn:SpawnFromVec2(spawnVec2)
+local function TranslateAndReturnSpawnLocation(heading, location, range)
+  range = range or RANGE
+  return location:Translate(range, heading, true):GetVec2()
 end
 
--- Function spawns a convoy 185m (600ft) away in straight line separated by 10m. Accepts coalitionNumber (2=Blue, 1=Red)
-function SpawnConvoy(hdg, pos, coalitionWrapper)
-  -- Initally spawns group 185m (600ft), increasing by 10 meters per group.
-  local range = 185
-  
-  -- Increment ranges of units by adding 10m to range value, then spawn units via Vec2 ( x and y pos) coordinates.
-  for i=1, #coalitionWrapper.ConvoySpawns do
-    local spawnPt = pos:Translate(range, hdg, true)
-    local spawnVec2 = spawnPt:GetVec2()
-    coalitionWrapper.ConvoySpawns[i]:SpawnFromVec2(spawnVec2)
+local function SpawnConvoy(coalitionNumber)
+  local range = RANGE
+  local queue = _Coalitions[coalitionNumber].Queue
+
+  for i=1, #_Coalitions[coalitionNumber].ConvoySpawns do
+    local spawnVec2 = TranslateAndReturnSpawnLocation(queue.Heading, queue.Location, range)
+    _Coalitions[coalitionNumber].ConvoySpawns[i]:SpawnFromVec2(spawnVec2)
     range = range + 10
+  end
+
+  -- DELETE TRANSPORT and DELETE Queued Information
+  _Coalitions[coalitionNumber].TransportGroup:Destroy(true, DELAY)
+  _Coalitions[coalitionNumber].TransportGroup = nil
+  _Coalitions[coalitionNumber].Queue = nil
+end
+
+local function SpawnTransport(heading, location, playerName, CoalitionNumber)
+  if not _Coalitions[CoalitionNumber].Queue then
+    env.info("CONVOY: Queue for team: " .. _Coalitions[CoalitionNumber].String .. " is empty. Inserting " .. playerName .. " location and heading.")
+    _Coalitions[CoalitionNumber].Queue = {Heading = heading, Location = location, PlayerName = playerName}
+    local spawnVec2 = TranslateAndReturnSpawnLocation(heading, location)
+    _Coalitions[CoalitionNumber].TransportGroup = _Coalitions[CoalitionNumber].TransportSpawn:SpawnFromVec2(spawnVec2)
   end
 end
 
--- Convoy Menu Function
-function CONVOY_MENU(coalitionWrapper)
-  coalitionWrapper.Clients:ForEachClient(function(thisClient)
-    -- TODO: Find out if checking to see if unit is alive is actually necessary.
-      if (thisClient ~= nil) and (thisClient:IsAlive()) then 
-        local group = thisClient:GetGroup()
-        local pos = group:GetPointVec2()
-        local hdg = group:GetHeading()
+local landEventHandler = nil
 
-        -- Main Menu
-        local ConvoyMenuRoot = MENU_GROUP:New( group, "Air Resupply" )
-        
-        -- Commands
-        local SpawnTransportCommand = MENU_GROUP_COMMAND:New( group, "Spawn C130 Air Resupply", ConvoyMenuRoot, SpawnTransport, hdg, pos, coalitionWrapper)
-        local GetRemainingCommand = MENU_GROUP_COMMAND:New( group, "Air Resupplies Remaining", ConvoyMenuRoot, function() 
-          trigger.action.outTextForCoalition(coalitionWrapper.Number, "[TEAM] Has " .. coalitionWrapper.ConvoysLeft .. " Remaining Air Resupplies", 10)
-        end)
-        
-        -- Enters log information
-        --env.info("Player name: " ..thisClient:GetPlayerName())
-        --env.info("Group Name: " ..group:GetName())       
-        
-        function EventHandler:OnEventBirth( EventData )
-          -- Defines name of unit being spawned in this function bracket for event only.
-          local str = EventData.IniDCSGroupName
-          
-          -- Test to see if it is a red convoy group has been born.
-          if string.match(str, coalitionWrapper.String .. " " .. ConvoyGroups[1]) then
-            coalitionWrapper.ConvoysLeft = coalitionWrapper.ConvoysLeft - 1
-            trigger.action.outTextForCoalition(coalitionWrapper.Number,"[TEAM] " ..thisClient:GetPlayerName().. "  Successfully Deployed a Convoy\nContact a Tactical Commander on Discord (discord.gg/fVg9gut) \n" 
-            .. coalitionWrapper.String .. " team has " .. coalitionWrapper.ConvoysLeft .. " remaining Convoy units.", 10)
-          -- If not, see if a transport has been born.
-          elseif string.match(str, coalitionWrapper.String .. " Transport") then
-            trigger.action.outTextForCoalition(coalitionWrapper.Number,"[TEAM] " ..thisClient:GetPlayerName().. "  Requested an Air Resupply\nESCORT REQUESTED", 10)
-            trigger.action.outTextForCoalition(coalitionWrapper.Number == 1 and 2 or 1,"[TEAM] " ..thisClient:GetPlayerName().. "  The Air Operations Center has detected an enemy C130\nINTERCEPT IMMEDIATELY", 10)
-          end
-        end
+LAND_EVENTHANDLER = {
+  ClassName = "LAND_EVENTHANDLER"
+}
 
-        function EventHandler:OnEventLand( EventData )
-          -- Defines name of unit being spawned in this function bracket for event only.
-          local str = EventData.IniDCSGroupName
+function LAND_EVENTHANDLER:New()
+  local self = BASE:Inherit(self, EVENTHANDLER:New())
 
-          --Test to see if a C130 has landed
-          if str.match(str, coalitionWrapper.String .. " Transport") then
-            SpawnConvoy(hdg, pos, coalitionWrapper)
-            coalitionWrapper.TransportGroup:Destroy()
-            coalitionWrapper.TransportGroup = nil
-            trigger.action.outTextForCoalition(coalitionWrapper.Number,"[TEAM] " .. coalitionWrapper.String .." Resupply Mission Successful", 10)
-            trigger.action.outTextForCoalition(coalitionWrapper.Number == 1 and 2 or 1,"[TEAM] C-130 Target Faded Intercept Mission Failure", 10)
-          end
-        end
-        -- TODO: Research this.
-        -- Refer to change 6. in changelog, I believe filterStart() will ensure that a despawned Client is removed. Tested with filterOnce()
-        --thisClient:Remove(thisClient:GetName(), true)
-      end
-  end)
-  -- This timer will have the function run again as clients become alive and not nil. Runs every 1-2s per coalition number. Prevents same time execution to save resources.
-  timer.scheduleFunction(CONVOY_MENU,coalitionWrapper,timer.getTime() + coalitionWrapper.Number)
+  self:HandleEvent(EVENTS.Land, self.OnLand)
+  self:HandleEvent(EVENTS.Birth, self.OnBirth)
+
+  return self
 end
+
+function LAND_EVENTHANDLER:OnLand( EventData )
+  env.info("CONVOY: Landed")
+  trigger.action.outTextForCoalition(1,"You Landed!", 10)
+end
+
+
+-- HANDLES BIRTH EVENTS OF TRANSPORT HELOS AND CARGO, TRANSPORTS, AND CONVOY GROUPS
+function LAND_EVENTHANDLER:OnBirth( EventData )
+  local group = EventData.IniGroup
+  local groupName = EventData.IniGroupName
+  local coalitionNumber = EventData.IniCoalition
+  local playerName = nil
+  local pos = nil
+
+  -- NOT NIL
+  if groupName then
+    -- PLAYER IN HELO OR CARGO BORN.
+    if string.match(groupName, "Helos") or string.match(groupName, "Cargo") then
+      env.info("CONVOY: " .. groupName .. " detected.")
+      
+      -- PLAYER OCCUPANT OF GROUP
+      if EventData.IniPlayerName then
+        playerName = EventData.IniPlayerName
+        env.info("CONVOY: Creating Convoy Menus for " .. playerName .. ".")
+
+        pos = {heading = group:GetHeading(), location = group:GetPointVec2()}
+        
+        -- PARENT MENU
+        local ConvoyMenuRoot = MENU_GROUP:New( group, "Air Resupply" )
+          
+        -- SUBMENU COMMANDS CHILD OF ConvoyMenuRoot
+        MENU_GROUP_COMMAND:New( group, "Spawn Air Resupply", ConvoyMenuRoot, SpawnTransport, pos.heading, pos.location, playerName, coalitionNumber)
+        MENU_GROUP_COMMAND:New( group, "Air Resupplies Remaining", ConvoyMenuRoot, function() 
+          trigger.action.outTextForCoalition(coalitionNumber, "[TEAM] Has " .. _Coalitions[coalitionNumber].ConvoysLeft .. " Remaining Air Resupplies.", 10)
+        end)
+      end
+    
+    -- CONVOY GROUP BORN.
+    elseif string.match(groupName, ConvoyGroups[1]) then
+
+      _Coalitions[EventData.IniCoalition].ConvoysLeft = _Coalitions[EventData.IniCoalition].ConvoysLeft - 1
+      trigger.action.outTextForCoalition(coalitionNumber,"[TEAM] " .. _Coalitions[coalitionNumber].Queue.PlayerName .. "  Successfully Deployed a Convoy!\nContact a Tactical Commander on Discord (" .. DISCORD ..").\n" 
+              .. _Coalitions[coalitionNumber].String .. " team has " .. _Coalitions[coalitionNumber].ConvoysLeft .. " remaining convoys.", 10)
+    
+    -- TRANSPORT BORN.
+    elseif string.match(groupName, "Convoy Transport") then
+      env.info("CONVOY: Convoy Transport incoming.")
+      --trigger.action.outTextForCoalition(coalitionNumber,"[TEAM] " .. _Coalitions[coalitionNumber].Queue.PlayerName .. "  Requested an Air Resupply.\nESCORT REQUESTED!", 10)
+      --trigger.action.outTextForCoalition(coalitionNumber == 1 and 2 or 1,"[TEAM] The Air Operations Center has detected an enemy C130!\nINTERCEPT IMMEDIATELY!", 10)
+    end
+  end   
+end
+
+landEventHandler = LAND_EVENTHANDLER:New()
+
+
+-- HANDLES LAND EVENTS OF TRANSPORTS ONLY
+--function EventHandler:OnEventLand( EventData )
+  --env.info("CONVOY: LANDING EVENT")
+  --local groupName = EventData.IniGroupName
+  --local coalitionNumber = EventData.IniCoalition
+
+  -- TRANSPORT LANDED
+  --if string.match(groupName, "Red Transport") then
+    --env.info(_Coalitions[coalitionNumber].String .. " Transport Landed. Deploying convoy.")
+    --SpawnConvoy(coalitionNumber)
+    
+    --trigger.action.outTextForCoalition(coalitionNumber,"[TEAM] " .. _Coalitions[coalitionNumber].String .." Resupply Mission Successful!", 10)
+    --trigger.action.outTextForCoalition(coalitionNumber == 1 and 2 or 1,"[TEAM] Enemy Transport Faded.\nIntercept Mission Failed!", 10)
+  --end
+--end
 --- END FUNCTIONS---
-
---- EXECUTION ---
-
--- Execute menus.
-
-CONVOY_MENU(_Coalitions.Red)
-CONVOY_MENU(_Coalitions.Blue)
-
---- END EXECUTION ---
