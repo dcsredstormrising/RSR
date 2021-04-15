@@ -1,3 +1,4 @@
+---@diagnostic disable: undefined-global
 -- Logger inspired by MIST's logger for use inside and outside DCS
 -- Here to replace the need to import MIST when we're just doing logging
 

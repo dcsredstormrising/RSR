@@ -1,3 +1,4 @@
+---@diagnostic disable: lowercase-global
 ES_Settings = {} --DO NOT REMOVE
 
 --************************************************************************--
