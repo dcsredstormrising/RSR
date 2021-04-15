@@ -492,7 +492,7 @@ ctld.spawnableCrates = {
 	  
 		-- RED
         { weight = 871, desc = "2S9 Nona", unit = "2S9 Nona", side = 1, cratesRequired = 1, unitQuantity = 2, internal = 1 },
-        { weight = 871, desc = "PLZ-05", unit = "PLZ05", side = 1, cratesRequired = 1, unitQuantity = 2, internal = 1 },        		
+        { weight = 768, desc = "PLZ-05", unit = "PLZ05", side = 1, cratesRequired = 1, unitQuantity = 2, internal = 1 },        		
 		    { weight = 720, desc = "SAU Akatsia", unit = "SAU Akatsia", cratesRequired = 1, unitQuantity = 2, internal = 1 },
         { weight = 872, desc = "SAU Gvozdika", unit = "SAU Gvozdika", side = 1, cratesRequired = 1, unitQuantity = 2, internal = 1 },
         { weight = 873, desc = "SPH 2S19 Msta", unit = "SAU Msta", side = 1, cratesRequired = 1, unitQuantity = 2, internal = 1 },
