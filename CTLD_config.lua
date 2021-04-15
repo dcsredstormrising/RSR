@@ -491,8 +491,9 @@ ctld.spawnableCrates = {
 	  ["Artillery"] = {
 	  
 		-- RED
-        { weight = 871, desc = "2S9 Nona", unit = "2S9 Nona", side = 1, cratesRequired = 1, unitQuantity = 2, internal = 1 },		
-		{ weight = 720, desc = "SAU Akatsia", unit = "SAU Akatsia", cratesRequired = 1, unitQuantity = 2, internal = 1 },
+        { weight = 871, desc = "2S9 Nona", unit = "2S9 Nona", side = 1, cratesRequired = 1, unitQuantity = 2, internal = 1 },
+        { weight = 871, desc = "PLZ-05", unit = "PLZ05", side = 1, cratesRequired = 1, unitQuantity = 2, internal = 1 },        		
+		    { weight = 720, desc = "SAU Akatsia", unit = "SAU Akatsia", cratesRequired = 1, unitQuantity = 2, internal = 1 },
         { weight = 872, desc = "SAU Gvozdika", unit = "SAU Gvozdika", side = 1, cratesRequired = 1, unitQuantity = 2, internal = 1 },
         { weight = 873, desc = "SPH 2S19 Msta", unit = "SAU Msta", side = 1, cratesRequired = 1, unitQuantity = 2, internal = 1 },
         { weight = 903, desc = "MLRS Grad", unit = "Grad-URAL", side = 1, cratesRequired = 2, unitQuantity = 2, internal = 1 },
@@ -512,10 +513,11 @@ ctld.spawnableCrates = {
 		{ weight = 836, desc = "Bofors 40mm AAA Gun", unit = "bofors40", cratesRequired = 1, unitQuantity = 2, internal = 1 },
         { weight = 837, desc = "Flak 18 AAA Gun", unit = "flak18", cratesRequired = 1, unitQuantity = 2, internal = 1 },		
 	
-		--RED        		
-		{ weight = 736, desc = "ZU-23 Emplacement", unit = "ZU-23 Emplacement", side = 1, cratesRequired = 1, unitQuantity = 1, internal = 1 },		
-		{ weight = 706, desc = "ZU-23 Emplacement Closed", unit = "ZU-23 Emplacement Closed", side = 1, cratesRequired = 1, unitQuantity = 1, internal = 1 },		
-		{ weight = 705, desc = "Ural-375 ZU-23", unit = "Ural-375 ZU-23", side = 1, cratesRequired = 1, unitQuantity = 2, internal = 1 },
+		--RED        	
+    		{ weight = 778, desc = "AZP S-60", unit = "S-60_Type59_Artillery", side = 1, cratesRequired = 1, unitQuantity = 1, internal = 1 },			
+    		{ weight = 736, desc = "ZU-23 Emplacement", unit = "ZU-23 Emplacement", side = 1, cratesRequired = 1, unitQuantity = 1, internal = 1 },		
+    		{ weight = 706, desc = "ZU-23 Emplacement Closed", unit = "ZU-23 Emplacement Closed", side = 1, cratesRequired = 1, unitQuantity = 1, internal = 1 },		
+    		{ weight = 705, desc = "Ural-375 ZU-23", unit = "Ural-375 ZU-23", side = 1, cratesRequired = 1, unitQuantity = 2, internal = 1 },
         { weight = 825, desc = "ZSU-23-4 Shilka", unit = "ZSU-23-4 Shilka", side = 1, cratesRequired = 1, unitQuantity = 2, internal = 1 },
         { weight = 826, desc = "ZSU-57-2", unit = "ZSU_57_2", side = 1, cratesRequired = 1, unitQuantity = 2, internal = 1 },
         
@@ -528,22 +530,22 @@ ctld.spawnableCrates = {
 	
 		-- RED
         { weight = 800, desc = "BTR-80", unit = "BTR-80", side = 1, cratesRequired = 1, unitQuantity = 2, internal = 1 },
-		{ weight = 700, desc = "BTR-82A", unit = "BTR-82A", side = 1, cratesRequired = 1, unitQuantity = 2, internal = 1 },
-		{ weight = 701, desc = "BTR-RD", unit = "BTR-RD", side = 1, cratesRequired = 1, unitQuantity = 2, internal = 1 },				
-		{ weight = 702, desc = "IFV BMD-1", unit = "BMD-1", side = 1, cratesRequired = 1, unitQuantity = 2, internal = 1 },
+    		{ weight = 700, desc = "BTR-82A", unit = "BTR-82A", side = 1, cratesRequired = 1, unitQuantity = 2, internal = 1 },
+    		{ weight = 701, desc = "BTR-RD", unit = "BTR-RD", side = 1, cratesRequired = 1, unitQuantity = 2, internal = 1 },				
+    		{ weight = 702, desc = "IFV BMD-1", unit = "BMD-1", side = 1, cratesRequired = 1, unitQuantity = 2, internal = 1 },
         { weight = 801, desc = "IFV BMP-1", unit = "BMP-1", side = 1, cratesRequired = 1, unitQuantity = 2, internal = 1 },		
         { weight = 802, desc = "IFV BMP-2", unit = "BMP-2", side = 1, cratesRequired = 1, unitQuantity = 2, internal = 1 },
         { weight = 803, desc = "IFV BMP-3", unit = "BMP-3", side = 1, cratesRequired = 1, unitQuantity = 1, internal = 1 },
         { weight = 804, desc = "IFV ZBD04A", unit = "ZBD04A", side = 1, cratesRequired = 1, unitQuantity = 1, internal = 1 },
         		
 		-- BLUE
-		  { weight = 726, desc = "AAV7", unit = "AAV7", side = 2, cratesRequired = 1, unitQuantity = 2, internal = 1 },		
-		  { weight = 703, desc = "HMMWV Armament", unit = "M1043 HMMWV Armament", side = 2, cratesRequired = 1, unitQuantity = 2, internal = 1 },
+  		  { weight = 726, desc = "AAV7", unit = "AAV7", side = 2, cratesRequired = 1, unitQuantity = 2, internal = 1 },		
+  		  { weight = 703, desc = "HMMWV Armament", unit = "M1043 HMMWV Armament", side = 2, cratesRequired = 1, unitQuantity = 2, internal = 1 },
         { weight = 807, desc = "HMMWV TOW", unit = "M1045 HMMWV TOW", side = 2, cratesRequired = 1, unitQuantity = 2, internal = 1 },
         { weight = 808, desc = "IFV Marder", unit = "Marder", side = 2, cratesRequired = 1, unitQuantity = 2, internal = 1 },				
-		{ weight = 740, desc = "LAV-25", unit = "LAV-25", side = 2, cratesRequired = 1, unitQuantity = 2, internal = 1 },
-		{ weight = 741, desc = "MCV-80", unit = "MCV-80", side = 2, cratesRequired = 1, unitQuantity = 1, internal = 1 },		
-		{ weight = 704, desc = "Stryker ICV", unit = "M1126 Stryker ICV", side = 2, cratesRequired = 1, unitQuantity = 2, internal = 1 },
+    		{ weight = 740, desc = "LAV-25", unit = "LAV-25", side = 2, cratesRequired = 1, unitQuantity = 2, internal = 1 },
+    		{ weight = 741, desc = "MCV-80", unit = "MCV-80", side = 2, cratesRequired = 1, unitQuantity = 1, internal = 1 },		
+    		{ weight = 704, desc = "Stryker ICV", unit = "M1126 Stryker ICV", side = 2, cratesRequired = 1, unitQuantity = 2, internal = 1 },
         { weight = 809, desc = "Stryker ATGM", unit = "M1134 Stryker ATGM", side = 2, cratesRequired = 1, unitQuantity = 1, internal = 1 },
         { weight = 810, desc = "Stryker MGS", unit = "M1128 Stryker MGS", side = 2, cratesRequired = 1, unitQuantity = 1, internal = 1 },
         { weight = 811, desc = "IFV BRADLEY", unit = "M-2 Bradley", side = 2, cratesRequired = 1, unitQuantity = 1, internal = 1 },        
