@@ -109,6 +109,7 @@ ctld.hoverTime = 4 -- Time to hold hover above a crate for loading in seconds
 -- When this limit is hit, a player will still be able to get crates for an AA system, just unable
 -- to unpack them
 
+ctld.completeAASystemsTag = "AASystem" -- This is the tag in ME and in code that defines AA system and allows us to repair them
 ctld.AASystemLimitRED = 20 -- Red side limit
 ctld.AASystemLimitBLUE = 20 -- Blue side limit
 ctld.aaSR2Launchers = 2 -- controls how many launchers to add to Short Range Missile systems: Roland, HQ when spawned.

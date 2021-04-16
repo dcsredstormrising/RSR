@@ -1057,16 +1057,15 @@ function ctld.spawnLogisticsCentre(_point, _name, _sideName, _baseORfob, _baseOR
     return _spawnedLogiCentreObject
 end
 
--- We check if group sling limit is reached here
+-- We check if group sling limit is reached
 function ctld.IsGroupLimitReached(_args, _crateType, _coalition)
 
-  local _limitReached = true -- we assume the worst and try to prove the opposite is true
+  local _limitReached = true -- we assume the worst and try to prove the opposite
       
   -- check to see if the unit we are trying to spawn is allowed no matter what the limit
   for _, _unitType in pairs (ctld.UnitTypesOutsideOfGroupLimit) do      
     if ctld.UnitTypesOutsideOfGroupLimit[_crateType.unit] then    
       _limitReached = false
-      env.info("**=AW=33COM ctld.IsCrateLimitReached Unit from outside : " .. inspect(_crateType.unit))  
       break
     end
   end
@@ -1081,24 +1080,25 @@ function ctld.IsGroupLimitReached(_args, _crateType, _coalition)
     end
     
     -- gets all player slung units   
-    local _playerSlungUnits = SET_GROUP:New():FilterCategoryGround():FilterCoalitions(_coalitionName):FilterPrefixes("CTLD"):FilterActive():FilterOnce()
+    local _playerSlungGroups = SET_GROUP:New():FilterCategoryGround():FilterCoalitions(_coalitionName):FilterPrefixes("CTLD"):FilterActive():FilterOnce()
     
-    if _playerSlungUnits ~= nil then
-      if _playerSlungUnits:Count() < ctld.GroupLimitCount then
-        _limitReached = false
-        env.info("**=AW=33COM ctld.IsCrateLimitReached ctld.GroupLimitCount is less than allowed already : " .. inspect(_playerSlungUnits:Count()))  
+    if _playerSlungGroups ~= nil then
+      if _playerSlungGroups:Count() < ctld.GroupLimitCount then
+        _limitReached = false        
       else
-        -- here we must deduct all ctld.UnitTypesOutsideOfGroupLimit from total
-        env.info("**=AW=33COM ctld.IsCrateLimitReached ctld.GroupLimitCount is more than allowed, we need to filter : " .. inspect(_playerSlungUnits:Count()))  
-        
-        local _groupOfUnitsNotPartOfLimit = ctld.getGroupsByUnitType(_playerSlungUnits, ctld.UnitTypesOutsideOfGroupLimit)
+        -- here we must deduct all ctld.UnitTypesOutsideOfGroupLimit from total        
+        local _groupsOfUnitsNotPartOfLimitCount = ctld.getGroupCountByUnitType(_playerSlungGroups, ctld.UnitTypesOutsideOfGroupLimit)
         
         -- we must remove ctld.UnitTypesOutsideOfGroupLimit (fuel trucks, EWRs, JTAC, CC crates are not part of the limit) from the list and then count it 
-        _playerSlungUnits:RemoveGroupsByName(_groupOfUnitsNotPartOfLimit)
+        -- to make sure we only count limited items
+        local totalPlayerLimitedGroupCount = _playerSlungGroups:Count() - _groupsOfUnitsNotPartOfLimitCount
         
-        if _playerSlungUnits:Count() <= ctld.GroupLimitCount then
-          _limitReached = false  
-          env.info("**=AW=33COM ctld.IsCrateLimitReached ctld.GroupLimitCount is less after removal of some groups : " .. inspect(_playerSlungUnits:Count()))  
+        env.info("**=AW=33COM ctld.IsCrateLimitReached _playerSlungUnits count: [" .. inspect(_playerSlungGroups:Count()) .. "]")  
+          env.info("**=AW=33COM ctld.IsCrateLimitReached _groupsOfUnitsNotPartOfLimitCount: [" .. inspect(_groupsOfUnitsNotPartOfLimitCount) .. "]")
+          env.info("**=AW=33COM ctld.IsCrateLimitReached totalPlayerLimitedGroupCount: [" .. inspect(totalPlayerLimitedGroupCount) .. "]")  
+        
+        if totalPlayerLimitedGroupCount < ctld.GroupLimitCount then
+          _limitReached = false            
         end
       end
     end
@@ -1107,24 +1107,23 @@ function ctld.IsGroupLimitReached(_args, _crateType, _coalition)
   return _limitReached
 end
 
--- fetches groups based on unit type
+-- Fetches count of groups based on unit type.  
 -- @_playerSlungUnits groups of units
 -- @_unitTypes Unit types that interest you
 -- you can pass an array of unit types
-function ctld.getGroupsByUnitType(_playerSlungUnits, _unitTypes)
+function ctld.getGroupCountByUnitType(_playerSlungGroups, _unitTypes)
 
-  local _groups
+  local _counter = 0
 
-  if (_playerSlungUnits ~= nil) then
-      _playerSlungUnits:ForEachGroup(
+  if (_playerSlungGroups ~= nil) then
+      _playerSlungGroups:ForEachGroup(
       function(grp)
         local _units = grp:GetUnits()
         if _units ~= nil then          
           for _, _unit in pairs (_units) do            
             local _unitTypeName = _unit:GetTypeName()                        
-            if ctld.UnitTypesOutsideOfGroupLimit[_unitTypeName] then
-              env.info("**=AW=33COM 5 ***")
-              _groups.AddGroup(_unit.GetGroup())
+            if ctld.UnitTypesOutsideOfGroupLimit[_unitTypeName] then    -- get groups that have units we don't count towards the limit                            
+              _counter = _counter + 1
               break
             end
           end
@@ -1132,7 +1131,7 @@ function ctld.getGroupsByUnitType(_playerSlungUnits, _unitTypes)
       end)
   end
   
-  return _groups  
+  return _counter  
 end
 
 --only helos should be able to spawn crates (check ctld.unitActions in CTLD_config.lua)
@@ -7367,8 +7366,6 @@ ctld.droppedLogisticsCentreCratesBLUE = {}
 --ctld.FOBlogisticCentreObjects = {} -- stores fully built fobs 
 
 ctld.completeAASystems = {} -- stores complete spawned groups from multiple crates
-ctld.completeAASystemsTag = "AASystem"
-
 ctld.FOBbeacons = {} -- stores FOB radio beacon details, refreshed every 60 seconds
 
 ctld.deployedRadioBeacons = {} -- stores details of deployed radio beacons
