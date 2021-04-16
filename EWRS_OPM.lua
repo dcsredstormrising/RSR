@@ -67,6 +67,7 @@ ewrs.validSearchRadars = {
     "Hawk sr", --Hawk SAM Search Radar
     "Roland Radar", --Roland Search Radar
     "1L13 EWR", --Early Warning Radar
+	"55G6 EWR", -- Big EWR
 
     -- AWACS
     "A-50",
@@ -102,10 +103,7 @@ ewrs.enabledAircraftTypes = {
     ["Mi-8MT"] = true,
     ["MiG-15bis"] = true,
     ["MiG-19P"] = true,
-    ["MiG-21Bis"] = true,
-    ["MiG-29A"] = true,
-    ["MiG-29G"] = true,
-    ["MiG-29S"] = true,
+    ["MiG-21Bis"] = true,    
     ["P-51D"] = true,
     ["P-51D-30-NA"] = true,
     ["SA342L"] = true,

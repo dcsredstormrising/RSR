@@ -74,7 +74,6 @@ end
 -- **************** Mission Editor Functions *********************
 -- ***************************************************************
 
-
 -----------------------------------------------------------------
 -- Spawn group at a trigger and set them as extractable. Usage:
 -- ctld.spawnGroupAtTrigger("groupside", number, "triggerName", radius)
@@ -129,7 +128,6 @@ function ctld.spawnGroupAtTrigger(_groupSide, _number, _triggerName, _searchRadi
     end
 end
 
-
 -----------------------------------------------------------------
 -- Spawn group at a Vec3 Point and set them as extractable. Usage:
 -- ctld.spawnGroupAtPoint("groupside", number,Vec3 Point, radius)
@@ -173,7 +171,6 @@ function ctld.spawnGroupAtPoint(_groupSide, _number, _point, _searchRadius)
     end
 end
 
-
 -- Preloads a transport with troops or vehicles
 -- replaces any troops currently on board
 function ctld.preLoadTransport(_unitName, _number, _troops)
@@ -188,7 +185,6 @@ function ctld.preLoadTransport(_unitName, _number, _troops)
         --        end
     end
 end
-
 
 -- Continuously counts the number of crates in a zone and sets the value of the passed in flag
 -- to the count amount
@@ -300,7 +296,6 @@ function ctld.createExtractZone(_zone, _flagNumber, _smoke)
     end
 end
 
-
 -- Removes an extraction zone
 --
 -- The smoke will take up to 5 minutes to disappear depending on the last time the smoke was activated
@@ -372,7 +367,6 @@ end
 -- CONTINUOUS TRIGGER FUNCTION
 -- This function will count the current number of extractable RED and BLUE
 -- UNITS in a zone and store the values in two flags
-
 -- Use: ctld.countDroppedUnitsInZone("Zone Name", flagBlue, flagRed)
 function ctld.countDroppedUnitsInZone(_zone, _blueFlag, _redFlag)
 
@@ -419,7 +413,6 @@ function ctld.countDroppedUnitsInZone(_zone, _blueFlag, _redFlag)
     --  env.info("Units in zone ".._blueCount.." ".._redCount)
 end
 
-
 -- Creates a radio beacon on a random UHF - VHF and HF/FM frequency for homing
 -- This WILL NOT WORK if you dont add beacon.ogg and beaconsilent.ogg to the mission!!!
 -- e.g. ctld.createRadioBeaconAtZone("beaconZone","red", 1440,"Waypoint 1") will create a beacon at trigger zone "beaconZone" for the Red side
@@ -449,7 +442,6 @@ function ctld.createRadioBeaconAtZone(_zone, _coalition, _batteryLife, _name)
         ctld.createRadioBeacon(_zonePos, 2, 2, _name, _batteryLife, false) --1440
     end
 end
-
 
 -- Activates a pickup zone
 -- Activates a pickup zone when called from a trigger
@@ -506,7 +498,6 @@ function ctld.activatePickupZone(_zoneName)
         end
     end
 end
-
 
 -- Deactivates a pickup zone
 -- Deactivates a pickup zone when called from a trigger
@@ -629,7 +620,6 @@ function ctld.activateWaypointZone(_zoneName)
     end
 end
 
-
 -- Deactivates a Waypoint zone
 -- Deactivates a Waypoint zone when called from a trigger
 -- EG: ctld.deactivateWaypointZone("wpzone3")
@@ -686,8 +676,6 @@ function ctld.unloadInProximityToEnemy(_unitName, _distance)
 
 end
 
-
-
 -- Unit will unload any units onboard if the unit is on the ground
 -- when this function is called
 function ctld.unloadTransport(_unitName)
@@ -738,6 +726,7 @@ end
 -- e.g. ctld.spawnCrateAtZone("blue", 505,"triggerzone1") -- spawn a tow humvee at triggerzone1 for blue side
 --
 function ctld.spawnCrateAtZone(_side, _weight, _zone)
+      
     local _spawnTrigger = trigger.misc.getZone(_zone) -- trigger to use as reference position
 
     if _spawnTrigger == nil then
@@ -783,7 +772,6 @@ end
 --
 function ctld.spawnCrateAtPoint(_side, _weight, _point)
 
-
     local _crateType = ctld.crateLookupTable[tostring(_weight)]
 
     if _crateType == nil then
@@ -811,7 +799,6 @@ end
 -- ***************************************************************
 -- **************** BE CAREFUL BELOW HERE ************************
 -- ***************************************************************
-
 ctld.crateWait = {}
 ctld.crateMove = {}
 
@@ -834,7 +821,7 @@ end
 
 function ctld.spawnCrateStatic(_country, _unitId, _point, _name, _weight, _side, _internal)
     --Ironwulf2000 added _internal for internal crate carriage support
-
+	
     local _crate
     local _spawnedCrate
 
@@ -972,7 +959,7 @@ function ctld.spawnCrateStatic(_country, _unitId, _point, _name, _weight, _side,
         _spawnedCrate = StaticObject.getByName(_crate["name"])
     end
 
-    -- { weight = 503, desc = "Logistics Centre crate", unit = "LogisticsCentre", internal = 1 }
+    -- { weight = 503, desc = "Logistics Centre crate", un it = "LogisticsCentre", internal = 1 }
     local _crateDetails = ctld.crateLookupTable[tostring(_weight)]
     _crateDetails.baseOfOrigin = _baseOfOriginFromName
 
@@ -1923,7 +1910,7 @@ function ctld.loadUnloadLogisticsCrate(_args)
                 (_closestBaseSide == _aircraftSideName) and
                 (_nearestLogisticsCentreBaseNameOrFOBgrid == _closestBaseName) then
 
-            ctld.displayMessageToGroup(_aircraft, "Logistics Centre already present.  Logistics Centre crate returned to base.", 10)
+            ctld.displayMessageToGroup(_aircraft, "Logistics Centre already present.  All crates returned to base.", 10)
             ctld.inTransitLogisticsCentreCrates[_aircraft:getName()] = nil --remove Logistics Centre crate from internal cargo
         end
     end
@@ -3173,7 +3160,7 @@ function ctld.unpackCrates(_arguments)
 
                 --log:info("ctld.unpackCrates: _playerName: $1, _crate.name: $2, _crateBaseOfOrigin: $3, _crate: $4", _playerName, _crate.name, _crateBaseOfOrigin, _crate)
                 log:info("ctld.unpackCrates: _playerName: $1, _crate.name: $2, _crateBaseOfOrigin: $3", _playerName, _crate.name, _crateBaseOfOrigin)
-
+                
                 if not ctld.isLogisticsCentreAliveAt(_crateBaseOfOrigin) then
                     local _azToCrate = ctld.getCompassBearing(_aircraft:getPoint(), _crate.crateUnit:getPoint())
                     ctld.displayMessageToGroup(_aircraft, "WARNING: Supplying logisitics centre at " .. _crateBaseOfOrigin .. " for crate (" .. _azToCrate .. "," .. _crate.dist .. "m) destroyed.  Unable to unpack crate.", 20)
@@ -3181,10 +3168,10 @@ function ctld.unpackCrates(_arguments)
                 end
 
                 local _aaTemplate = ctld.getAATemplate(_crate.details.unit)
+                                
+                if _aaTemplate and _crate.details.isStandalone == false then
 
-                if _aaTemplate then
-
-                    if _crate.details.unit == _aaTemplate.repair then
+                    if _crate.details.unit == _aaTemplate.repair then                        
                         ctld.repairAASystem(_aircraft, _crate, _aaTemplate)
                     else
                         ctld.unpackAASystem(_aircraft, _crate, _crates, _aaTemplate)
@@ -3194,12 +3181,13 @@ function ctld.unpackCrates(_arguments)
                     -- is multi crate?
                 elseif _crate.details.cratesRequired ~= nil and _crate.details.cratesRequired > 1 then
                     -- multicrate
-
+                    
                     ctld.unpackMultiCrate(_aircraft, _crate, _crates)
 
                     return
 
                 else
+                
                     -- single crate
                     local _cratePoint = _crate.crateUnit:getPoint()
                     local _crateName = _crate.crateUnit:getName()
@@ -3223,8 +3211,12 @@ function ctld.unpackCrates(_arguments)
                     ctld.processCallback({ unit = _aircraft, crate = _crate, spawnedGroup = _spawnedGroups, action = "unpack" })
 
                     if _crate.details.unit == "1L13 EWR" then
-                        ctld.addEWRTask(_spawnedGroups)
-                        --env.info("Added EWR")
+                        ctld.addEWRTask(_spawnedGroups)                        
+                    end
+					
+					-- added for long range EWR as test
+					if _crate.details.unit == "55G6 EWR" then
+                        ctld.addEWRTask(_spawnedGroups)                        
                     end
 
                     local _quantityTxt = "1 "
@@ -3277,7 +3269,6 @@ function ctld.unpackCrates(_arguments)
         env.error(string.format("CTLD ERROR: %s", _err))
     end
 end
-
 
 --[[
 	builds a logistics centre after unpacking a logistics centre crate
@@ -3662,7 +3653,7 @@ function ctld.unloadInternalCrate (_args)
                         (_closestBaseSide == _heliSideName) and
                         (_nearestLogisticsCentreBaseNameOrFOBgrid == _closestBaseName) then
 
-                    ctld.displayMessageToGroup(_heli, "Logistics Centre already present.  Logistics Centre crate returned to base.", 10)
+                    ctld.displayMessageToGroup(_heli, "Logistics Centre already present.  All crates returned to base.", 10)
                     ctld.inTransitLogisticsCentreCrates[_heli:getName()] = nil
                 else
                     --unload logistics crate
@@ -4179,6 +4170,8 @@ function ctld.aaGetLaunchersFromType(_aaTemplate)
 
     if _aaTemplate.systemType == "SR" then
         return ctld.aaSRLaunchers
+    elseif _aaTemplate.systemType == "SR2" then
+        return ctld.aaSR2Launchers
     elseif _aaTemplate.systemType == "MR" then
         return ctld.aaMRLaunchers
     elseif _aaTemplate.systemType == "LR" then
@@ -4352,8 +4345,8 @@ function ctld.unpackAASystem(_heli, _nearestCrate, _nearbyCrates, _aaSystemTempl
 
                     _point = { x = _point.x + _xOffset, y = _point.y, z = _point.z + _yOffset }
 
-                    table.insert(_posArray, _point)
-                    table.insert(_typeArray, _name)
+                    table.insert(_posArray, _point)					
+					table.insert(_typeArray, _name)
                 end
             else
                 table.insert(_posArray, _systemPart.crate.crateUnit:getPoint())
@@ -4397,8 +4390,7 @@ function ctld.unpackAASystem(_heli, _nearestCrate, _nearbyCrates, _aaSystemTempl
         local _spawnedGroup = ctld.spawnCrateGroup(_heli, _posArray, _typeArray)
 
         ctld.completeAASystems[_spawnedGroup:getName()] = ctld.getAASystemDetails(_spawnedGroup, _aaSystemTemplate)
-		log:info("ctld.completeAASystems: $1", inspect(ctld.completeAASystems, { newline = " ", indent = "" }))
-
+		    log:info("ctld.completeAASystems: $1", inspect(ctld.completeAASystems, { newline = " ", indent = "" }))
         ctld.processCallback({ unit = _heli, crate = _nearestCrate, spawnedGroup = _spawnedGroup, action = "unpack" })
 
         trigger.action.outTextForCoalition(_heli:getCoalition(), "[TEAM] " .. ctld.getPlayerNameOrType(_heli) .. " successfully deployed a full " .. _aaSystemTemplate.name .. " to the field. \n\nAA Active System limit is: " .. _allowed .. "\nActive: " .. (_activeLaunchers + 1), 10)
@@ -4406,7 +4398,7 @@ function ctld.unpackAASystem(_heli, _nearestCrate, _nearbyCrates, _aaSystemTempl
     end
 end
 
---count the number of captured cities, sets the amount of allowed AA Systems
+-- get sets the amount of allowed AA Systems
 function ctld.getAllowedAASystems(_heli)
 
     if _heli:getCoalition() == 1 then
@@ -4626,6 +4618,7 @@ function ctld.unpackMultiCrate(_heli, _nearestCrate, _nearbyCrates)
 end
 
 function ctld.spawnCrateGroup(_heli, _positions, _types, _unitQuantity)
+	
     _unitQuantity = _unitQuantity or 1
     local _id = ctld.getNextGroupId()
     local _playerName = ctld.getPlayerNameOrType(_heli)
@@ -4704,6 +4697,16 @@ Heading is definately output in radians
     else
         _group.country = _heli:getCountry()
     end
+	
+	-- added for long range EWR as test
+	if _heli:getCoalition() == coalition.side.BLUE and _types[1] == "EWR 55G6" then
+        -- EWRs need to be from a country with numeric callsigns
+        -- see https://github.com/ModernColdWar/RedStormRising/issues/99
+        -- also see https://forums.eagle.ru/showthread.php?t=130723&page=4
+        _group.country = country.id.UKRAINE
+    else
+        _group.country = _heli:getCountry()
+    end
 
     local _spawnedGroup = Group.getByName(mist.dynAdd(_group).name)
 
@@ -4719,8 +4722,6 @@ Heading is definately output in radians
 
     return _spawnedGroup
 end
-
-
 
 -- spawn normal group
 -- luacheck: push no unused
@@ -5338,6 +5339,7 @@ function ctld.inWaypointZone(_point, _coalition)
 
     return { inZone = false }
 end
+
 -- checks if logisitics centre still alive at a passed airbase/FARP
 function ctld.isLogisticsCentreAliveAt(_passedLogisiticsCentreBase)
 
@@ -5793,7 +5795,6 @@ function ctld.processCallback(_callbackArgs)
     end
 end
 
-
 -- checks the status of all AI troop carriers and auto loads and unloads troops
 -- as long as the troops are on the ground
 function ctld.checkAIStatus()
@@ -5877,7 +5878,13 @@ end
 -- add menu for spawning crates
 function ctld.addCrateMenu(_rootPath, _crateTypeDescription, _unit, _groupId, _spawnableCrates, _weightMultiplier)
     local _crateRootPath = missionCommands.addSubMenuForGroup(_groupId, _crateTypeDescription, _rootPath)
-    for _subMenuName, _crates in pairs(_spawnableCrates) do
+		
+	--	Added by =AW=33COM in order to control the menu order
+	for _counter, _subMenuName in pairs(ctld.spawnableCratesOrdered) do
+		local _crates = _spawnableCrates[_subMenuName]
+		
+		--for _subMenuName, _crates in pairs(_spawnableCrates) do			
+		
         local _cratePath = missionCommands.addSubMenuForGroup(_groupId, _subMenuName, _crateRootPath)
         for _, _crate in pairs(_crates) do
 
@@ -6006,7 +6013,7 @@ function ctld.addF10MenuOptions(_unitName)
                     if _unitActions.crates then
 
                         if ctld.enableCrates then
-
+							
                             if ctld.unitCanCarryVehicles(_unit) == false then
                                 ctld.addCrateMenu(_rootPath, "Light crates", _unit, _groupId, ctld.spawnableCrates, 1)
                                 ctld.addCrateMenu(_rootPath, "Heavy crates", _unit, _groupId, ctld.spawnableCrates, ctld.heavyCrateWeightMultiplier)
@@ -6170,8 +6177,6 @@ end
 
 
 ------------ JTAC -----------
-
-
 ctld.jtacLaserPoints = {}
 ctld.jtacIRPoints = {}
 ctld.jtacSmokeMarks = {}
@@ -6534,14 +6539,11 @@ function ctld.getCurrentUnit(_jtacUnit, _jtacGroupName)
     return nil
 end
 
-
 -- Find nearest enemy to JTAC that isn't blocked by terrain --mr: from CTLD GitHub: LOS doesn't include buildings or trees
 function ctld.findNearestVisibleEnemy(_jtacUnit, _targetType, _distance)
 
     --local startTime = os.clock()
-
     local _maxDistance = _distance or ctld.JTAC_maxDistance
-
     local _jtacPoint = _jtacUnit:getPoint()
     local _coa = _jtacUnit:getCoalition()
 
@@ -6724,9 +6726,7 @@ function ctld.alreadyTarget(_enemyUnit)
     return false
 end
 
-
 -- Returns only alive units from group but the group / unit may not be active
-
 function ctld.getGroup(groupName)
 
     local _groupUnits = Group.getByName(groupName)
@@ -7242,9 +7242,7 @@ ctld.droppedVehiclesRED = {} -- stores vehicle groups for c-130 / hercules
 ctld.droppedVehiclesBLUE = {} -- stores vehicle groups for c-130 / hercules
 
 ctld.inTransitTroops = {}
-
 ctld.inTransitLogisticsCentreCrates = {}
-
 ctld.inTransitSlingLoadCrates = {} -- stores crates that are being transported by helicopters for alternative to real slingload
 
 ctld.droppedLogisticsCentreCratesRED = {}
@@ -7442,7 +7440,6 @@ if ctld.allowRandomAiTeamPickups == true then
 end
 
 -- add total count
-
 for _, _loadGroup in pairs(ctld.loadableGroupsHelis) do
 
     _loadGroup.total = 0
@@ -7494,7 +7491,6 @@ for _, _loadGroup in pairs(ctld.loadableGroupsCargoPlanes) do
 end
 
 -- Scheduled functions (run cyclically) -- but hold execution for a second so we can override parts
-
 timer.scheduleFunction(ctld.checkAIStatus, nil, timer.getTime() + 1)
 timer.scheduleFunction(ctld.checkTransportStatus, nil, timer.getTime() + 5)
 
@@ -7581,3 +7577,4 @@ env.info("CTLD.LUA LOADED")
 --            env.info(tostring(key))
 --            env.info(tostring(value))
 --        end
+

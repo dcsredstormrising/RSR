@@ -4,6 +4,8 @@
 -- Trying to integrate the Alpha warehouse system from moose into RSR. Initially this will replace base units
 -- Ultimately I couldn't integrate this into RSR-Caucuses because of the capture mechanism, but with the new Syria map we revamped the capture mechanism and went with Moose Zone Capture, so now exploring using these with RSR-Syria
 
+local inspect = require("inspect")
+local unitManagment = require("unitManagment")
 
 local warehouse={}
 ----function to check if a save warehouse file exist, stole it from pikey's SGS
@@ -121,11 +123,11 @@ else
   
   ----Add Assets to the warehouses on new campaign
     --EXAMPLE*** WAREHOUSE:AddAsset(group, ngroups, forceattribute, forcecargobay, forceweight, loadradius, skill, liveries,    assignment) 
-  warehouse.BlueNorthernWarehouse:AddAsset("Resupply Blue MBT North", 60) --Counted as tank  in stock
-  warehouse.BlueNorthernWarehouse:AddAsset("Resupply Blue IFV North", 90)    --Counted as APC in stock
+  warehouse.BlueNorthernWarehouse:AddAsset("Resupply Blue MBT North", 40) --Counted as tank  in stock
+  warehouse.BlueNorthernWarehouse:AddAsset("Resupply Blue IFV North", 40)    --Counted as APC in stock
   
-  warehouse.BlueSouthernWarehouse:AddAsset("Resupply Blue MBT South", 60) --Counted as tank  in stock
-  warehouse.BlueSouthernWarehouse:AddAsset("Resupply Blue IFV South", 90)    --Counted as APC in stock
+  warehouse.BlueSouthernWarehouse:AddAsset("Resupply Blue MBT South", 40) --Counted as tank  in stock
+  warehouse.BlueSouthernWarehouse:AddAsset("Resupply Blue IFV South", 40)    --Counted as APC in stock
   
   warehouse.BlueNavalWarehouse:AddAsset("Resupply Blue Ticonderoga", 10)
   warehouse.BlueNavalWarehouse:AddAsset("Resupply Blue Type 052C", 15)
@@ -133,14 +135,14 @@ else
   warehouse.BlueNavalWarehouse:AddAsset("Resupply Blue Carrier", 10)
   warehouse.BlueNavalWarehouse:AddAsset("Resupply Blue Tarawa", 10)
   
-  warehouse.RedNorthernWarehouse:AddAsset("Resupply Red MBT North", 60)    --counted as tank  in stock
-  warehouse.RedNorthernWarehouse:AddAsset("Resupply Red IFV North", 90)   --counted as APC in stock
+  warehouse.RedNorthernWarehouse:AddAsset("Resupply Red MBT North", 40)    --counted as tank  in stock
+  warehouse.RedNorthernWarehouse:AddAsset("Resupply Red IFV North", 40)   --counted as APC in stock
   
-  warehouse.RedSouthernWarehouse:AddAsset("Resupply Red MBT South", 60)    --counted as tank  in stock
-  warehouse.RedSouthernWarehouse:AddAsset("Resupply Red IFV South", 90)   --counted as APC in stock
+  warehouse.RedSouthernWarehouse:AddAsset("Resupply Red MBT South", 40)    --counted as tank  in stock
+  warehouse.RedSouthernWarehouse:AddAsset("Resupply Red IFV South", 40)   --counted as APC in stock
   
-  warehouse.RedNavalWarehouse:AddAsset("Resupply Red Moskva", 15)
-  warehouse.RedNavalWarehouse:AddAsset("Resupply Red Molniya", 20)
+  warehouse.RedNavalWarehouse:AddAsset("Resupply Red Moskva", 10)
+  warehouse.RedNavalWarehouse:AddAsset("Resupply Red Molniya", 15)
   warehouse.RedNavalWarehouse:AddAsset("Resupply Red Type 054A", 15) 
   warehouse.RedNavalWarehouse:AddAsset("Resupply Red Carrier", 10)
   warehouse.RedNavalWarehouse:AddAsset("Resupply Red Transport Dock", 10)
@@ -213,71 +215,142 @@ warehouse.RedNavalWarehouse:SetPortZone(ZONE_POLYGON:NewFromGroupName("Red Naval
 Warehouse_EventHandler = EVENTHANDLER:New()
 Warehouse_EventHandler:HandleEvent( EVENTS.Dead )
 
-----Spawn unit at a warehouse when a unit of it's type dies
-function Warehouse_EventHandler:OnEventDead( EventData )
-  --BLUE--
-  if EventData.IniTypeName == 'MCV-80' then
-    warehouse.BlueNorthernWarehouse:__AddRequest(1800, warehouse.BlueNorthernWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Blue IFV North", 1, WAREHOUSE.TransportType.SELFPROPELLED)
-    warehouse.BlueNorthernWarehouse:__Save(5,nil,"BlueNorthernWarehouse")
-  elseif EventData.IniTypeName == 'LAV-25' then
-    warehouse.BlueSouthernWarehouse:__AddRequest(1800, warehouse.BlueSouthernWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Blue IFV South", 1, WAREHOUSE.TransportType.SELFPROPELLED)
-    warehouse.BlueSouthernWarehouse:__Save(10,nil,"BlueSouthernWarehouse")
-  elseif EventData.IniTypeName == 'Leopard-2' then
-    warehouse.BlueNorthernWarehouse:__AddRequest(1800, warehouse.BlueNorthernWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Blue MBT North", 1, WAREHOUSE.TransportType.SELFPROPELLED)
-    warehouse.BlueNorthernWarehouse:__Save(5,nil,"BlueNorthernWarehouse")
-  elseif EventData.IniTypeName == 'Merkava_Mk4' then
-    warehouse.BlueSouthernWarehouse:__AddRequest(1800, warehouse.BlueSouthernWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Blue MBT South", 1, WAREHOUSE.TransportType.SELFPROPELLED)
-    warehouse.BlueSouthernWarehouse:__Save(10,nil,"BlueSouthernWarehouse")
-	
-  elseif EventData.IniTypeName == 'PERRY' then
-    warehouse.BlueNavalWarehouse:__AddRequest(5, warehouse.BlueNavalWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Blue Perry", 1, WAREHOUSE.TransportType.SELFPROPELLED)
-    warehouse.BlueNavalWarehouse:__Save(5,nil,"BlueNavalWarehouse")
-  elseif EventData.IniTypeName == 'TICONDEROG' then
-    warehouse.BlueNavalWarehouse:__AddRequest(5, warehouse.BlueNavalWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Blue Ticonderoga", 1, WAREHOUSE.TransportType.SELFPROPELLED)
-    warehouse.BlueNavalWarehouse:__Save(5,nil,"BlueNavalWarehouse")
-  elseif EventData.IniTypeName == 'Type_052C' then
-    warehouse.BlueNavalWarehouse:__AddRequest(5, warehouse.BlueNavalWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Blue Type 052C", 1, WAREHOUSE.TransportType.SELFPROPELLED)
-    warehouse.BlueNavalWarehouse:__Save(5,nil,"BlueNavalWarehouse")
-  elseif EventData.IniTypeName == 'CVN_73' then
-    warehouse.BlueNavalWarehouse:__AddRequest(5, warehouse.BlueNavalWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Blue Carrier", 1, WAREHOUSE.TransportType.SELFPROPELLED)
-    warehouse.BlueNavalWarehouse:__Save(5,nil,"BlueNavalWarehouse")
-  elseif EventData.IniTypeName == 'LHA_Tarawa' then
-    warehouse.BlueNavalWarehouse:__AddRequest(5, warehouse.BlueNavalWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Blue Tarawa", 1, WAREHOUSE.TransportType.SELFPROPELLED)
-    warehouse.BlueNavalWarehouse:__Save(5,nil,"BlueNavalWarehouse")
+-- This function is an easy fix for our warehouse/slinging problem. The Warehouse resupply was written in such a way, that once you used a specific unit in the warehouse
+-- you were not able to sling that type of unit, becuase the warehouse resupply was checking at unit type.  That eliminated tanks from slinging.
+-- Here we determine if the unit is player slung, or if it comes from the miz file, or the initial warehouse spit.
+-- AW=33COM
+local function isUnitPlayerSlung(iniUnitName)
+
+  local retVal = false
   
-  --RED-- 	
-  elseif EventData.IniTypeName == 'BMD-1' then
-    warehouse.RedNorthernWarehouse:__AddRequest(1800, warehouse.RedNorthernWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Red IFV North", 1, WAREHOUSE.TransportType.SELFPROPELLED)
-    warehouse.RedNorthernWarehouse:__Save(5,nil,"RedNorthernWarehouse")
-  elseif EventData.IniTypeName == 'BMP-1' then
-    warehouse.RedSouthernWarehouse:__AddRequest(1800, warehouse.RedSouthernWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Red IFV South", 1, WAREHOUSE.TransportType.SELFPROPELLED)
-    warehouse.RedSouthernWarehouse:__Save(10,nil,"RedSouthernWarehouse")
-  elseif EventData.IniTypeName == 'T-90' then
-    warehouse.RedNorthernWarehouse:__AddRequest(1800, warehouse.RedNorthernWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Red MBT North", 1, WAREHOUSE.TransportType.SELFPROPELLED)
-    warehouse.RedNorthernWarehouse:__Save(5,nil,"RedNorthernWarehouse")
-  elseif EventData.IniTypeName == 'T-72B' then
-    warehouse.RedSouthernWarehouse:__AddRequest(1800, warehouse.RedSouthernWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Red MBT South", 1, WAREHOUSE.TransportType.SELFPROPELLED)
-    warehouse.RedSouthernWarehouse:__Save(10,nil,"RedSouthernWarehouse")
-	 	
-  elseif EventData.IniTypeName == 'Type_054A' then
-    warehouse.RedNavalWarehouse:__AddRequest(5, warehouse.RedNavalWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Red Type 054A", 1, WAREHOUSE.TransportType.SELFPROPELLED)
-    warehouse.RedNavalWarehouse:__Save(5,nil,"RedNavalWarehouse")
-  elseif EventData.IniTypeName == 'MOSCOW' then
-    warehouse.RedNavalWarehouse:__AddRequest(5, warehouse.RedNavalWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Red Moskva", 1, WAREHOUSE.TransportType.SELFPROPELLED)
-    warehouse.RedNavalWarehouse:__Save(5,nil,"RedNavalWarehouse")
-  elseif EventData.IniTypeName == 'MOLNIYA' then
-    warehouse.RedNavalWarehouse:__AddRequest(5, warehouse.RedNavalWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Red Molniya", 1, WAREHOUSE.TransportType.SELFPROPELLED)
-    warehouse.RedNavalWarehouse:__Save(5,nil,"RedNavalWarehouse")
-  elseif EventData.IniTypeName == 'CV_1143_5' then
-    warehouse.RedNavalWarehouse:__AddRequest(5, warehouse.RedNavalWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Red Carrier", 1, WAREHOUSE.TransportType.SELFPROPELLED)
-    warehouse.RedNavalWarehouse:__Save(5,nil,"RedNavalWarehouse")
-  elseif EventData.IniTypeName == 'Type_071' then
-    warehouse.RedNavalWarehouse:__AddRequest(5, warehouse.RedNavalWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Red Transport Dock", 1, WAREHOUSE.TransportType.SELFPROPELLED)
-    warehouse.RedNavalWarehouse:__Save(5,nil,"RedNavalWarehouse")	
-	
-  else
-    --nothing
+  if iniUnitName ~= nil then
+    if string.find(iniUnitName, "Unpacked") then
+      retVal = true
+    end
   end
+  
+  return retVal
+
+end
+
+-- This is the function that allows us to distinquish between ships of the same type, but different location: MIZ ship, Warehouse ship.  
+-- everything works on the word: Resupply.  Once that word changes nothing will work.  This is similiar to the Player Slung unit check for tanks.
+-- =AW=33COM  I added this, becuase our ships worked at TYPE level, and we could not have multiple ships of the same type.  Now we can.
+local function isShipFromNavalWarehouse(iniUnitName)
+
+  local retVal = false
+  
+  if iniUnitName ~= nil then
+    if string.find(iniUnitName, "Resupply") then
+      retVal = true
+    end
+  end
+  
+  return retVal
+
+end
+
+----Spawn unit at a warehouse when a unit dies
+function Warehouse_EventHandler:OnEventDead( EventData )
+
+	-- here we check if the unit is player slung, if it's not we check if it's part of the warehouse...this allows us not to add player slung units to the warehouses	
+	if EventData.IniUnitName ~= nil then	
+		
+		local isPlayerSlung = isUnitPlayerSlung(inspect(EventData.IniUnitName))	
+			
+		if isPlayerSlung == false then
+		
+			-- unit comes from miz or warehouse, we need to add it	
+			if EventData.IniTypeName ~= nil and EventData.IniUnitName ~= nil then
+				env.info("***=AW=33COM Warehouse Unit: IniTypeName: ".. inspect(EventData.IniTypeName) .. " IniUnitName:" .. inspect(EventData.IniUnitName) .. " - Add to Warehouse if type matches***")			
+			end
+				-- ships
+			if EventData.IniTypeName == 'PERRY' then
+				warehouse.BlueNavalWarehouse:__AddRequest(1800, warehouse.BlueNavalWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Blue Perry", 1, WAREHOUSE.TransportType.SELFPROPELLED)
+				warehouse.BlueNavalWarehouse:__Save(5,nil,"BlueNavalWarehouse")
+			  elseif EventData.IniTypeName == 'TICONDEROG' then
+				warehouse.BlueNavalWarehouse:__AddRequest(1800, warehouse.BlueNavalWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Blue Ticonderoga", 1, WAREHOUSE.TransportType.SELFPROPELLED)
+				warehouse.BlueNavalWarehouse:__Save(5,nil,"BlueNavalWarehouse")
+			  elseif EventData.IniTypeName == 'Type_052C' then
+				warehouse.BlueNavalWarehouse:__AddRequest(1800, warehouse.BlueNavalWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Blue Type 052C", 1, WAREHOUSE.TransportType.SELFPROPELLED)
+				warehouse.BlueNavalWarehouse:__Save(5,nil,"BlueNavalWarehouse")
+			  elseif EventData.IniTypeName == 'CVN_73' then
+			  
+				local isFromNavalWarehouse = isShipFromNavalWarehouse(inspect(EventData.IniUnitName))	
+				
+				if isFromNavalWarehouse == true then
+					env.info("***=AW=33COM Naval Warehouse BLUE Unit: IniTypeName: ".. inspect(EventData.IniTypeName) .. " IniUnitName:" .. inspect(EventData.IniUnitName) .. " - Add to BLUE Naval Warehouse***")			  
+					warehouse.BlueNavalWarehouse:__AddRequest(1800, warehouse.BlueNavalWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Blue Carrier", 1, WAREHOUSE.TransportType.SELFPROPELLED)
+					warehouse.BlueNavalWarehouse:__Save(5,nil,"BlueNavalWarehouse")
+				else
+					env.info("***=AW=33COM Ship BLUE Unit: IniTypeName: ".. inspect(EventData.IniTypeName) .. " IniUnitName:" .. inspect(EventData.IniUnitName) .. " - DO NOT ADD to BLUE Naval Warehouse.  Ship comes from MIZ***")			
+				end
+				
+			  elseif EventData.IniTypeName == 'LHA_Tarawa' then
+				warehouse.BlueNavalWarehouse:__AddRequest(1800, warehouse.BlueNavalWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Blue Tarawa", 1, WAREHOUSE.TransportType.SELFPROPELLED)
+				warehouse.BlueNavalWarehouse:__Save(5,nil,"BlueNavalWarehouse")
+				
+			  elseif EventData.IniTypeName == 'Type_054A' then
+				warehouse.RedNavalWarehouse:__AddRequest(1800, warehouse.RedNavalWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Red Type 054A", 1, WAREHOUSE.TransportType.SELFPROPELLED)
+				warehouse.RedNavalWarehouse:__Save(5,nil,"RedNavalWarehouse")
+			  elseif EventData.IniTypeName == 'MOSCOW' then
+				warehouse.RedNavalWarehouse:__AddRequest(1800, warehouse.RedNavalWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Red Moskva", 1, WAREHOUSE.TransportType.SELFPROPELLED)
+				warehouse.RedNavalWarehouse:__Save(5,nil,"RedNavalWarehouse")
+			  elseif EventData.IniTypeName == 'MOLNIYA' then
+				warehouse.RedNavalWarehouse:__AddRequest(1800, warehouse.RedNavalWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Red Molniya", 1, WAREHOUSE.TransportType.SELFPROPELLED)
+				warehouse.RedNavalWarehouse:__Save(5,nil,"RedNavalWarehouse")
+			  elseif EventData.IniTypeName == 'CV_1143_5' then
+			  
+				local isFromNavalWarehouse = isShipFromNavalWarehouse(inspect(EventData.IniUnitName))	
+				
+				if isFromNavalWarehouse == true then
+					env.info("***=AW=33COM Naval Warehouse RED Unit: IniTypeName: ".. inspect(EventData.IniTypeName) .. " IniUnitName:" .. inspect(EventData.IniUnitName) .. " - Add to RED Naval Warehouse***")			
+					warehouse.RedNavalWarehouse:__AddRequest(1800, warehouse.RedNavalWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Red Carrier", 1, WAREHOUSE.TransportType.SELFPROPELLED)
+					warehouse.RedNavalWarehouse:__Save(5,nil,"RedNavalWarehouse")
+				else
+					env.info("***=AW=33COM Ship RED Unit: IniTypeName: ".. inspect(EventData.IniTypeName) .. " IniUnitName:" .. inspect(EventData.IniUnitName) .. " - DO NOT ADD to RED Naval Warehouse.  Ship comes from MIZ***")			
+				end
+				
+			  elseif EventData.IniTypeName == 'Type_071' then
+				warehouse.RedNavalWarehouse:__AddRequest(1800, warehouse.RedNavalWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Red Transport Dock", 1, WAREHOUSE.TransportType.SELFPROPELLED)
+				warehouse.RedNavalWarehouse:__Save(5,nil,"RedNavalWarehouse")	
+			  
+			  --ground units  	
+			  elseif EventData.IniTypeName == 'MCV-80' then
+				warehouse.BlueNorthernWarehouse:__AddRequest(1800, warehouse.BlueNorthernWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Blue IFV North", 1, WAREHOUSE.TransportType.SELFPROPELLED)
+				warehouse.BlueNorthernWarehouse:__Save(5,nil,"BlueNorthernWarehouse")
+			  elseif EventData.IniTypeName == 'LAV-25' then
+				warehouse.BlueSouthernWarehouse:__AddRequest(1800, warehouse.BlueSouthernWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Blue IFV South", 1, WAREHOUSE.TransportType.SELFPROPELLED)
+				warehouse.BlueSouthernWarehouse:__Save(10,nil,"BlueSouthernWarehouse")
+			  elseif EventData.IniTypeName == 'Leopard-2' then 
+				warehouse.BlueNorthernWarehouse:__AddRequest(1800, warehouse.BlueNorthernWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Blue MBT North", 1, WAREHOUSE.TransportType.SELFPROPELLED)
+				warehouse.BlueNorthernWarehouse:__Save(5,nil,"BlueNorthernWarehouse")
+			  elseif EventData.IniTypeName == 'Merkava_Mk4' then
+				warehouse.BlueSouthernWarehouse:__AddRequest(1800, warehouse.BlueSouthernWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Blue MBT South", 1, WAREHOUSE.TransportType.SELFPROPELLED)
+				warehouse.BlueSouthernWarehouse:__Save(10,nil,"BlueSouthernWarehouse")	
+				
+			  elseif EventData.IniTypeName == 'BMD-1' then
+				warehouse.RedNorthernWarehouse:__AddRequest(1800, warehouse.RedNorthernWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Red IFV North", 1, WAREHOUSE.TransportType.SELFPROPELLED)
+				warehouse.RedNorthernWarehouse:__Save(5,nil,"RedNorthernWarehouse")
+			  elseif EventData.IniTypeName == 'BMP-1' then
+				warehouse.RedSouthernWarehouse:__AddRequest(1800, warehouse.RedSouthernWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Red IFV South", 1, WAREHOUSE.TransportType.SELFPROPELLED)
+				warehouse.RedSouthernWarehouse:__Save(10,nil,"RedSouthernWarehouse")
+			  elseif EventData.IniTypeName == 'T-90' then
+				warehouse.RedNorthernWarehouse:__AddRequest(1800, warehouse.RedNorthernWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Red MBT North", 1, WAREHOUSE.TransportType.SELFPROPELLED)
+				warehouse.RedNorthernWarehouse:__Save(5,nil,"RedNorthernWarehouse")
+			  elseif EventData.IniTypeName == 'T-72B' then
+				warehouse.RedSouthernWarehouse:__AddRequest(1800, warehouse.RedSouthernWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Red MBT South", 1, WAREHOUSE.TransportType.SELFPROPELLED)
+				warehouse.RedSouthernWarehouse:__Save(10,nil,"RedSouthernWarehouse")
+			  else
+				--nothing
+			end
+		else
+			-- unit is player spawn, no need to do anything
+			if EventData.IniTypeName ~= nil and EventData.IniUnitName ~= nil then
+				env.info("***=AW=33COM Slung Unit: IniTypeName: ".. inspect(EventData.IniTypeName) .. " IniUnitName:" .. inspect(EventData.IniUnitName) .. " - Do not add to Warehouse***")			
+			end
+		end
+	end
 end
 
 ----Spawn Units after Capture
@@ -287,8 +360,8 @@ function warehouse.BlueNorthernWarehouse:OnAfterCaptured(From, Event, To, Coalit
     MESSAGE:New("The Northern Warehouse is running at full capacity.",25,"[TEAM]:"):ToBlue()
     warehouse.BlueNorthernWarehouse:Start()
     warehouse.BlueNorthernWarehouse:__Save(15,nil,"BlueNorthernWarehouse")
-    warehouse.BlueNorthernWarehouse:AddRequest(warehouse.BlueNorthernWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Blue MBT North", 3, WAREHOUSE.TransportType.SELFPROPELLED)
-    warehouse.BlueNorthernWarehouse:AddRequest(warehouse.BlueNorthernWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Blue IFV North", 6, WAREHOUSE.TransportType.SELFPROPELLED)
+    warehouse.BlueNorthernWarehouse:AddRequest(warehouse.BlueNorthernWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Blue MBT North", 1, WAREHOUSE.TransportType.SELFPROPELLED)
+    warehouse.BlueNorthernWarehouse:AddRequest(warehouse.BlueNorthernWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Blue IFV North", 2, WAREHOUSE.TransportType.SELFPROPELLED)
   
   elseif Coalition==coalition.side.RED then
     MESSAGE:New("We have captured Blue Team's Northern Warehouse, they will no longer receive re-enforcements.",25,"[TEAM]:"):ToRed()
@@ -317,8 +390,8 @@ function warehouse.BlueSouthernWarehouse:OnAfterCaptured(From, Event, To, Coalit
     MESSAGE:New("The Southern Warehouse is running at full capacity.",25,"[TEAM]:"):ToBlue()
     warehouse.BlueSouthernWarehouse:Start()
     warehouse.BlueSouthernWarehouse:__Save(4,nil,"BlueSouthernWarehouse")
-    warehouse.BlueSouthernWarehouse:AddRequest(warehouse.BlueSouthernWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Blue MBT South", 3, WAREHOUSE.TransportType.SELFPROPELLED)
-    warehouse.BlueSouthernWarehouse:AddRequest(warehouse.BlueSouthernWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Blue IFV South", 6, WAREHOUSE.TransportType.SELFPROPELLED)
+    warehouse.BlueSouthernWarehouse:AddRequest(warehouse.BlueSouthernWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Blue MBT South", 1, WAREHOUSE.TransportType.SELFPROPELLED)
+    warehouse.BlueSouthernWarehouse:AddRequest(warehouse.BlueSouthernWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Blue IFV South", 2, WAREHOUSE.TransportType.SELFPROPELLED)
   
   elseif Coalition==coalition.side.RED then
     MESSAGE:New("We have captured Blue Team's Southern Warehouse, they will no longer receive re-enforcements.",25,"[TEAM]:"):ToRed()
@@ -334,8 +407,8 @@ function warehouse.RedNorthernWarehouse:OnAfterCaptured(From, Event, To, Coaliti
     MESSAGE:New("The Northern Warehouse is running at full capacity.",25,"[TEAM]:"):ToRed()
     warehouse.RedNorthernWarehouse:Start()
     warehouse.RedNorthernWarehouse:__Save(7,nil,"RedNorthernWarehouse")
-    warehouse.RedNorthernWarehouse:AddRequest(warehouse.RedNorthernWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Red MBT North", 3, WAREHOUSE.TransportType.SELFPROPELLED)
-    warehouse.RedNorthernWarehouse:AddRequest(warehouse.RedNorthernWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Red IFV North", 6, WAREHOUSE.TransportType.SELFPROPELLED)
+    warehouse.RedNorthernWarehouse:AddRequest(warehouse.RedNorthernWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Red MBT North", 1, WAREHOUSE.TransportType.SELFPROPELLED)
+    warehouse.RedNorthernWarehouse:AddRequest(warehouse.RedNorthernWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Red IFV North", 2, WAREHOUSE.TransportType.SELFPROPELLED)
   
   elseif Coalition==coalition.side.BLUE then
     MESSAGE:New("We have captured Red Team's Northern Warehouse, they will no longer receive re-enforcements.",25,"[TEAM]:"):ToBlue()
@@ -351,8 +424,8 @@ function warehouse.RedSouthernWarehouse:OnAfterCaptured(From, Event, To, Coaliti
     MESSAGE:New("The Southern Warehouse is running at full capacity.",25,"[TEAM]:"):ToRed()
     warehouse.RedSouthernWarehouse:Start()
     warehouse.RedSouthernWarehouse:__Save(9,nil,"RedSouthernWarehouse")
-    warehouse.RedSouthernWarehouse:AddRequest(warehouse.RedSouthernWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Red MBT South", 3, WAREHOUSE.TransportType.SELFPROPELLED)
-    warehouse.RedSouthernWarehouse:AddRequest(warehouse.RedSouthernWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Red IFV South", 6, WAREHOUSE.TransportType.SELFPROPELLED)
+    warehouse.RedSouthernWarehouse:AddRequest(warehouse.RedSouthernWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Red MBT South", 1, WAREHOUSE.TransportType.SELFPROPELLED)
+    warehouse.RedSouthernWarehouse:AddRequest(warehouse.RedSouthernWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Red IFV South", 2, WAREHOUSE.TransportType.SELFPROPELLED)
   
   elseif Coalition==coalition.side.BLUE then
     MESSAGE:New("We have captured Red Team's Southern Warehouse, they will no longer receive re-enforcements.",25,"[TEAM]:"):ToBlue()
@@ -371,8 +444,8 @@ function warehouse.BlueNavalWarehouse:OnAfterCaptured(From, Event, To, Coalition
     warehouse.BlueNavalWarehouse:__Save(15,nil,"BlueNavalWarehouse")
 --initial spawn of ships as well as when captured by blue team
     warehouse.BlueNavalWarehouse:AddRequest(warehouse.BlueNavalWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Blue Type 052C", 2, WAREHOUSE.TransportType.SELFPROPELLED)
-  	warehouse.BlueNavalWarehouse:AddRequest(warehouse.BlueNavalWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Blue Ticonderoga", 1, WAREHOUSE.TransportType.SELFPROPELLED)
-	  warehouse.BlueNavalWarehouse:AddRequest(warehouse.BlueNavalWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Blue Perry", 3, WAREHOUSE.TransportType.SELFPROPELLED)
+  	warehouse.BlueNavalWarehouse:AddRequest(warehouse.BlueNavalWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Blue Ticonderoga", 2, WAREHOUSE.TransportType.SELFPROPELLED)
+	  warehouse.BlueNavalWarehouse:AddRequest(warehouse.BlueNavalWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Blue Perry", 2, WAREHOUSE.TransportType.SELFPROPELLED)
 	  warehouse.BlueNavalWarehouse:AddRequest(warehouse.BlueNavalWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Blue Carrier", 1, WAREHOUSE.TransportType.SELFPROPELLED)
     warehouse.BlueNavalWarehouse:AddRequest(warehouse.BlueNavalWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Blue Tarawa", 1, WAREHOUSE.TransportType.SELFPROPELLED)
   
@@ -391,8 +464,8 @@ function warehouse.RedNavalWarehouse:OnAfterCaptured(From, Event, To, Coalition,
     warehouse.RedNavalWarehouse:Start()
     warehouse.RedNavalWarehouse:__Save(9,nil,"RedNavalWarehouse")	
 --initial spawn of ships as well as when captured by red team
-    warehouse.RedNavalWarehouse:AddRequest(warehouse.RedNavalWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Red Type 054A", 3, WAREHOUSE.TransportType.SELFPROPELLED)
-    warehouse.RedNavalWarehouse:AddRequest(warehouse.RedNavalWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Red Molniya", 3, WAREHOUSE.TransportType.SELFPROPELLED)
+    warehouse.RedNavalWarehouse:AddRequest(warehouse.RedNavalWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Red Type 054A", 2, WAREHOUSE.TransportType.SELFPROPELLED)
+    warehouse.RedNavalWarehouse:AddRequest(warehouse.RedNavalWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Red Molniya", 2, WAREHOUSE.TransportType.SELFPROPELLED)
 	  warehouse.RedNavalWarehouse:AddRequest(warehouse.RedNavalWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Red Moskva", 2, WAREHOUSE.TransportType.SELFPROPELLED)
     warehouse.RedNavalWarehouse:AddRequest(warehouse.RedNavalWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Red Carrier", 1, WAREHOUSE.TransportType.SELFPROPELLED)
 	  warehouse.RedNavalWarehouse:AddRequest(warehouse.RedNavalWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Red Transport Dock", 1, WAREHOUSE.TransportType.SELFPROPELLED)

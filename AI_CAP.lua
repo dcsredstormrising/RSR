@@ -3,29 +3,6 @@
 -- Reintroducing AI-CAP to protect warehouses, add some difficulty when it is PVE.
 -- Spawns
 
-----Putting this here for now to test, but the idea is to set all units to alarm state red on mission restart
---so that things are not sitting ducks on restart
-
---++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
---Below is not part of AI-CAO, but is something I run to set all units to red and turn MLPRS on following a restart
-WakeUpSet = SET_GROUP:New():FilterPrefixes( {"Red Start","Blue Start", "Resupply ", " Convoy", "Dropped Group ","CTLD"} ):FilterStart()
-
-SCHEDULER:New( nil, function()
-   WakeUpSet:ForEachGroup(
-   function( MooseGroup )
-    local chance = math.random(1,99)
-     if chance > 1 then
-        MooseGroup:OptionAlarmStateRed()
-        MooseGroup:CommandEPLRS(true, 3)
-     else
-        MooseGroup: OptionAlarmStateGreen()
-     end
-    end)
-
-end, {}, 40)
---+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-
 --COMMON FUNCTIONS to save table to file and reload, in this case we are using it to make the AI-CAP persistent
 do
 --http://lua-users.org/wiki/SaveTableToFile
