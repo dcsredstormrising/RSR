@@ -1145,7 +1145,7 @@ function ctld.spawnCrate(_arguments)
         local _heli = ctld.getTransportUnit(_args[1])
         
        if ctld.IsGroupLimitReached(_args, _crateType, _heli:getCoalition()) == true then          
-          ctld.displayMessageToGroup(_heli, "Shelter limit reached. You can only pickup JTAC, Logistics Center, Repair, and Support crates.", 10)-- message to player he can't sling units except JTAC, CC, Repair crates
+          ctld.displayMessageToGroup(_heli, "Shelter crate limit reached. You can only pickup JTAC, Logistics Center, Repair, and Support crates.", 10)-- message to player he can't sling units except JTAC, CC, Repair crates
           return
        end
 

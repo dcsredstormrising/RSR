@@ -12,8 +12,8 @@ local _redTypes = {"Roland", "Tor"}
 -- can not run this due to performance until we figure out what is Moose/DCS doing with this: grp:CommandEPLRS(true, 3)
 -- might be that Moose is the problem here not DCS and that's why the big performance hit every 15 sec
 -- This sets EPRLS ON
---GroupsForEPLRS = SET_GROUP:New():FilterCategoryGround():FilterPrefixes( {"Red Start","Blue Start", "CTLD"} ):FilterActive():FilterOnce()
---local _eplrsTypes = {"Hawk", "Buk", "Kub", "p-19", "SNR_75V", "Patriot", "S-300PS", "snr s-125"}
+GroupsForEPLRS = SET_GROUP:New():FilterCategoryGround():FilterPrefixes( {"Red Start","Blue Start", "CTLD"} ):FilterActive():FilterOnce()
+local _eplrsTypes = {"Hawk", "Buk", "Kub", "p-19", "SNR_75V", "Patriot", "S-300PS", "snr s-125"}
 
 SCHEDULER:New( nil, function()
 
@@ -45,7 +45,7 @@ SCHEDULER:New( nil, function()
    
    -- this is nice to have but setting any kind of EPLRS brings down the server every 15 seconds. Does not matter if we set 1 unit ON or 1000 units.  Same behavior
    -- this was reported to ED and they are looking into it.
-   --[[
+   
    env.info("**=AW=33COM GroupsForEPLRS Scheduler")   
    GroupsForEPLRS:ForEachGroup(     
       function( grp )    
@@ -64,15 +64,14 @@ SCHEDULER:New( nil, function()
             for _, eplrsType in ipairs (_eplrsTypes) do
               if string.find(_unitTypeName, eplrsType) then
                -- env.info("**=AW=33COM GroupsForEPLRS Found: " ..inspect(eplrsType) .. " in " .. inspect(_unitTypeName))
-                grp:CommandEPLRS(true, 0)
+                grp:CommandEPLRS(true, 10)
               end
             end
           end
         end                          
      end
    end)
-   ]]--
-    
+       
   -- logic to load saved AASystems into CTLD. This fixes the problem of static sams not being part of CTLD.  Now they are. This fixes half the problem, 
   -- the other problem is CTLD Repair was written for 1 session.  It has to be rewritten in order to repair systems through out the entire round.  
   -- this must run after State is reconstructed in order to load correct AASystem.  Otherwise you will load old miz level systems from default position and with different names.
