@@ -1,6 +1,6 @@
 local missionUtils = require("missionUtils")
 local missionInfoMenu = require("missionInfoMenu")
-local weaponManager = require("weaponManager")
+--local weaponManager = require("weaponManager")
 
 local M = {}
 
@@ -65,8 +65,8 @@ function M.BIRTH_EVENTHANDLER:_AddJTACStatusMenu(groupId, unitName)
 end
 
 function M.BIRTH_EVENTHANDLER:_AddWeaponsManagerMenus(groupId)
-    missionCommands.addCommandForGroup(groupId, "Show weapons left", nil, weaponManager.printHowManyLeft, groupId)
-    missionCommands.addCommandForGroup(groupId, "Validate Loadout", nil, weaponManager.validateLoadout, groupId)
+    --missionCommands.addCommandForGroup(groupId, "Show weapons left", nil, weaponManager.printHowManyLeft, groupId)
+    --missionCommands.addCommandForGroup(groupId, "Validate Loadout", nil, weaponManager.validateLoadout, groupId)
 end
 
 function M.BIRTH_EVENTHANDLER:_AddTransportMenus(groupId, unitName)
