@@ -89,10 +89,10 @@ end
 
 local function validateClientGroup(group)
     local errors = {}
-    local groupName = missionUtils.getDictionaryValue(group.name)
+    local groupName = group.name
 
     local unit = group.units[1]
-    local unitName = missionUtils.getDictionaryValue(unit.name)
+    local unitName = unit.name
     if missionUtils.isTransportType(unit.type) and unitName ~= groupName then
         if #group.units ~= 1 then
             table.insert(errors, string.format("Transport group '%s' should only have 1 unit, but has %d", groupName, #group.units))
@@ -106,7 +106,7 @@ local function validateClientGroup(group)
 end
 
 local function description(unit)
-    return unit.type .. " '" .. missionUtils.getDictionaryValue(unit.name) .. "'"
+    return unit.type .. " '" .. unit.name .. "'"
 end
 
 local function setWeaponsUnlimited(baseName, warehouse)

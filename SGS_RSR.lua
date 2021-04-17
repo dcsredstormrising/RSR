@@ -34,7 +34,7 @@
   
  -----------------------------------
  --Configurable for user:
- SaveScheduleUnits=60 --how many seconds between each check of all the units.
+ SaveScheduleUnits=120 --how many seconds between each check of all the units.
  -----------------------------------
  --Do not edit below here
  -----------------------------------

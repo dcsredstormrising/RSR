@@ -498,8 +498,9 @@ ctld.spawnableCrates = {
 	  ["Artillery"] = {
 	  
 		-- RED
-        { weight = 871, desc = "2S9 Nona", unit = "2S9 Nona", side = 1, cratesRequired = 1, unitQuantity = 2, internal = 1 },		
-		{ weight = 720, desc = "SAU Akatsia", unit = "SAU Akatsia", cratesRequired = 1, unitQuantity = 2, internal = 1 },
+        { weight = 871, desc = "2S9 Nona", unit = "2S9 Nona", side = 1, cratesRequired = 1, unitQuantity = 2, internal = 1 },
+        { weight = 768, desc = "PLZ-05", unit = "PLZ05", side = 1, cratesRequired = 1, unitQuantity = 2, internal = 1 },        		
+		    { weight = 720, desc = "SAU Akatsia", unit = "SAU Akatsia", cratesRequired = 1, unitQuantity = 2, internal = 1 },
         { weight = 872, desc = "SAU Gvozdika", unit = "SAU Gvozdika", side = 1, cratesRequired = 1, unitQuantity = 2, internal = 1 },
         { weight = 873, desc = "SPH 2S19 Msta", unit = "SAU Msta", side = 1, cratesRequired = 1, unitQuantity = 2, internal = 1 },
         { weight = 903, desc = "MLRS Grad", unit = "Grad-URAL", side = 1, cratesRequired = 2, unitQuantity = 2, internal = 1 },
@@ -519,10 +520,11 @@ ctld.spawnableCrates = {
 		{ weight = 836, desc = "Bofors 40mm AAA Gun", unit = "bofors40", cratesRequired = 1, unitQuantity = 2, internal = 1 },
         { weight = 837, desc = "Flak 18 AAA Gun", unit = "flak18", cratesRequired = 1, unitQuantity = 2, internal = 1 },		
 	
-		--RED        		
-		{ weight = 736, desc = "ZU-23 Emplacement", unit = "ZU-23 Emplacement", side = 1, cratesRequired = 1, unitQuantity = 1, internal = 1 },		
-		{ weight = 706, desc = "ZU-23 Emplacement Closed", unit = "ZU-23 Emplacement Closed", side = 1, cratesRequired = 1, unitQuantity = 1, internal = 1 },		
-		{ weight = 705, desc = "Ural-375 ZU-23", unit = "Ural-375 ZU-23", side = 1, cratesRequired = 1, unitQuantity = 2, internal = 1 },
+		--RED        	
+    		{ weight = 778, desc = "AZP S-60", unit = "S-60_Type59_Artillery", side = 1, cratesRequired = 1, unitQuantity = 1, internal = 1 },			
+    		{ weight = 736, desc = "ZU-23 Emplacement", unit = "ZU-23 Emplacement", side = 1, cratesRequired = 1, unitQuantity = 1, internal = 1 },		
+    		{ weight = 706, desc = "ZU-23 Emplacement Closed", unit = "ZU-23 Emplacement Closed", side = 1, cratesRequired = 1, unitQuantity = 1, internal = 1 },		
+    		{ weight = 705, desc = "Ural-375 ZU-23", unit = "Ural-375 ZU-23", side = 1, cratesRequired = 1, unitQuantity = 2, internal = 1 },
         { weight = 825, desc = "ZSU-23-4 Shilka", unit = "ZSU-23-4 Shilka", side = 1, cratesRequired = 1, unitQuantity = 2, internal = 1 },
         { weight = 826, desc = "ZSU-57-2", unit = "ZSU_57_2", side = 1, cratesRequired = 1, unitQuantity = 2, internal = 1 },
         
@@ -535,22 +537,22 @@ ctld.spawnableCrates = {
 	
 		-- RED
         { weight = 800, desc = "BTR-80", unit = "BTR-80", side = 1, cratesRequired = 1, unitQuantity = 2, internal = 1 },
-		{ weight = 700, desc = "BTR-82A", unit = "BTR-82A", side = 1, cratesRequired = 1, unitQuantity = 2, internal = 1 },
-		{ weight = 701, desc = "BTR-RD", unit = "BTR-RD", side = 1, cratesRequired = 1, unitQuantity = 2, internal = 1 },				
-		{ weight = 702, desc = "IFV BMD-1", unit = "BMD-1", side = 1, cratesRequired = 1, unitQuantity = 2, internal = 1 },
+    		{ weight = 700, desc = "BTR-82A", unit = "BTR-82A", side = 1, cratesRequired = 1, unitQuantity = 2, internal = 1 },
+    		{ weight = 701, desc = "BTR-RD", unit = "BTR-RD", side = 1, cratesRequired = 1, unitQuantity = 2, internal = 1 },				
+    		{ weight = 702, desc = "IFV BMD-1", unit = "BMD-1", side = 1, cratesRequired = 1, unitQuantity = 2, internal = 1 },
         { weight = 801, desc = "IFV BMP-1", unit = "BMP-1", side = 1, cratesRequired = 1, unitQuantity = 2, internal = 1 },		
         { weight = 802, desc = "IFV BMP-2", unit = "BMP-2", side = 1, cratesRequired = 1, unitQuantity = 2, internal = 1 },
         { weight = 803, desc = "IFV BMP-3", unit = "BMP-3", side = 1, cratesRequired = 1, unitQuantity = 1, internal = 1 },
         { weight = 804, desc = "IFV ZBD04A", unit = "ZBD04A", side = 1, cratesRequired = 1, unitQuantity = 1, internal = 1 },
         		
 		-- BLUE
-		  { weight = 726, desc = "AAV7", unit = "AAV7", side = 2, cratesRequired = 1, unitQuantity = 2, internal = 1 },		
-		  { weight = 703, desc = "HMMWV Armament", unit = "M1043 HMMWV Armament", side = 2, cratesRequired = 1, unitQuantity = 2, internal = 1 },
+  		  { weight = 726, desc = "AAV7", unit = "AAV7", side = 2, cratesRequired = 1, unitQuantity = 2, internal = 1 },		
+  		  { weight = 703, desc = "HMMWV Armament", unit = "M1043 HMMWV Armament", side = 2, cratesRequired = 1, unitQuantity = 2, internal = 1 },
         { weight = 807, desc = "HMMWV TOW", unit = "M1045 HMMWV TOW", side = 2, cratesRequired = 1, unitQuantity = 2, internal = 1 },
         { weight = 808, desc = "IFV Marder", unit = "Marder", side = 2, cratesRequired = 1, unitQuantity = 2, internal = 1 },				
-		{ weight = 740, desc = "LAV-25", unit = "LAV-25", side = 2, cratesRequired = 1, unitQuantity = 2, internal = 1 },
-		{ weight = 741, desc = "MCV-80", unit = "MCV-80", side = 2, cratesRequired = 1, unitQuantity = 1, internal = 1 },		
-		{ weight = 704, desc = "Stryker ICV", unit = "M1126 Stryker ICV", side = 2, cratesRequired = 1, unitQuantity = 2, internal = 1 },
+    		{ weight = 740, desc = "LAV-25", unit = "LAV-25", side = 2, cratesRequired = 1, unitQuantity = 2, internal = 1 },
+    		{ weight = 741, desc = "MCV-80", unit = "MCV-80", side = 2, cratesRequired = 1, unitQuantity = 1, internal = 1 },		
+    		{ weight = 704, desc = "Stryker ICV", unit = "M1126 Stryker ICV", side = 2, cratesRequired = 1, unitQuantity = 2, internal = 1 },
         { weight = 809, desc = "Stryker ATGM", unit = "M1134 Stryker ATGM", side = 2, cratesRequired = 1, unitQuantity = 1, internal = 1 },
         { weight = 810, desc = "Stryker MGS", unit = "M1128 Stryker MGS", side = 2, cratesRequired = 1, unitQuantity = 1, internal = 1 },
         { weight = 811, desc = "IFV BRADLEY", unit = "M-2 Bradley", side = 2, cratesRequired = 1, unitQuantity = 1, internal = 1 },        
@@ -602,20 +604,20 @@ ctld.spawnableCrates = {
 
     ["Medium Range SAMs"] = {   
     -- Buk system
-        { weight = 848, desc = "Buk Launcher", unit = "SA-11 Buk LN 9A310M1", side = 1, internal = 1 },
-        { weight = 849, desc = "Buk Search Radar", unit = "SA-11 Buk SR 9S18M1", side = 1, internal = 1 },
-        { weight = 850, desc = "Buk CC Radar", unit = "SA-11 Buk CC 9S470M1", side = 1, internal = 1 },
+        { weight = 848, desc = "Buk Launcher", unit = "SA-11 Buk LN 9A310M1", side = 1, internal = 1, isStandalone = false },
+        { weight = 849, desc = "Buk Search Radar", unit = "SA-11 Buk SR 9S18M1", side = 1, internal = 1, isStandalone = false },
+        { weight = 850, desc = "Buk CC Radar", unit = "SA-11 Buk CC 9S470M1", side = 1, internal = 1, isStandalone = false },
     -- Kub system
-        { weight = 846, desc = "Kub Launcher", unit = "Kub 2P25 ln", side = 1, internal = 1 },
-        { weight = 847, desc = "Kub Radar", unit = "Kub 1S91 str", side = 1, internal = 1 },    
+        { weight = 846, desc = "Kub Launcher", unit = "Kub 2P25 ln", side = 1, internal = 1, isStandalone = false },
+        { weight = 847, desc = "Kub Radar", unit = "Kub 1S91 str", side = 1, internal = 1, isStandalone = false },    
     -- SA-3 system
-        { weight = 843, desc = "SA-3 Launcher", unit = "5p73 s-125 ln", side = 1, internal = 1 },
-        { weight = 844, desc = "SA-3 Search Radar", unit = "p-19 s-125 sr", side = 1, internal = 1 },
-        { weight = 845, desc = "SA-3 Track Radar", unit = "snr s-125 tr", side = 1, internal = 1 },
+        { weight = 843, desc = "SA-3 Launcher", unit = "5p73 s-125 ln", side = 1, internal = 1, isStandalone = false },
+        { weight = 844, desc = "SA-3 Search Radar", unit = "p-19 s-125 sr", side = 1, internal = 1, isStandalone = false },
+        { weight = 845, desc = "SA-3 Track Radar", unit = "snr s-125 tr", side = 1, internal = 1, isStandalone = false },
     -- Raipier System
-		    { weight = 708, desc = "Rapier Blindfire Radar", unit = "rapier_fsa_blindfire_radar", side = 2, internal = 1 },
-		    { weight = 709, desc = "Rapier Optical Tracker", unit = "rapier_fsa_optical_tracker_unit", side = 2, internal = 1 },
-		    { weight = 710, desc = "Rapier Launcher", unit = "rapier_fsa_launcher", side = 2, internal = 1 },				
+		    { weight = 708, desc = "Rapier Blindfire Radar", unit = "rapier_fsa_blindfire_radar", side = 2, internal = 1, isStandalone = false },
+		    { weight = 709, desc = "Rapier Optical Tracker", unit = "rapier_fsa_optical_tracker_unit", side = 2, internal = 1, isStandalone = false },
+		    { weight = 710, desc = "Rapier Launcher", unit = "rapier_fsa_launcher", side = 2, internal = 1, isStandalone = false },				
 	 -- Hawk System
         { weight = 851, desc = "Hawk Launcher", unit = "Hawk ln", side = 2, internal = 1, isStandalone = false },
         { weight = 852, desc = "Hawk Search Radar", unit = "Hawk sr", side = 2, internal = 1, isStandalone = false },
@@ -625,45 +627,45 @@ ctld.spawnableCrates = {
   
   ["Long Range SAMs"] = {
     -- SA-2 system
-        { weight = 857, desc = "SA-2 Launcher", unit = "S_75M_Volhov", side = 1, internal = 1 },
-        { weight = 858, desc = "SA-2 Search Radar", unit = "p-19 s-125 sr", side = 1, internal = 1 },
-        { weight = 859, desc = "SA-2 Track Radar", unit = "SNR_75V", side = 1, internal = 1 },    
+        { weight = 857, desc = "SA-2 Launcher", unit = "S_75M_Volhov", side = 1, internal = 1, isStandalone = false },
+        { weight = 858, desc = "SA-2 Search Radar", unit = "p-19 s-125 sr", side = 1, internal = 1, isStandalone = false },
+        { weight = 859, desc = "SA-2 Track Radar", unit = "SNR_75V", side = 1, internal = 1, isStandalone = false },    
     -- Patriot
-        { weight = 860, desc = "Patriot EPP", unit = "Patriot EPP", side = 2, internal = 1 },
-        { weight = 861, desc = "Patriot STR", unit = "Patriot str", side = 2, internal = 1 },
-        { weight = 862, desc = "Patriot CP", unit = "Patriot cp", side = 2, internal = 1 },
-        { weight = 863, desc = "Patriot AMG", unit = "Patriot AMG", side = 2, internal = 1},
-        { weight = 864, desc = "Patriot ECS", unit = "Patriot ECS", side = 2, internal = 1},
-        { weight = 865, desc = "Patriot LN", unit = "Patriot ln", side = 2, internal = 1},    
+        { weight = 860, desc = "Patriot EPP", unit = "Patriot EPP", side = 2, internal = 1, isStandalone = false },
+        { weight = 861, desc = "Patriot STR", unit = "Patriot str", side = 2, internal = 1, isStandalone = false },
+        { weight = 862, desc = "Patriot CP", unit = "Patriot cp", side = 2, internal = 1, isStandalone = false },
+        { weight = 863, desc = "Patriot AMG", unit = "Patriot AMG", side = 2, internal = 1, isStandalone = false },
+        { weight = 864, desc = "Patriot ECS", unit = "Patriot ECS", side = 2, internal = 1, isStandalone = false },
+        { weight = 865, desc = "Patriot LN", unit = "Patriot ln", side = 2, internal = 1, isStandalone = false },    
     -- S-300
-        { weight = 866, desc = "S-300PS 64H6E SR", unit = "S-300PS 64H6E sr", side = 1, internal = 1 },
-        { weight = 867, desc = "S-300PS 40B6M TR", unit = "S-300PS 40B6M tr", side = 1, internal = 1 },
-        { weight = 868, desc = "S-300PS 54K6 CP", unit = "S-300PS 54K6 cp", side = 1, internal = 1 },
-        { weight = 869, desc = "S-300PS 5P85D LN", unit = "S-300PS 5P85D ln", side = 1, internal = 1 },
-        { weight = 870, desc = "S-300PS 5P85C LN", unit = "S-300PS 5P85C ln", side = 1, internal = 1 },    
+        { weight = 866, desc = "S-300PS 64H6E SR", unit = "S-300PS 64H6E sr", side = 1, internal = 1, isStandalone = false },
+        { weight = 867, desc = "S-300PS 40B6M TR", unit = "S-300PS 40B6M tr", side = 1, internal = 1, isStandalone = false },
+        { weight = 868, desc = "S-300PS 54K6 CP", unit = "S-300PS 54K6 cp", side = 1, internal = 1, isStandalone = false },
+        { weight = 869, desc = "S-300PS 5P85D LN", unit = "S-300PS 5P85D ln", side = 1, internal = 1, isStandalone = false },
+        { weight = 870, desc = "S-300PS 5P85C LN", unit = "S-300PS 5P85C ln", side = 1, internal = 1, isStandalone = false },    
     
     },
 	["SAM Repairs"] = {	
-		{ weight = 884, desc = "Buk Repair", unit = "Buk Repair", side = 1, internal = 1 },
+		{ weight = 884, desc = "Buk Repair", unit = "Buk Repair", side = 1, internal = 1, isStandalone = false },
 		{ weight = 754, desc = "HQ-7 Repair", unit = "HQ-7 Repair", side = 1, internal = 1, isStandalone = false },
-		{ weight = 883, desc = "Kub Repair", unit = "Kub Repair", side = 1, internal = 1 },
-		{ weight = 880, desc = "SA-2 Repair", unit = "SA-2 Repair", side = 1, internal = 1 },
-    { weight = 881, desc = "SA-3 Repair", unit = "SA-3 Repair", side = 1, internal = 1 },
-    { weight = 882, desc = "SA-10 Repair", unit = "SA-10 Repair", side = 1, internal = 1 },    
+		{ weight = 883, desc = "Kub Repair", unit = "Kub Repair", side = 1, internal = 1, isStandalone = false },
+		{ weight = 880, desc = "SA-2 Repair", unit = "SA-2 Repair", side = 1, internal = 1, isStandalone = false },
+    { weight = 881, desc = "SA-3 Repair", unit = "SA-3 Repair", side = 1, internal = 1, isStandalone = false },
+    { weight = 882, desc = "SA-10 Repair", unit = "SA-10 Repair", side = 1, internal = 1, isStandalone = false },
     		
     { weight = 759, desc = "Crotale Repair", unit = "HQ-7 Repair", side = 2, internal = 1, isStandalone = false },
-    { weight = 886, desc = "Hawk Repair", unit = "Hawk Repair", side = 2, internal = 1, isStandalone = false},
-    { weight = 888, desc = "Patriot Repair", unit = "Patriot Repair", side = 2, internal = 1 },
-    { weight = 728, desc = "Rapier Repair", unit = "Rapier Repair", side = 2, internal = 1 },
+    { weight = 886, desc = "Hawk Repair", unit = "Hawk Repair", side = 2, internal = 1, isStandalone = false },
+    { weight = 888, desc = "Patriot Repair", unit = "Patriot Repair", side = 2, internal = 1, isStandalone = false },
+    { weight = 728, desc = "Rapier Repair", unit = "Rapier Repair", side = 2, internal = 1, isStandalone = false },
     { weight = 887, desc = "Roland Repair", unit = "Roland Repair", side = 2, internal = 1, isStandalone = false },
-		{ weight = 729, desc = "Silkworm Repair", unit = "Silkworm Repair", internal = 1 },
+	{ weight = 729, desc = "Silkworm Repair", unit = "Silkworm Repair", internal = 1, isStandalone = false },
 	},
 		
     ["Missiles"] = {	  
 		{ weight = 876, desc = "Scud-B", unit = "Scud_B", side = 1, cratesRequired = 4, unitQuantity = 3, internal = 1 },
 		-- Silkworm
-		{ weight = 721, desc = "Silkworm Radar", unit = "Silkworm_SR", internal = 1 },
-		{ weight = 722, desc = "Silkworm Missile HY-2A", unit = "hy_launcher", internal = 1 },		
+		{ weight = 721, desc = "Silkworm Radar", unit = "Silkworm_SR", internal = 1, isStandalone = false},
+		{ weight = 722, desc = "Silkworm Missile HY-2A", unit = "hy_launcher", internal = 1, isStandalone = false},		
     },
 			
    ["Support"] = {
