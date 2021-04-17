@@ -4482,8 +4482,6 @@ function ctld.getAllowedAASystems(_heli)
     else
         return ctld.AASystemLimitRED
     end
-
-
 end
 
 function ctld.countCompleteAASystems(_heli)

@@ -110,8 +110,8 @@ ctld.hoverTime = 4 -- Time to hold hover above a crate for loading in seconds
 -- to unpack them
 
 ctld.completeAASystemsTag = "AASystem" -- This is the tag in ME and in code that defines AA system and allows us to repair them
-ctld.AASystemLimitRED = 20 -- Red side limit
-ctld.AASystemLimitBLUE = 20 -- Blue side limit
+ctld.AASystemLimitRED = 30 -- Red side limit  -- this has to be 30 (20 player, 10 static) now or a rewrite to CTLD is required since we now count static sams in order to repair them
+ctld.AASystemLimitBLUE = 30 -- Blue side limit -- this has to be 30 now or a rewrite to CTLD is required since we now count static sams in order to repair them
 ctld.aaSR2Launchers = 2 -- controls how many launchers to add to Short Range Missile systems: Roland, HQ when spawned.
 ctld.aaSRLaunchers = 3 -- controls how many launchers to add to Short Range Missile systems when spawned.
 ctld.aaMRLaunchers = 4 -- controls how many launchers to add to Medium Range Missile systems when spawned.
