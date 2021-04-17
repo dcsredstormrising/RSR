@@ -1093,9 +1093,9 @@ function ctld.IsGroupLimitReached(_args, _crateType, _coalition)
         -- to make sure we only count limited items
         local totalPlayerLimitedGroupCount = _playerSlungGroups:Count() - _groupsOfUnitsNotPartOfLimitCount
         
-        env.info("**=AW=33COM ctld.IsCrateLimitReached _playerSlungUnits count: [" .. inspect(_playerSlungGroups:Count()) .. "]")  
-          env.info("**=AW=33COM ctld.IsCrateLimitReached _groupsOfUnitsNotPartOfLimitCount: [" .. inspect(_groupsOfUnitsNotPartOfLimitCount) .. "]")
-          env.info("**=AW=33COM ctld.IsCrateLimitReached totalPlayerLimitedGroupCount: [" .. inspect(totalPlayerLimitedGroupCount) .. "]")  
+          --env.info("**=AW=33COM ctld.IsCrateLimitReached _playerSlungUnits count: [" .. inspect(_playerSlungGroups:Count()) .. "]")  
+          --env.info("**=AW=33COM ctld.IsCrateLimitReached _groupsOfUnitsNotPartOfLimitCount: [" .. inspect(_groupsOfUnitsNotPartOfLimitCount) .. "]")
+          --env.info("**=AW=33COM ctld.IsCrateLimitReached totalPlayerLimitedGroupCount: [" .. inspect(totalPlayerLimitedGroupCount) .. "]")  
         
         if totalPlayerLimitedGroupCount < ctld.GroupLimitCount then
           _limitReached = false            

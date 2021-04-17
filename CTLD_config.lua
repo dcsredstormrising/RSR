@@ -1,8 +1,3 @@
---ctld.spawnCrate
---ctld.spawnCrateStatic
---ctld.unpackCrates
---ctld.spawnCrateGroup
-
 --[[
     Combat Troop and Logistics Drop
     Allows Huey, Mi-8 and C130 to transport troops internally and Helicopters to transport Logistic / Vehicle units to the field via sling-loads
