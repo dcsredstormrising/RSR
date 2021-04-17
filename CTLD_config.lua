@@ -667,7 +667,7 @@ ctld.spawnableCrates = {
     },
 			
    ["Support"] = {
-        { weight = 503, desc = "FOB/CC/Logistics Repair", unit = "LogisticsCentre", internal = 1 },
+        { weight = 891, desc = "FOB/CC/Logistics Repair", unit = "LogisticsCentre", internal = 1 },
         { weight = 502, desc = "GAZ Tigr - JTAC", unit = "Tigr_233036", side = 1, cratesRequired = 1, internal = 1 },
 		{ weight = 501, desc = "HMMWV - JTAC", unit = "Hummer", side = 2, cratesRequired = 1, internal = 1 },
 		{ weight = 805, desc = "ATZ-10 Fuel Truck", unit = "ATZ-10", side = 1, cratesRequired = 1, internal = 1 },

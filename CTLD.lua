@@ -2666,8 +2666,10 @@ function ctld.loadNearbyCrate(_aircraftName)
 
                 if (_crate.dist < 50.0) and (_crate.details.internal == 1) and (ctld.crateValidLoadPoint(_aircraft, _crate)) then
 				
-					ctld.displayMessageToGroup(_aircraft, "Loaded " .. _crate.details.desc .. " crate!", 10, true)
-					trigger.action.outTextForCoalition(_aircraftCoalition, "[TEAM] " .. _playerName .. " loaded a " .. _crate.details.desc .. " crate for transport from " .. _nearestLogisticsCentreBaseNameOrFOBgrid, 10)
+				  if _crate.details.weight == 891 then -- cc only
+					 ctld.displayMessageToGroup(_aircraft, "Loaded " .. _crate.details.desc .. " crate!", 10, true)
+					 trigger.action.outTextForCoalition(_aircraftCoalition, "[TEAM] " .. _playerName .. " loaded a " .. _crate.details.desc .. " crate for transport from " .. _nearestLogisticsCentreBaseNameOrFOBgrid, 10)
+					end
 					
                     if _aircraft:getCoalition() == 1 then
                         ctld.spawnedCratesRED[_crate.crateUnit:getName()] = nil
