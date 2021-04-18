@@ -26,14 +26,14 @@ local warUnitPrefix = "Resupply" -- do not change this
 warehouse.List = 
 {
     -- BLUE warehouses
-    ["BlueNorthernWarehouse"] = {name="Blue Northern Warehouse", type = "ground", side = 2, count = 40, zone = "Blue Northern Warehouse Zone", unitTypes = {"MCV-80","Leopard-2"}},    -- North units must be different than South, otherwise you will get double units I think
-    ["BlueSouthernWarehouse"] = {name="Blue Southern Warehouse", type = "ground", side = 2, count = 40, zone = "Blue Southern Warehouse Zone", unitTypes = {"LAV-25", "Merkava_Mk4"}},  -- South units must be different than North  
-    ["BlueNavalWarehouse"] = {name="Blue Naval Warehouse", type = "naval", side = 2, count = 10, zone = "Blue Naval Zone", unitTypes = {"CVN_73", "Type_052C", "Type_054A", "MOSCOW", "TICONDEROG", "PERRY", "MOLNIYA", "LHA_Tarawa"}}, -- ships can use same units
+    ["BlueNorthernWarehouse"] = {type = "ground", side = 2, count = 40, zone = "Blue Northern Warehouse Zone", unitTypes = {"MCV-80","Leopard-2"}},    -- North units must be different than South, otherwise you will get double units I think
+    ["BlueSouthernWarehouse"] = {type = "ground", side = 2, count = 40, zone = "Blue Southern Warehouse Zone", unitTypes = {"LAV-25", "Merkava_Mk4"}},  -- South units must be different than North  
+    ["BlueNavalWarehouse"] = {type = "naval", side = 2, count = 10, zone = "Blue Naval Zone", unitTypes = {"CVN_73", "Type_052C", "Type_054A", "MOSCOW", "TICONDEROG", "PERRY", "MOLNIYA", "LHA_Tarawa"}}, -- ships can use same units
     
     -- RED warehouses 
-    ["RedNorthernWarehouse"] = {name="Red Northern Warehouse", type = "ground", side = 1, count = 40, zone="Red Northern Warehouse Zone", unitTypes = {"BMD-1","T-90"}},    -- North units must be different than South, otherwise you will get double units I think
-    ["RedSouthernWarehouse"] = {name="Red Southern Warehouse", type = "ground", side = 1, count = 40, zone="Red Southern Warehouse Zone", unitTypes = {"BMP-1", "T-72B"}},  -- South units must be different than North
-    ["RedNavalWarehouse"] = {name="Red Naval Warehouse", type = "naval", side = 1, count = 10, zone = "Red Naval Zone", unitTypes = {"CV_1143_5", "Type_052C", "Type_054A", "MOSCOW", "TICONDEROG", "PERRY", "MOLNIYA", "Type_071"}}, -- ships can use same units
+    ["RedNorthernWarehouse"] = {type = "ground", side = 1, count = 40, zone="Red Northern Warehouse Zone", unitTypes = {"BMD-1","T-90"}},    -- North units must be different than South, otherwise you will get double units I think
+    ["RedSouthernWarehouse"] = {type = "ground", side = 1, count = 40, zone="Red Southern Warehouse Zone", unitTypes = {"BMP-1", "T-72B"}},  -- South units must be different than North
+    ["RedNavalWarehouse"] = {type = "naval", side = 1, count = 10, zone = "Red Naval Zone", unitTypes = {"CV_1143_5", "Type_052C", "Type_054A", "MOSCOW", "TICONDEROG", "PERRY", "MOLNIYA", "Type_071"}}, -- ships can use same units
 }
 
 -- Find warehouses from the mission and create them
