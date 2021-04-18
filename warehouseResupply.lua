@@ -1,21 +1,29 @@
 -- Name: Warehouse Resupply
--- Author: Wildcat (Chandawg)
--- Date Created: 28 Apr 2020
--- Trying to integrate the Alpha warehouse system from moose into RSR. Initially this will replace base units
--- Ultimately I couldn't integrate this into RSR-Caucuses because of the capture mechanism, but with the new Syria map we revamped the capture mechanism and went with Moose Zone Capture, so now exploring using these with RSR-Syria
+
+-- Mostly rewritten by =AW=33COM in order to:
+-- 1. Be able to use the same type of ships in the static mission and dynamic warehouses
+-- 2. Be able to use the same type of ground units in the static mission and dynamic warehouses
+-- 3. Be able to use the same type of units across coalitions.
+-- 4. Be able to add warehouses through configuration.
+-- 5. Be able to configure this without a programmer
+-- Notes: The above items were not possible as everything was hardcoded and checked only at type level.  If you added a specific type to RED it was not possible to add it to BLUE.
+-- or it was not possible to sling tanks if they were in the warehouse
 
 local inspect = require("inspect")
+local utils = require("utils")
 
-local warehouse={}
-----function to check if a save warehouse file exist, stole it from pikey's SGS
-function file_exists(name) --check if the file already exists for writing
-    if lfs.attributes(name) then
-    return true
-    else
-    return false end 
-end
+local warehouse= {}
+local warRespawnDelay = 3600
+local shipRespawnDelay = 1800
+local vehicleRespawnDelay = 1800
+local redShips =  {"Type_052C", "Type_054A", "MOSCOW", "TICONDEROG", "PERRY", "CVN_73", "MOLNIYA", "CV_1143_5", "Type_071"}
+local blueShips = {"Type_052C", "Type_054A", "MOSCOW", "TICONDEROG", "PERRY", "CVN_73", "MOLNIYA", "CV_1143_5", "LHA_Tarawa"}
+local redGroudUnits = {"BMD-1", "BMP-1", "T-90", "T-72B"}
+local blueGroudUnits = {"MCV-80", "LAV-25", "Leopard-2", "Merkava_Mk4"}
+local blueWarehouses = {"Blue Northern Warehouse", "Blue Southern Warehouse", "Blue Naval Warehouse"}
+local redWarehouses = {"Red Northern Warehouse", "Red Southern Warehouse", "Red Naval Warehouse"}
 
-----warehouseBatumi=WAREHOUSE:New(STATIC:FindByName("Warehouse Batumi"), "My optional Warehouse Alias")
+
 ----Defines the warehouses
 --the string is the name in the mission editor
 warehouse.BlueNorthernWarehouse=WAREHOUSE:New(STATIC:FindByName("Blue Northern Warehouse"))
@@ -26,8 +34,8 @@ warehouse.RedSouthernWarehouse=WAREHOUSE:New(STATIC:FindByName("Red Southern War
 warehouse.RedNavalWarehouse=WAREHOUSE:New(STATIC:FindByName("Red Naval Warehouse"))
 
 ----If previous file exists it will load last saved warehouse
-if file_exists("BlueNorthernWarehouse") then --Script has been run before, so we need to load the save
-  env.info("Existing warehouse, loading from File.")
+if M.file_exists("BlueNorthernWarehouse") then --Script has been run before, so we need to load the saved values
+  env.info("Existing warehouses, loading from File.")
   warehouse.BlueNorthernWarehouse:Load(nil,"BlueNorthernWarehouse")
   warehouse.BlueSouthernWarehouse:Load(nil,"BlueSouthernWarehouse")
   warehouse.BlueNavalWarehouse:Load(nil,"BlueNavalWarehouse")
@@ -101,7 +109,7 @@ if file_exists("BlueNorthernWarehouse") then --Script has been run before, so we
   end
   
 else  
-    --Fresh Campaign starts warehouses, and loads assets
+    --Fresh Campaign, we starts warehouses, and loads assets
   warehouse.BlueNorthernWarehouse:Start()
   warehouse.BlueNorthernWarehouse:SetRespawnAfterDestroyed(3600)
   

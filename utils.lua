@@ -12,6 +12,14 @@ function M.getFilePath(filename)
     end
 end
 
+function M.file_exists(name) --check if the file already exists for writing
+    if lfs.attributes(name) then
+      return true
+    else
+      return false 
+    end 
+end
+
 local sideLookupTable
 
 local function populateSideLookupTable()
