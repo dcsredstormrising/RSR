@@ -20,6 +20,41 @@ function M.file_exists(name) --check if the file already exists for writing
     end 
 end
 
+-- This function is an easy fix for our warehouse/slinging problem. The Warehouse resupply was written in such a way, that once you used a specific unit in the warehouse
+-- you were not able to sling that type of unit, becuase the warehouse resupply was checking at unit type.  That eliminated tanks from slinging.
+-- Here we determine if the unit is player slung, or if it comes from the miz file, or the initial warehouse spit.
+-- AW=33COM
+function M.isUnitPlayerSlung(iniUnitName)
+
+  local retVal = false
+  
+  if iniUnitName ~= nil then
+    if string.find(iniUnitName, "Unpacked") then
+      retVal = true
+    end
+  end
+  
+  return retVal
+
+end
+
+-- This is the function that allows us to distinquish between ships of the same type, but different location: MIZ ship, Warehouse ship.  
+-- everything works on the word: Resupply.  Once that word changes nothing will work.  This is similiar to the Player Slung unit check for tanks.
+-- =AW=33COM  I added this, becuase our ships worked at TYPE level, and we could not have multiple ships of the same type.  Now we can.
+function M.isUnitFromWarehouse(iniUnitName)
+
+  local retVal = false
+  
+  if iniUnitName ~= nil then
+    if string.find(iniUnitName, "Resupply") then
+      retVal = true
+    end
+  end
+  
+  return retVal
+
+end
+
 local sideLookupTable
 
 local function populateSideLookupTable()

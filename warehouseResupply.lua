@@ -12,258 +12,233 @@
 local inspect = require("inspect")
 local utils = require("utils")
 
-local warehouse= {}
+local war= {}
 local warRespawnDelay = 3600
 local shipRespawnDelay = 1800
 local vehicleRespawnDelay = 1800
-local redShips =  {"Type_052C", "Type_054A", "MOSCOW", "TICONDEROG", "PERRY", "CVN_73", "MOLNIYA", "CV_1143_5", "Type_071"}
-local blueShips = {"Type_052C", "Type_054A", "MOSCOW", "TICONDEROG", "PERRY", "CVN_73", "MOLNIYA", "CV_1143_5", "LHA_Tarawa"}
-local redGroudUnits = {"BMD-1", "BMP-1", "T-90", "T-72B"}
-local blueGroudUnits = {"MCV-80", "LAV-25", "Leopard-2", "Merkava_Mk4"}
-local blueWarehouses = {"Blue Northern Warehouse", "Blue Southern Warehouse", "Blue Naval Warehouse"}
-local redWarehouses = {"Red Northern Warehouse", "Red Southern Warehouse", "Red Naval Warehouse"}
+local warUnitPrefix = "Resupply" -- do not change this
 
+-- you can now configure your warehouses and add new once without programming
+-- add a warhouse and a zone to the map and copy their names into here...then define the unit types for the warehouse plus coalition and type(naval, ground) of warhouse and you're done.
+-- warehouse and zone names must be unique
+war.warehouses = 
+{
+    -- BLUE warehouses
+    ["Blue Northern Warehouse"] = {type = "ground", side = 2, count = 40, zone = "Blue Northern Warehouse Zone", unitTypes = {"MCV-80","Leopard-2"}},    -- North units must be different than South, otherwise you will get double units I think
+    ["Blue Southern Warehouse"] = {type = "ground", side = 2, count = 40, zone = "Blue Southern Warehouse Zone", unitTypes = {"LAV-25", "Merkava_Mk4"}},  -- South units must be different than North  
+    ["Blue Naval Warehouse"] = {type = "naval", side = 2, count = 10, zone = "Blue Naval Zone", unitTypes = {"CVN_73", "Type_052C", "Type_054A", "MOSCOW", "TICONDEROG", "PERRY", "MOLNIYA", "LHA_Tarawa"}}, -- ships can use same units
+    
+    -- RED warehouses 
+    ["Red Northern Warehouse"] = {type = "ground", side = 1, count = 40, zone="Red Northern Warehouse Zone", unitTypes = {"BMD-1","T-90"}},    -- North units must be different than South, otherwise you will get double units I think
+    ["Red Southern Warehouse"] = {type = "ground", side = 1, count = 40, zone="Red Southern Warehouse Zone", unitTypes = {"BMP-1", "T-72B"}},  -- South units must be different than North
+    ["Red Naval Warehouse"] = {type = "naval", side = 1, count = 10, zone = "Red Naval Zone", unitTypes = {"CV_1143_5", "Type_052C", "Type_054A", "MOSCOW", "TICONDEROG", "PERRY", "MOLNIYA", "Type_071"}}, -- ships can use same units
+}
 
 ----Defines the warehouses
 --the string is the name in the mission editor
-warehouse.BlueNorthernWarehouse=WAREHOUSE:New(STATIC:FindByName("Blue Northern Warehouse"))
-warehouse.BlueNavalWarehouse=WAREHOUSE:New(STATIC:FindByName("Blue Naval Warehouse"))
-warehouse.BlueSouthernWarehouse=WAREHOUSE:New(STATIC:FindByName("Blue Southern Warehouse"))
-warehouse.RedNorthernWarehouse=WAREHOUSE:New(STATIC:FindByName("Red Northern Warehouse"))
-warehouse.RedSouthernWarehouse=WAREHOUSE:New(STATIC:FindByName("Red Southern Warehouse"))
-warehouse.RedNavalWarehouse=WAREHOUSE:New(STATIC:FindByName("Red Naval Warehouse"))
+war.BlueNorthernWarehouse=WAREHOUSE:New(STATIC:FindByName("Blue Northern Warehouse"))
+war.BlueNavalWarehouse=WAREHOUSE:New(STATIC:FindByName("Blue Naval Warehouse"))
+war.BlueSouthernWarehouse=WAREHOUSE:New(STATIC:FindByName("Blue Southern Warehouse"))
+war.RedNorthernWarehouse=WAREHOUSE:New(STATIC:FindByName("Red Northern Warehouse"))
+war.RedSouthernWarehouse=WAREHOUSE:New(STATIC:FindByName("Red Southern Warehouse"))
+war.RedNavalWarehouse=WAREHOUSE:New(STATIC:FindByName("Red Naval Warehouse"))
 
 ----If previous file exists it will load last saved warehouse
 if M.file_exists("BlueNorthernWarehouse") then --Script has been run before, so we need to load the saved values
   env.info("Existing warehouses, loading from File.")
-  warehouse.BlueNorthernWarehouse:Load(nil,"BlueNorthernWarehouse")
-  warehouse.BlueSouthernWarehouse:Load(nil,"BlueSouthernWarehouse")
-  warehouse.BlueNavalWarehouse:Load(nil,"BlueNavalWarehouse")
-  warehouse.RedNorthernWarehouse:Load(nil,"RedNorthernWarehouse")
-  warehouse.RedSouthernWarehouse:Load(nil,"RedSouthernWarehouse")
-  warehouse.RedNavalWarehouse:Load(nil,"RedNavalWarehouse")
-  warehouse.BlueNorthernWarehouse:Start()
-  warehouse.BlueNorthernWarehouse:SetRespawnAfterDestroyed(3600)
-  warehouse.BlueSouthernWarehouse:Start()
-  warehouse.BlueSouthernWarehouse:SetRespawnAfterDestroyed(3600)
-  warehouse.BlueNavalWarehouse:Start()
-  warehouse.BlueNavalWarehouse:SetRespawnAfterDestroyed(3600)
-  warehouse.RedNorthernWarehouse:Start()
-  warehouse.RedNorthernWarehouse:SetRespawnAfterDestroyed(3600)
-  warehouse.RedSouthernWarehouse:Start()
-  warehouse.RedSouthernWarehouse:SetRespawnAfterDestroyed(3600)
-  warehouse.RedNavalWarehouse:Start()
-  warehouse.RedNavalWarehouse:SetRespawnAfterDestroyed(3600)
+  war.BlueNorthernWarehouse:Load(nil,"BlueNorthernWarehouse")
+  war.BlueSouthernWarehouse:Load(nil,"BlueSouthernWarehouse")
+  war.BlueNavalWarehouse:Load(nil,"BlueNavalWarehouse")
+  war.RedNorthernWarehouse:Load(nil,"RedNorthernWarehouse")
+  war.RedSouthernWarehouse:Load(nil,"RedSouthernWarehouse")
+  war.RedNavalWarehouse:Load(nil,"RedNavalWarehouse")
+  war.BlueNorthernWarehouse:Start()
+  war.BlueNorthernWarehouse:SetRespawnAfterDestroyed(3600)
+  war.BlueSouthernWarehouse:Start()
+  war.BlueSouthernWarehouse:SetRespawnAfterDestroyed(3600)
+  war.BlueNavalWarehouse:Start()
+  war.BlueNavalWarehouse:SetRespawnAfterDestroyed(3600)
+  war.RedNorthernWarehouse:Start()
+  war.RedNorthernWarehouse:SetRespawnAfterDestroyed(3600)
+  war.RedSouthernWarehouse:Start()
+  war.RedSouthernWarehouse:SetRespawnAfterDestroyed(3600)
+  war.RedNavalWarehouse:Start()
+  war.RedNavalWarehouse:SetRespawnAfterDestroyed(3600)
   
-  if warehouse.BlueNorthernWarehouse:GetCoalition()==2 then
-    warehouse.BlueNorthernWarehouse:Start()
-    warehouse.BlueNorthernWarehouse:SetRespawnAfterDestroyed(3600)
-  elseif warehouse.BlueNorthernWarehouse:GetCoalition()~=2 then
-    warehouse.BlueNorthernWarehouse:Stop()
-    warehouse.BlueNorthernWarehouse:SetRespawnAfterDestroyed(3600)
+  if war.BlueNorthernWarehouse:GetCoalition()==2 then
+    war.BlueNorthernWarehouse:Start()
+    war.BlueNorthernWarehouse:SetRespawnAfterDestroyed(3600)
+  elseif war.BlueNorthernWarehouse:GetCoalition()~=2 then
+    war.BlueNorthernWarehouse:Stop()
+    war.BlueNorthernWarehouse:SetRespawnAfterDestroyed(3600)
   else    
   end
   
-  if warehouse.BlueSouthernWarehouse:GetCoalition()==2 then
-      warehouse.BlueSouthernWarehouse:Start()
-      warehouse.BlueSouthernWarehouse:SetRespawnAfterDestroyed(3600)
-    elseif warehouse.BlueSouthernWarehouse:GetCoalition()~=2 then
-      warehouse.BlueSouthernWarehouse:Stop()
-      warehouse.BlueSouthernWarehouse:SetRespawnAfterDestroyed(3600)    
+  if war.BlueSouthernWarehouse:GetCoalition()==2 then
+      war.BlueSouthernWarehouse:Start()
+      war.BlueSouthernWarehouse:SetRespawnAfterDestroyed(3600)
+    elseif war.BlueSouthernWarehouse:GetCoalition()~=2 then
+      war.BlueSouthernWarehouse:Stop()
+      war.BlueSouthernWarehouse:SetRespawnAfterDestroyed(3600)    
     else
   end
   
-  if warehouse.BlueNavalWarehouse:GetCoalition()==2 then
-      warehouse.BlueNavalWarehouse:Start()
-      warehouse.BlueNavalWarehouse:SetRespawnAfterDestroyed(3600)
-    elseif warehouse.BlueNavalWarehouse:GetCoalition()~=2 then
-      warehouse.BlueNavalWarehouse:Stop()
-      warehouse.BlueNavalWarehouse:SetRespawnAfterDestroyed(3600)  
+  if war.BlueNavalWarehouse:GetCoalition()==2 then
+      war.BlueNavalWarehouse:Start()
+      war.BlueNavalWarehouse:SetRespawnAfterDestroyed(3600)
+    elseif war.BlueNavalWarehouse:GetCoalition()~=2 then
+      war.BlueNavalWarehouse:Stop()
+      war.BlueNavalWarehouse:SetRespawnAfterDestroyed(3600)  
     else
   end
     
-  if warehouse.RedNorthernWarehouse:GetCoalition()==1 then
-      warehouse.RedNorthernWarehouse:Start()
-      warehouse.RedNorthernWarehouse:SetRespawnAfterDestroyed(3600)
-    elseif warehouse.RedNorthernWarehouse:GetCoalition()~=1 then
-      warehouse.RedNorthernWarehouse:Stop()
-      warehouse.RedNorthernWarehouse:SetRespawnAfterDestroyed(3600)  
+  if war.RedNorthernWarehouse:GetCoalition()==1 then
+      war.RedNorthernWarehouse:Start()
+      war.RedNorthernWarehouse:SetRespawnAfterDestroyed(3600)
+    elseif war.RedNorthernWarehouse:GetCoalition()~=1 then
+      war.RedNorthernWarehouse:Stop()
+      war.RedNorthernWarehouse:SetRespawnAfterDestroyed(3600)  
     else
   end
   
-  if warehouse.RedSouthernWarehouse:GetCoalition()==1 then
-      warehouse.RedSouthernWarehouse:Start()
-      warehouse.RedSouthernWarehouse:SetRespawnAfterDestroyed(3600)
-    elseif warehouse.RedSouthernWarehouse:GetCoalition()~=1 then
-      warehouse.RedSouthernWarehouse:Stop()
-      warehouse.RedSouthernWarehouse:SetRespawnAfterDestroyed(3600)    
+  if war.RedSouthernWarehouse:GetCoalition()==1 then
+      war.RedSouthernWarehouse:Start()
+      war.RedSouthernWarehouse:SetRespawnAfterDestroyed(3600)
+    elseif war.RedSouthernWarehouse:GetCoalition()~=1 then
+      war.RedSouthernWarehouse:Stop()
+      war.RedSouthernWarehouse:SetRespawnAfterDestroyed(3600)    
   end
   
-  if warehouse.RedNavalWarehouse:GetCoalition()==1 then
-      warehouse.RedNavalWarehouse:Start()
-      warehouse.RedNavalWarehouse:SetRespawnAfterDestroyed(3600)
-    elseif warehouse.RedNavalWarehouse:GetCoalition()~=1 then
-      warehouse.RedNavalWarehouse:Stop()
-      warehouse.RedNavalWarehouse:SetRespawnAfterDestroyed(3600)  
+  if war.RedNavalWarehouse:GetCoalition()==1 then
+      war.RedNavalWarehouse:Start()
+      war.RedNavalWarehouse:SetRespawnAfterDestroyed(3600)
+    elseif war.RedNavalWarehouse:GetCoalition()~=1 then
+      war.RedNavalWarehouse:Stop()
+      war.RedNavalWarehouse:SetRespawnAfterDestroyed(3600)  
     else
   end
   
 else  
     --Fresh Campaign, we starts warehouses, and loads assets
-  warehouse.BlueNorthernWarehouse:Start()
-  warehouse.BlueNorthernWarehouse:SetRespawnAfterDestroyed(3600)
+  war.BlueNorthernWarehouse:Start()
+  war.BlueNorthernWarehouse:SetRespawnAfterDestroyed(3600)
   
-  warehouse.BlueSouthernWarehouse:Start()
-  warehouse.BlueSouthernWarehouse:SetRespawnAfterDestroyed(3600)
+  war.BlueSouthernWarehouse:Start()
+  war.BlueSouthernWarehouse:SetRespawnAfterDestroyed(3600)
   
-  warehouse.BlueNavalWarehouse:Start()
-  warehouse.BlueNavalWarehouse:SetRespawnAfterDestroyed(3600)
+  war.BlueNavalWarehouse:Start()
+  war.BlueNavalWarehouse:SetRespawnAfterDestroyed(3600)
   
-  warehouse.RedNorthernWarehouse:Start()
-  warehouse.RedNorthernWarehouse:SetRespawnAfterDestroyed(3600)
+  war.RedNorthernWarehouse:Start()
+  war.RedNorthernWarehouse:SetRespawnAfterDestroyed(3600)
   
-  warehouse.RedSouthernWarehouse:Start()
-  warehouse.RedSouthernWarehouse:SetRespawnAfterDestroyed(3600)
+  war.RedSouthernWarehouse:Start()
+  war.RedSouthernWarehouse:SetRespawnAfterDestroyed(3600)
   
-  warehouse.RedNavalWarehouse:Start()
-  warehouse.RedNavalWarehouse:SetRespawnAfterDestroyed(3600)
+  war.RedNavalWarehouse:Start()
+  war.RedNavalWarehouse:SetRespawnAfterDestroyed(3600)
   
   ----Add Assets to the warehouses on new campaign
     --EXAMPLE*** WAREHOUSE:AddAsset(group, ngroups, forceattribute, forcecargobay, forceweight, loadradius, skill, liveries,    assignment) 
-  warehouse.BlueNorthernWarehouse:AddAsset("Resupply Blue MBT North", 40) --Counted as tank  in stock
-  warehouse.BlueNorthernWarehouse:AddAsset("Resupply Blue IFV North", 40)    --Counted as APC in stock
+  war.BlueNorthernWarehouse:AddAsset("Resupply Blue MBT North", 40) --Counted as tank  in stock
+  war.BlueNorthernWarehouse:AddAsset("Resupply Blue IFV North", 40)    --Counted as APC in stock
   
-  warehouse.BlueSouthernWarehouse:AddAsset("Resupply Blue MBT South", 40) --Counted as tank  in stock
-  warehouse.BlueSouthernWarehouse:AddAsset("Resupply Blue IFV South", 40)    --Counted as APC in stock
+  war.BlueSouthernWarehouse:AddAsset("Resupply Blue MBT South", 40) --Counted as tank  in stock
+  war.BlueSouthernWarehouse:AddAsset("Resupply Blue IFV South", 40)    --Counted as APC in stock
   
-  warehouse.BlueNavalWarehouse:AddAsset("Resupply Blue Ticonderoga", 10)
-  warehouse.BlueNavalWarehouse:AddAsset("Resupply Blue Type 052C", 15)
-  warehouse.BlueNavalWarehouse:AddAsset("Resupply Blue Perry", 15) 
-  warehouse.BlueNavalWarehouse:AddAsset("Resupply Blue Carrier", 10)
-  warehouse.BlueNavalWarehouse:AddAsset("Resupply Blue Tarawa", 10)
+  war.BlueNavalWarehouse:AddAsset("Resupply Blue Ticonderoga", 10)
+  war.BlueNavalWarehouse:AddAsset("Resupply Blue Type 052C", 15)
+  war.BlueNavalWarehouse:AddAsset("Resupply Blue Perry", 15) 
+  war.BlueNavalWarehouse:AddAsset("Resupply Blue Carrier", 10)
+  war.BlueNavalWarehouse:AddAsset("Resupply Blue Tarawa", 10)
   
-  warehouse.RedNorthernWarehouse:AddAsset("Resupply Red MBT North", 40)    --counted as tank  in stock
-  warehouse.RedNorthernWarehouse:AddAsset("Resupply Red IFV North", 40)   --counted as APC in stock
+  war.RedNorthernWarehouse:AddAsset("Resupply Red MBT North", 40)    --counted as tank  in stock
+  war.RedNorthernWarehouse:AddAsset("Resupply Red IFV North", 40)   --counted as APC in stock
   
-  warehouse.RedSouthernWarehouse:AddAsset("Resupply Red MBT South", 40)    --counted as tank  in stock
-  warehouse.RedSouthernWarehouse:AddAsset("Resupply Red IFV South", 40)   --counted as APC in stock
+  war.RedSouthernWarehouse:AddAsset("Resupply Red MBT South", 40)    --counted as tank  in stock
+  war.RedSouthernWarehouse:AddAsset("Resupply Red IFV South", 40)   --counted as APC in stock
   
-  warehouse.RedNavalWarehouse:AddAsset("Resupply Red Moskva", 10)
-  warehouse.RedNavalWarehouse:AddAsset("Resupply Red Molniya", 15)
-  warehouse.RedNavalWarehouse:AddAsset("Resupply Red Type 054A", 15) 
-  warehouse.RedNavalWarehouse:AddAsset("Resupply Red Carrier", 10)
-  warehouse.RedNavalWarehouse:AddAsset("Resupply Red Transport Dock", 10)
+  war.RedNavalWarehouse:AddAsset("Resupply Red Moskva", 10)
+  war.RedNavalWarehouse:AddAsset("Resupply Red Molniya", 15)
+  war.RedNavalWarehouse:AddAsset("Resupply Red Type 054A", 15) 
+  war.RedNavalWarehouse:AddAsset("Resupply Red Carrier", 10)
+  war.RedNavalWarehouse:AddAsset("Resupply Red Transport Dock", 10)
 end
 
-if warehouse.BlueNorthernWarehouse:GetCoalition()==2 or warehouse.BlueNorthernWarehouse:GetCoalition()==0 then
-    warehouse.BlueNorthernWarehouse:Start()
-    warehouse.BlueNorthernWarehouse:SetRespawnAfterDestroyed(3600)
-  elseif warehouse.BlueNorthernWarehouse:GetCoalition()~=2 then
-    warehouse.BlueNorthernWarehouse:Stop()
-    warehouse.BlueNorthernWarehouse:SetRespawnAfterDestroyed(3600)
+if war.BlueNorthernWarehouse:GetCoalition()==2 or war.BlueNorthernWarehouse:GetCoalition()==0 then
+    war.BlueNorthernWarehouse:Start()
+    war.BlueNorthernWarehouse:SetRespawnAfterDestroyed(3600)
+  elseif war.BlueNorthernWarehouse:GetCoalition()~=2 then
+    war.BlueNorthernWarehouse:Stop()
+    war.BlueNorthernWarehouse:SetRespawnAfterDestroyed(3600)
   else    
 end
 
-if warehouse.BlueSouthernWarehouse:GetCoalition()==2 or warehouse.BlueSouthernWarehouse:GetCoalition()==0 then
-    warehouse.BlueSouthernWarehouse:Start()
-    warehouse.BlueSouthernWarehouse:SetRespawnAfterDestroyed(3600)
-  elseif warehouse.BlueSouthernWarehouse:GetCoalition()~=2 then
-    warehouse.BlueSouthernWarehouse:Stop()
-    warehouse.BlueSouthernWarehouse:SetRespawnAfterDestroyed(3600)    
+if war.BlueSouthernWarehouse:GetCoalition()==2 or war.BlueSouthernWarehouse:GetCoalition()==0 then
+    war.BlueSouthernWarehouse:Start()
+    war.BlueSouthernWarehouse:SetRespawnAfterDestroyed(3600)
+  elseif war.BlueSouthernWarehouse:GetCoalition()~=2 then
+    war.BlueSouthernWarehouse:Stop()
+    war.BlueSouthernWarehouse:SetRespawnAfterDestroyed(3600)    
   else
 end
 
-if warehouse.BlueNavalWarehouse:GetCoalition()==2 or warehouse.BlueNavalWarehouse:GetCoalition()==0 then
-    warehouse.BlueNavalWarehouse:Start()
-    warehouse.BlueNavalWarehouse:SetRespawnAfterDestroyed(3600)
-  elseif warehouse.BlueNavalWarehouse:GetCoalition()~=2 then
-    warehouse.BlueNavalWarehouse:Stop()
-    warehouse.BlueNavalWarehouse:SetRespawnAfterDestroyed(3600)
+if war.BlueNavalWarehouse:GetCoalition()==2 or war.BlueNavalWarehouse:GetCoalition()==0 then
+    war.BlueNavalWarehouse:Start()
+    war.BlueNavalWarehouse:SetRespawnAfterDestroyed(3600)
+  elseif war.BlueNavalWarehouse:GetCoalition()~=2 then
+    war.BlueNavalWarehouse:Stop()
+    war.BlueNavalWarehouse:SetRespawnAfterDestroyed(3600)
   else    
 end
 
-if warehouse.RedNorthernWarehouse:GetCoalition()==1 or warehouse.RedNorthernWarehouse:GetCoalition()==0 then
-    warehouse.RedNorthernWarehouse:Start()
-    warehouse.RedNorthernWarehouse:SetRespawnAfterDestroyed(3600)
-  elseif warehouse.RedNorthernWarehouse:GetCoalition()~=1 then
-    warehouse.RedNorthernWarehouse:Stop()
-    warehouse.RedNorthernWarehouse:SetRespawnAfterDestroyed(3600)  
+if war.RedNorthernWarehouse:GetCoalition()==1 or war.RedNorthernWarehouse:GetCoalition()==0 then
+    war.RedNorthernWarehouse:Start()
+    war.RedNorthernWarehouse:SetRespawnAfterDestroyed(3600)
+  elseif war.RedNorthernWarehouse:GetCoalition()~=1 then
+    war.RedNorthernWarehouse:Stop()
+    war.RedNorthernWarehouse:SetRespawnAfterDestroyed(3600)  
   else
 end
 
-if warehouse.RedSouthernWarehouse:GetCoalition()==1 or warehouse.RedSouthernWarehouse:GetCoalition()==0 then
-    warehouse.RedSouthernWarehouse:Start()
-    warehouse.RedSouthernWarehouse:SetRespawnAfterDestroyed(3600)
-  elseif warehouse.RedSouthernWarehouse:GetCoalition()~=1 then
-    warehouse.RedSouthernWarehouse:Stop()
-    warehouse.RedSouthernWarehouse:SetRespawnAfterDestroyed(3600)    
+if war.RedSouthernWarehouse:GetCoalition()==1 or war.RedSouthernWarehouse:GetCoalition()==0 then
+    war.RedSouthernWarehouse:Start()
+    war.RedSouthernWarehouse:SetRespawnAfterDestroyed(3600)
+  elseif war.RedSouthernWarehouse:GetCoalition()~=1 then
+    war.RedSouthernWarehouse:Stop()
+    war.RedSouthernWarehouse:SetRespawnAfterDestroyed(3600)    
 end
 
-if warehouse.RedNavalWarehouse:GetCoalition()==1 or warehouse.RedNavalWarehouse:GetCoalition()==0 then
-    warehouse.RedNavalWarehouse:Start()
-    warehouse.RedNavalWarehouse:SetRespawnAfterDestroyed(3600)
-  elseif warehouse.RedNavalWarehouse:GetCoalition()~=1 then
-    warehouse.RedNavalWarehouse:Stop()
-    warehouse.RedNavalWarehouse:SetRespawnAfterDestroyed(3600)  
+if war.RedNavalWarehouse:GetCoalition()==1 or war.RedNavalWarehouse:GetCoalition()==0 then
+    war.RedNavalWarehouse:Start()
+    war.RedNavalWarehouse:SetRespawnAfterDestroyed(3600)
+  elseif war.RedNavalWarehouse:GetCoalition()~=1 then
+    war.RedNavalWarehouse:Stop()
+    war.RedNavalWarehouse:SetRespawnAfterDestroyed(3600)  
   else
 end
 
 ----Set Spawn Zones for the warehouses
-warehouse.BlueNorthernWarehouse:SetSpawnZone(ZONE_POLYGON:New("Blue Northern Warehouse Spawn Zone #001", GROUP:FindByName("Blue Northern Warehouse Spawn Zone #001"))):SetReportOff()
-warehouse.BlueSouthernWarehouse:SetSpawnZone(ZONE_POLYGON:New("Blue Southern Warehouse Spawn Zone #001", GROUP:FindByName("Blue Southern Warehouse Spawn Zone #001"))):SetReportOff()
+war.BlueNorthernWarehouse:SetSpawnZone(ZONE_POLYGON:New("Blue Northern Warehouse Spawn Zone #001", GROUP:FindByName("Blue Northern Warehouse Spawn Zone #001"))):SetReportOff()
+war.BlueSouthernWarehouse:SetSpawnZone(ZONE_POLYGON:New("Blue Southern Warehouse Spawn Zone #001", GROUP:FindByName("Blue Southern Warehouse Spawn Zone #001"))):SetReportOff()
 
-warehouse.BlueNavalWarehouse:SetPortZone(ZONE_POLYGON:NewFromGroupName("Blue Naval Spawn Zone", GROUP:FindByName("Blue Naval Spawn Zone"))):SetReportOff()
+war.BlueNavalWarehouse:SetPortZone(ZONE_POLYGON:NewFromGroupName("Blue Naval Spawn Zone", GROUP:FindByName("Blue Naval Spawn Zone"))):SetReportOff()
 
-warehouse.RedNorthernWarehouse:SetSpawnZone(ZONE_POLYGON:New("Red Northern Warehouse Spawn Zone #001", GROUP:FindByName("Red Northern Warehouse Spawn Zone #001"))):SetReportOff()
-warehouse.RedSouthernWarehouse:SetSpawnZone(ZONE_POLYGON:New("Red Southern Warehouse Spawn Zone #001", GROUP:FindByName("Red Southern Warehouse Spawn Zone #001"))):SetReportOff()
+war.RedNorthernWarehouse:SetSpawnZone(ZONE_POLYGON:New("Red Northern Warehouse Spawn Zone #001", GROUP:FindByName("Red Northern Warehouse Spawn Zone #001"))):SetReportOff()
+war.RedSouthernWarehouse:SetSpawnZone(ZONE_POLYGON:New("Red Southern Warehouse Spawn Zone #001", GROUP:FindByName("Red Southern Warehouse Spawn Zone #001"))):SetReportOff()
 
-warehouse.RedNavalWarehouse:SetPortZone(ZONE_POLYGON:NewFromGroupName("Red Naval Spawn Zone", GROUP:FindByName("Red Naval Spawn Zone"))):SetReportOff()
+war.RedNavalWarehouse:SetPortZone(ZONE_POLYGON:NewFromGroupName("Red Naval Spawn Zone", GROUP:FindByName("Red Naval Spawn Zone"))):SetReportOff()
 
 Warehouse_EventHandler = EVENTHANDLER:New()
 Warehouse_EventHandler:HandleEvent( EVENTS.Dead )
 
--- This function is an easy fix for our warehouse/slinging problem. The Warehouse resupply was written in such a way, that once you used a specific unit in the warehouse
--- you were not able to sling that type of unit, becuase the warehouse resupply was checking at unit type.  That eliminated tanks from slinging.
--- Here we determine if the unit is player slung, or if it comes from the miz file, or the initial warehouse spit.
--- AW=33COM
-local function isUnitPlayerSlung(iniUnitName)
-
-  local retVal = false
-  
-  if iniUnitName ~= nil then
-    if string.find(iniUnitName, "Unpacked") then
-      retVal = true
-    end
-  end
-  
-  return retVal
-
-end
-
--- This is the function that allows us to distinquish between ships of the same type, but different location: MIZ ship, Warehouse ship.  
--- everything works on the word: Resupply.  Once that word changes nothing will work.  This is similiar to the Player Slung unit check for tanks.
--- =AW=33COM  I added this, becuase our ships worked at TYPE level, and we could not have multiple ships of the same type.  Now we can.
-local function isShipFromNavalWarehouse(iniUnitName)
-
-  local retVal = false
-  
-  if iniUnitName ~= nil then
-    if string.find(iniUnitName, "Resupply") then
-      retVal = true
-    end
-  end
-  
-  return retVal
-
-end
-
 ----Spawn unit at a warehouse when a unit dies
 function Warehouse_EventHandler:OnEventDead( EventData )
 
-	-- here we check if the unit is player slung, if it's not we check if it's part of the warehouse...this allows us not to add player slung units to the warehouses	
+	-- here we check if the unit is player slung, if it's not we check if it's part of the war...this allows us not to add player slung units to the warehouses	
 	if EventData.IniUnitName ~= nil then	
 		
-		local isPlayerSlung = isUnitPlayerSlung(inspect(EventData.IniUnitName))	
+		local isPlayerSlung = M.isUnitPlayerSlung(inspect(EventData.IniUnitName))	
 			
 		if isPlayerSlung == false then
 		
@@ -273,81 +248,81 @@ function Warehouse_EventHandler:OnEventDead( EventData )
 			end
 				-- ships
 			if EventData.IniTypeName == 'PERRY' then
-				warehouse.BlueNavalWarehouse:__AddRequest(1800, warehouse.BlueNavalWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Blue Perry", 1, WAREHOUSE.TransportType.SELFPROPELLED)
-				warehouse.BlueNavalWarehouse:__Save(5,nil,"BlueNavalWarehouse")
+				war.BlueNavalWarehouse:__AddRequest(1800, war.BlueNavalWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Blue Perry", 1, WAREHOUSE.TransportType.SELFPROPELLED)
+				war.BlueNavalWarehouse:__Save(5,nil,"BlueNavalWarehouse")
 			  elseif EventData.IniTypeName == 'TICONDEROG' then
-				warehouse.BlueNavalWarehouse:__AddRequest(1800, warehouse.BlueNavalWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Blue Ticonderoga", 1, WAREHOUSE.TransportType.SELFPROPELLED)
-				warehouse.BlueNavalWarehouse:__Save(5,nil,"BlueNavalWarehouse")
+				war.BlueNavalWarehouse:__AddRequest(1800, war.BlueNavalWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Blue Ticonderoga", 1, WAREHOUSE.TransportType.SELFPROPELLED)
+				war.BlueNavalWarehouse:__Save(5,nil,"BlueNavalWarehouse")
 			  elseif EventData.IniTypeName == 'Type_052C' then
-				warehouse.BlueNavalWarehouse:__AddRequest(1800, warehouse.BlueNavalWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Blue Type 052C", 1, WAREHOUSE.TransportType.SELFPROPELLED)
-				warehouse.BlueNavalWarehouse:__Save(5,nil,"BlueNavalWarehouse")
+				war.BlueNavalWarehouse:__AddRequest(1800, war.BlueNavalWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Blue Type 052C", 1, WAREHOUSE.TransportType.SELFPROPELLED)
+				war.BlueNavalWarehouse:__Save(5,nil,"BlueNavalWarehouse")
 			  elseif EventData.IniTypeName == 'CVN_73' then
 			  
-				local isFromNavalWarehouse = isShipFromNavalWarehouse(inspect(EventData.IniUnitName))	
+				local isFromNavalWarehouse = M.isUnitFromWarehouse(inspect(EventData.IniUnitName))	
 				
 				if isFromNavalWarehouse == true then
 					env.info("***=AW=33COM Naval Warehouse BLUE Unit: IniTypeName: ".. inspect(EventData.IniTypeName) .. " IniUnitName:" .. inspect(EventData.IniUnitName) .. " - Add to BLUE Naval Warehouse***")			  
-					warehouse.BlueNavalWarehouse:__AddRequest(1800, warehouse.BlueNavalWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Blue Carrier", 1, WAREHOUSE.TransportType.SELFPROPELLED)
-					warehouse.BlueNavalWarehouse:__Save(5,nil,"BlueNavalWarehouse")
+					war.BlueNavalWarehouse:__AddRequest(1800, war.BlueNavalWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Blue Carrier", 1, WAREHOUSE.TransportType.SELFPROPELLED)
+					war.BlueNavalWarehouse:__Save(5,nil,"BlueNavalWarehouse")
 				else
 					env.info("***=AW=33COM Ship BLUE Unit: IniTypeName: ".. inspect(EventData.IniTypeName) .. " IniUnitName:" .. inspect(EventData.IniUnitName) .. " - DO NOT ADD to BLUE Naval Warehouse.  Ship comes from MIZ***")			
 				end
 				
 			  elseif EventData.IniTypeName == 'LHA_Tarawa' then
-				warehouse.BlueNavalWarehouse:__AddRequest(1800, warehouse.BlueNavalWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Blue Tarawa", 1, WAREHOUSE.TransportType.SELFPROPELLED)
-				warehouse.BlueNavalWarehouse:__Save(5,nil,"BlueNavalWarehouse")
+				war.BlueNavalWarehouse:__AddRequest(1800, war.BlueNavalWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Blue Tarawa", 1, WAREHOUSE.TransportType.SELFPROPELLED)
+				war.BlueNavalWarehouse:__Save(5,nil,"BlueNavalWarehouse")
 				
 			  elseif EventData.IniTypeName == 'Type_054A' then
-				warehouse.RedNavalWarehouse:__AddRequest(1800, warehouse.RedNavalWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Red Type 054A", 1, WAREHOUSE.TransportType.SELFPROPELLED)
-				warehouse.RedNavalWarehouse:__Save(5,nil,"RedNavalWarehouse")
+				war.RedNavalWarehouse:__AddRequest(1800, war.RedNavalWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Red Type 054A", 1, WAREHOUSE.TransportType.SELFPROPELLED)
+				war.RedNavalWarehouse:__Save(5,nil,"RedNavalWarehouse")
 			  elseif EventData.IniTypeName == 'MOSCOW' then
-				warehouse.RedNavalWarehouse:__AddRequest(1800, warehouse.RedNavalWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Red Moskva", 1, WAREHOUSE.TransportType.SELFPROPELLED)
-				warehouse.RedNavalWarehouse:__Save(5,nil,"RedNavalWarehouse")
+				war.RedNavalWarehouse:__AddRequest(1800, war.RedNavalWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Red Moskva", 1, WAREHOUSE.TransportType.SELFPROPELLED)
+				war.RedNavalWarehouse:__Save(5,nil,"RedNavalWarehouse")
 			  elseif EventData.IniTypeName == 'MOLNIYA' then
-				warehouse.RedNavalWarehouse:__AddRequest(1800, warehouse.RedNavalWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Red Molniya", 1, WAREHOUSE.TransportType.SELFPROPELLED)
-				warehouse.RedNavalWarehouse:__Save(5,nil,"RedNavalWarehouse")
+				war.RedNavalWarehouse:__AddRequest(1800, war.RedNavalWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Red Molniya", 1, WAREHOUSE.TransportType.SELFPROPELLED)
+				war.RedNavalWarehouse:__Save(5,nil,"RedNavalWarehouse")
 			  elseif EventData.IniTypeName == 'CV_1143_5' then
 			  
-				local isFromNavalWarehouse = isShipFromNavalWarehouse(inspect(EventData.IniUnitName))	
+				local isFromNavalWarehouse = M.isUnitFromWarehouse(inspect(EventData.IniUnitName))	
 				
 				if isFromNavalWarehouse == true then
 					env.info("***=AW=33COM Naval Warehouse RED Unit: IniTypeName: ".. inspect(EventData.IniTypeName) .. " IniUnitName:" .. inspect(EventData.IniUnitName) .. " - Add to RED Naval Warehouse***")			
-					warehouse.RedNavalWarehouse:__AddRequest(1800, warehouse.RedNavalWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Red Carrier", 1, WAREHOUSE.TransportType.SELFPROPELLED)
-					warehouse.RedNavalWarehouse:__Save(5,nil,"RedNavalWarehouse")
+					war.RedNavalWarehouse:__AddRequest(1800, war.RedNavalWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Red Carrier", 1, WAREHOUSE.TransportType.SELFPROPELLED)
+					war.RedNavalWarehouse:__Save(5,nil,"RedNavalWarehouse")
 				else
 					env.info("***=AW=33COM Ship RED Unit: IniTypeName: ".. inspect(EventData.IniTypeName) .. " IniUnitName:" .. inspect(EventData.IniUnitName) .. " - DO NOT ADD to RED Naval Warehouse.  Ship comes from MIZ***")			
 				end
 				
 			  elseif EventData.IniTypeName == 'Type_071' then
-				warehouse.RedNavalWarehouse:__AddRequest(1800, warehouse.RedNavalWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Red Transport Dock", 1, WAREHOUSE.TransportType.SELFPROPELLED)
-				warehouse.RedNavalWarehouse:__Save(5,nil,"RedNavalWarehouse")	
+				war.RedNavalWarehouse:__AddRequest(1800, war.RedNavalWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Red Transport Dock", 1, WAREHOUSE.TransportType.SELFPROPELLED)
+				war.RedNavalWarehouse:__Save(5,nil,"RedNavalWarehouse")	
 			  
 			  --ground units  	
 			  elseif EventData.IniTypeName == 'MCV-80' then
-				warehouse.BlueNorthernWarehouse:__AddRequest(1800, warehouse.BlueNorthernWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Blue IFV North", 1, WAREHOUSE.TransportType.SELFPROPELLED)
-				warehouse.BlueNorthernWarehouse:__Save(5,nil,"BlueNorthernWarehouse")
+				war.BlueNorthernWarehouse:__AddRequest(1800, war.BlueNorthernWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Blue IFV North", 1, WAREHOUSE.TransportType.SELFPROPELLED)
+				war.BlueNorthernWarehouse:__Save(5,nil,"BlueNorthernWarehouse")
 			  elseif EventData.IniTypeName == 'LAV-25' then
-				warehouse.BlueSouthernWarehouse:__AddRequest(1800, warehouse.BlueSouthernWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Blue IFV South", 1, WAREHOUSE.TransportType.SELFPROPELLED)
-				warehouse.BlueSouthernWarehouse:__Save(10,nil,"BlueSouthernWarehouse")
+				war.BlueSouthernWarehouse:__AddRequest(1800, war.BlueSouthernWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Blue IFV South", 1, WAREHOUSE.TransportType.SELFPROPELLED)
+				war.BlueSouthernWarehouse:__Save(10,nil,"BlueSouthernWarehouse")
 			  elseif EventData.IniTypeName == 'Leopard-2' then 
-				warehouse.BlueNorthernWarehouse:__AddRequest(1800, warehouse.BlueNorthernWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Blue MBT North", 1, WAREHOUSE.TransportType.SELFPROPELLED)
-				warehouse.BlueNorthernWarehouse:__Save(5,nil,"BlueNorthernWarehouse")
+				war.BlueNorthernWarehouse:__AddRequest(1800, war.BlueNorthernWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Blue MBT North", 1, WAREHOUSE.TransportType.SELFPROPELLED)
+				war.BlueNorthernWarehouse:__Save(5,nil,"BlueNorthernWarehouse")
 			  elseif EventData.IniTypeName == 'Merkava_Mk4' then
-				warehouse.BlueSouthernWarehouse:__AddRequest(1800, warehouse.BlueSouthernWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Blue MBT South", 1, WAREHOUSE.TransportType.SELFPROPELLED)
-				warehouse.BlueSouthernWarehouse:__Save(10,nil,"BlueSouthernWarehouse")	
+				war.BlueSouthernWarehouse:__AddRequest(1800, war.BlueSouthernWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Blue MBT South", 1, WAREHOUSE.TransportType.SELFPROPELLED)
+				war.BlueSouthernWarehouse:__Save(10,nil,"BlueSouthernWarehouse")	
 				
 			  elseif EventData.IniTypeName == 'BMD-1' then
-				warehouse.RedNorthernWarehouse:__AddRequest(1800, warehouse.RedNorthernWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Red IFV North", 1, WAREHOUSE.TransportType.SELFPROPELLED)
-				warehouse.RedNorthernWarehouse:__Save(5,nil,"RedNorthernWarehouse")
+				war.RedNorthernWarehouse:__AddRequest(1800, war.RedNorthernWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Red IFV North", 1, WAREHOUSE.TransportType.SELFPROPELLED)
+				war.RedNorthernWarehouse:__Save(5,nil,"RedNorthernWarehouse")
 			  elseif EventData.IniTypeName == 'BMP-1' then
-				warehouse.RedSouthernWarehouse:__AddRequest(1800, warehouse.RedSouthernWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Red IFV South", 1, WAREHOUSE.TransportType.SELFPROPELLED)
-				warehouse.RedSouthernWarehouse:__Save(10,nil,"RedSouthernWarehouse")
+				war.RedSouthernWarehouse:__AddRequest(1800, war.RedSouthernWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Red IFV South", 1, WAREHOUSE.TransportType.SELFPROPELLED)
+				war.RedSouthernWarehouse:__Save(10,nil,"RedSouthernWarehouse")
 			  elseif EventData.IniTypeName == 'T-90' then
-				warehouse.RedNorthernWarehouse:__AddRequest(1800, warehouse.RedNorthernWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Red MBT North", 1, WAREHOUSE.TransportType.SELFPROPELLED)
-				warehouse.RedNorthernWarehouse:__Save(5,nil,"RedNorthernWarehouse")
+				war.RedNorthernWarehouse:__AddRequest(1800, war.RedNorthernWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Red MBT North", 1, WAREHOUSE.TransportType.SELFPROPELLED)
+				war.RedNorthernWarehouse:__Save(5,nil,"RedNorthernWarehouse")
 			  elseif EventData.IniTypeName == 'T-72B' then
-				warehouse.RedSouthernWarehouse:__AddRequest(1800, warehouse.RedSouthernWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Red MBT South", 1, WAREHOUSE.TransportType.SELFPROPELLED)
-				warehouse.RedSouthernWarehouse:__Save(10,nil,"RedSouthernWarehouse")
+				war.RedSouthernWarehouse:__AddRequest(1800, war.RedSouthernWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Red MBT South", 1, WAREHOUSE.TransportType.SELFPROPELLED)
+				war.RedSouthernWarehouse:__Save(10,nil,"RedSouthernWarehouse")
 			  else
 				--nothing
 			end
@@ -361,125 +336,125 @@ function Warehouse_EventHandler:OnEventDead( EventData )
 end
 
 ----Spawn Units after Capture
-function warehouse.BlueNorthernWarehouse:OnAfterCaptured(From, Event, To, Coalition, Country)
---function warehouse.BlueNorthernWarehouse:OnAfterAirbaseCaptured(From,Event,To,Coalition)
+function war.BlueNorthernWarehouse:OnAfterCaptured(From, Event, To, Coalition, Country)
+--function war.BlueNorthernWarehouse:OnAfterAirbaseCaptured(From,Event,To,Coalition)
   if Coalition==coalition.side.BLUE then
     MESSAGE:New("The Northern Warehouse is running at full capacity.",25,"[TEAM]:"):ToBlue()
-    warehouse.BlueNorthernWarehouse:Start()
-    warehouse.BlueNorthernWarehouse:__Save(15,nil,"BlueNorthernWarehouse")
-    warehouse.BlueNorthernWarehouse:AddRequest(warehouse.BlueNorthernWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Blue MBT North", 1, WAREHOUSE.TransportType.SELFPROPELLED)
-    warehouse.BlueNorthernWarehouse:AddRequest(warehouse.BlueNorthernWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Blue IFV North", 2, WAREHOUSE.TransportType.SELFPROPELLED)
+    war.BlueNorthernWarehouse:Start()
+    war.BlueNorthernWarehouse:__Save(15,nil,"BlueNorthernWarehouse")
+    war.BlueNorthernWarehouse:AddRequest(war.BlueNorthernWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Blue MBT North", 1, WAREHOUSE.TransportType.SELFPROPELLED)
+    war.BlueNorthernWarehouse:AddRequest(war.BlueNorthernWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Blue IFV North", 2, WAREHOUSE.TransportType.SELFPROPELLED)
   
   elseif Coalition==coalition.side.RED then
     MESSAGE:New("We have captured Blue Team's Northern Warehouse, they will no longer receive re-enforcements.",25,"[TEAM]:"):ToRed()
     MESSAGE:New("We have lost the Northern Warehouse and no longer able to re-enforce the front.",25,"[TEAM]:"):ToBlue()
-    warehouse.BlueNorthernWarehouse:Stop()
-    warehouse.BlueNorthernWarehouse:__Save(15,nil,"BlueNorthernWarehouse")
+    war.BlueNorthernWarehouse:Stop()
+    war.BlueNorthernWarehouse:__Save(15,nil,"BlueNorthernWarehouse")
     end
 end
 
----- An asset has died request self resupply for it from the warehouse. Would be awesome if I could somehow get the warehouse to recognize the units after a restart. 
+---- An asset has died request self resupply for it from the war. Would be awesome if I could somehow get the warehouse to recognize the units after a restart. 
 -- Until then going to send a request to ALL warehouses dependent on when the type of vehicle that dies, Probably not going to only make the fixed SAM sites at least not based on warehouses. 
---function warehouse.BlueNorthernWarehouse:OnAfterAssetDead(From, Event, To, asset, request)
+--function war.BlueNorthernWarehouse:OnAfterAssetDead(From, Event, To, asset, request)
 --  local asset=asset       --Functional.Warehouse#WAREHOUSE.Assetitem
 --  local request=request   --Functional.Warehouse#WAREHOUSE.Pendingitem
 --
 --  -- Get assignment.
---  local assignment=warehouse.BlueNorthernWarehouse:GetAssignment(request)
---    warehouse.BlueNorthernWarehouse:AddRequest(warehouse.BlueNorthernWarehouse, WAREHOUSE.Descriptor.ATTRIBUTE, asset.attribute, nil, nil, nil, nil, "Resupply from Blue Northern Warehouse")
---    warehouse.BlueNorthernWarehouse:__Save(15,nil,"BlueNorthernWarehouse")
+--  local assignment=war.BlueNorthernWarehouse:GetAssignment(request)
+--    war.BlueNorthernWarehouse:AddRequest(war.BlueNorthernWarehouse, WAREHOUSE.Descriptor.ATTRIBUTE, asset.attribute, nil, nil, nil, nil, "Resupply from Blue Northern Warehouse")
+--    war.BlueNorthernWarehouse:__Save(15,nil,"BlueNorthernWarehouse")
 --end
 
 
-function warehouse.BlueSouthernWarehouse:OnAfterCaptured(From, Event, To, Coalition, Country)
---function  warehouse.BlueSouthernWarehouse:OnAfterAirbaseCaptured(From,Event,To,Coalition)
+function war.BlueSouthernWarehouse:OnAfterCaptured(From, Event, To, Coalition, Country)
+--function  war.BlueSouthernWarehouse:OnAfterAirbaseCaptured(From,Event,To,Coalition)
   if Coalition==coalition.side.BLUE then
     MESSAGE:New("The Southern Warehouse is running at full capacity.",25,"[TEAM]:"):ToBlue()
-    warehouse.BlueSouthernWarehouse:Start()
-    warehouse.BlueSouthernWarehouse:__Save(4,nil,"BlueSouthernWarehouse")
-    warehouse.BlueSouthernWarehouse:AddRequest(warehouse.BlueSouthernWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Blue MBT South", 1, WAREHOUSE.TransportType.SELFPROPELLED)
-    warehouse.BlueSouthernWarehouse:AddRequest(warehouse.BlueSouthernWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Blue IFV South", 2, WAREHOUSE.TransportType.SELFPROPELLED)
+    war.BlueSouthernWarehouse:Start()
+    war.BlueSouthernWarehouse:__Save(4,nil,"BlueSouthernWarehouse")
+    war.BlueSouthernWarehouse:AddRequest(war.BlueSouthernWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Blue MBT South", 1, WAREHOUSE.TransportType.SELFPROPELLED)
+    war.BlueSouthernWarehouse:AddRequest(war.BlueSouthernWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Blue IFV South", 2, WAREHOUSE.TransportType.SELFPROPELLED)
   
   elseif Coalition==coalition.side.RED then
     MESSAGE:New("We have captured Blue Team's Southern Warehouse, they will no longer receive re-enforcements.",25,"[TEAM]:"):ToRed()
     MESSAGE:New("We have lost the Southern Warehouse and no longer able to re-enforce the front.",25,"[TEAM]:"):ToBlue()
-    warehouse.BlueSouthernWarehouse:Stop()
-    warehouse.BlueSouthernWarehouse:__Save(15,nil,"BlueSouthernWarehouse")
+    war.BlueSouthernWarehouse:Stop()
+    war.BlueSouthernWarehouse:__Save(15,nil,"BlueSouthernWarehouse")
     end
 end
 
-function warehouse.RedNorthernWarehouse:OnAfterCaptured(From, Event, To, Coalition, Country)
---function warehouse.RedNorthernWarehouse:OnAfterAirbaseCaptured(From,Event,To,Coalition)
+function war.RedNorthernWarehouse:OnAfterCaptured(From, Event, To, Coalition, Country)
+--function war.RedNorthernWarehouse:OnAfterAirbaseCaptured(From,Event,To,Coalition)
   if Coalition==coalition.side.RED then
     MESSAGE:New("The Northern Warehouse is running at full capacity.",25,"[TEAM]:"):ToRed()
-    warehouse.RedNorthernWarehouse:Start()
-    warehouse.RedNorthernWarehouse:__Save(7,nil,"RedNorthernWarehouse")
-    warehouse.RedNorthernWarehouse:AddRequest(warehouse.RedNorthernWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Red MBT North", 1, WAREHOUSE.TransportType.SELFPROPELLED)
-    warehouse.RedNorthernWarehouse:AddRequest(warehouse.RedNorthernWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Red IFV North", 2, WAREHOUSE.TransportType.SELFPROPELLED)
+    war.RedNorthernWarehouse:Start()
+    war.RedNorthernWarehouse:__Save(7,nil,"RedNorthernWarehouse")
+    war.RedNorthernWarehouse:AddRequest(war.RedNorthernWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Red MBT North", 1, WAREHOUSE.TransportType.SELFPROPELLED)
+    war.RedNorthernWarehouse:AddRequest(war.RedNorthernWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Red IFV North", 2, WAREHOUSE.TransportType.SELFPROPELLED)
   
   elseif Coalition==coalition.side.BLUE then
     MESSAGE:New("We have captured Red Team's Northern Warehouse, they will no longer receive re-enforcements.",25,"[TEAM]:"):ToBlue()
     MESSAGE:New("We have lost the Northern Warehouse and no longer able to re-enforce the front.",25,"[TEAM]:"):ToRed()
-    warehouse.RedNorthernWarehouse:Stop()
-    warehouse.RedNorthernWarehouse:__Save(10,nil,"RedNorthernWarehouse")
+    war.RedNorthernWarehouse:Stop()
+    war.RedNorthernWarehouse:__Save(10,nil,"RedNorthernWarehouse")
     end
 end
 
-function warehouse.RedSouthernWarehouse:OnAfterCaptured(From, Event, To, Coalition, Country)
---function warehouse.RedSouthernWarehouse:OnAfterAirbaseCaptured(From,Event,To,Coalition)
+function war.RedSouthernWarehouse:OnAfterCaptured(From, Event, To, Coalition, Country)
+--function war.RedSouthernWarehouse:OnAfterAirbaseCaptured(From,Event,To,Coalition)
   if Coalition==coalition.side.RED then
     MESSAGE:New("The Southern Warehouse is running at full capacity.",25,"[TEAM]:"):ToRed()
-    warehouse.RedSouthernWarehouse:Start()
-    warehouse.RedSouthernWarehouse:__Save(9,nil,"RedSouthernWarehouse")
-    warehouse.RedSouthernWarehouse:AddRequest(warehouse.RedSouthernWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Red MBT South", 1, WAREHOUSE.TransportType.SELFPROPELLED)
-    warehouse.RedSouthernWarehouse:AddRequest(warehouse.RedSouthernWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Red IFV South", 2, WAREHOUSE.TransportType.SELFPROPELLED)
+    war.RedSouthernWarehouse:Start()
+    war.RedSouthernWarehouse:__Save(9,nil,"RedSouthernWarehouse")
+    war.RedSouthernWarehouse:AddRequest(war.RedSouthernWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Red MBT South", 1, WAREHOUSE.TransportType.SELFPROPELLED)
+    war.RedSouthernWarehouse:AddRequest(war.RedSouthernWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Red IFV South", 2, WAREHOUSE.TransportType.SELFPROPELLED)
   
   elseif Coalition==coalition.side.BLUE then
     MESSAGE:New("We have captured Red Team's Southern Warehouse, they will no longer receive re-enforcements.",25,"[TEAM]:"):ToBlue()
     MESSAGE:New("We have lost the Southern Warehouse and no longer able to re-enforce the front.",25,"[TEAM]:"):ToRed()
-    warehouse.RedSouthernWarehouse:Stop()
-    warehouse.RedSouthernWarehouse:__Save(15,nil,"RedSouthernWarehouse")
+    war.RedSouthernWarehouse:Stop()
+    war.RedSouthernWarehouse:__Save(15,nil,"RedSouthernWarehouse")
     end
 end
 
 --Spawn naval units after capture
-function warehouse.BlueNavalWarehouse:OnAfterCaptured(From, Event, To, Coalition, Country)
---function warehouse.BlueNavalWarehouse:OnAfterAirbaseCaptured(From,Event,To,Coalition)
+function war.BlueNavalWarehouse:OnAfterCaptured(From, Event, To, Coalition, Country)
+--function war.BlueNavalWarehouse:OnAfterAirbaseCaptured(From,Event,To,Coalition)
   if Coalition==coalition.side.BLUE then
     MESSAGE:New("Our Drydock is running at full capacity.",25,"[TEAM]:"):ToBlue()
-    warehouse.BlueNavalWarehouse:Start()
-    warehouse.BlueNavalWarehouse:__Save(15,nil,"BlueNavalWarehouse")
+    war.BlueNavalWarehouse:Start()
+    war.BlueNavalWarehouse:__Save(15,nil,"BlueNavalWarehouse")
 --initial spawn of ships as well as when captured by blue team
-    warehouse.BlueNavalWarehouse:AddRequest(warehouse.BlueNavalWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Blue Type 052C", 2, WAREHOUSE.TransportType.SELFPROPELLED)
-  	warehouse.BlueNavalWarehouse:AddRequest(warehouse.BlueNavalWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Blue Ticonderoga", 2, WAREHOUSE.TransportType.SELFPROPELLED)
-	  warehouse.BlueNavalWarehouse:AddRequest(warehouse.BlueNavalWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Blue Perry", 2, WAREHOUSE.TransportType.SELFPROPELLED)
-	  warehouse.BlueNavalWarehouse:AddRequest(warehouse.BlueNavalWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Blue Carrier", 1, WAREHOUSE.TransportType.SELFPROPELLED)
-    warehouse.BlueNavalWarehouse:AddRequest(warehouse.BlueNavalWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Blue Tarawa", 1, WAREHOUSE.TransportType.SELFPROPELLED)
+    war.BlueNavalWarehouse:AddRequest(war.BlueNavalWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Blue Type 052C", 2, WAREHOUSE.TransportType.SELFPROPELLED)
+  	war.BlueNavalWarehouse:AddRequest(war.BlueNavalWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Blue Ticonderoga", 2, WAREHOUSE.TransportType.SELFPROPELLED)
+	  war.BlueNavalWarehouse:AddRequest(war.BlueNavalWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Blue Perry", 2, WAREHOUSE.TransportType.SELFPROPELLED)
+	  war.BlueNavalWarehouse:AddRequest(war.BlueNavalWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Blue Carrier", 1, WAREHOUSE.TransportType.SELFPROPELLED)
+    war.BlueNavalWarehouse:AddRequest(war.BlueNavalWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Blue Tarawa", 1, WAREHOUSE.TransportType.SELFPROPELLED)
   
   elseif Coalition==coalition.side.RED then
     MESSAGE:New("We have captured Blue Team's Drydock! They will no longer be able to reinforce their fleet!",25,"[TEAM]:"):ToRed()
     MESSAGE:New("We have lost our Drydock and will no longer able to re-enforce the fleet.",25,"[TEAM]:"):ToBlue()
-    warehouse.BlueNavalWarehouse:Stop()
-    warehouse.BlueNavalWarehouse:__Save(15,nil,"BlueNavalWarehouse")
+    war.BlueNavalWarehouse:Stop()
+    war.BlueNavalWarehouse:__Save(15,nil,"BlueNavalWarehouse")
     end
 end
 
-function warehouse.RedNavalWarehouse:OnAfterCaptured(From, Event, To, Coalition, Country)
---function warehouse.RedSouthernWarehouse:OnAfterAirbaseCaptured(From,Event,To,Coalition)
+function war.RedNavalWarehouse:OnAfterCaptured(From, Event, To, Coalition, Country)
+--function war.RedSouthernWarehouse:OnAfterAirbaseCaptured(From,Event,To,Coalition)
   if Coalition==coalition.side.RED then
     MESSAGE:New("Our Drydock is running at full capacity.",25,"[TEAM]:"):ToRed()
-    warehouse.RedNavalWarehouse:Start()
-    warehouse.RedNavalWarehouse:__Save(9,nil,"RedNavalWarehouse")	
+    war.RedNavalWarehouse:Start()
+    war.RedNavalWarehouse:__Save(9,nil,"RedNavalWarehouse")	
 --initial spawn of ships as well as when captured by red team
-    warehouse.RedNavalWarehouse:AddRequest(warehouse.RedNavalWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Red Type 054A", 2, WAREHOUSE.TransportType.SELFPROPELLED)
-    warehouse.RedNavalWarehouse:AddRequest(warehouse.RedNavalWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Red Molniya", 2, WAREHOUSE.TransportType.SELFPROPELLED)
-	  warehouse.RedNavalWarehouse:AddRequest(warehouse.RedNavalWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Red Moskva", 2, WAREHOUSE.TransportType.SELFPROPELLED)
-    warehouse.RedNavalWarehouse:AddRequest(warehouse.RedNavalWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Red Carrier", 1, WAREHOUSE.TransportType.SELFPROPELLED)
-	  warehouse.RedNavalWarehouse:AddRequest(warehouse.RedNavalWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Red Transport Dock", 1, WAREHOUSE.TransportType.SELFPROPELLED)
+    war.RedNavalWarehouse:AddRequest(war.RedNavalWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Red Type 054A", 2, WAREHOUSE.TransportType.SELFPROPELLED)
+    war.RedNavalWarehouse:AddRequest(war.RedNavalWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Red Molniya", 2, WAREHOUSE.TransportType.SELFPROPELLED)
+	  war.RedNavalWarehouse:AddRequest(war.RedNavalWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Red Moskva", 2, WAREHOUSE.TransportType.SELFPROPELLED)
+    war.RedNavalWarehouse:AddRequest(war.RedNavalWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Red Carrier", 1, WAREHOUSE.TransportType.SELFPROPELLED)
+	  war.RedNavalWarehouse:AddRequest(war.RedNavalWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Red Transport Dock", 1, WAREHOUSE.TransportType.SELFPROPELLED)
   elseif Coalition==coalition.side.BLUE then
     MESSAGE:New("We have captured Red Team's Drydock! They will no longer be able to reinforce their fleet!",25,"[TEAM]:"):ToBlue()
     MESSAGE:New("We have lost our Drydock and will no longer able to re-enforce the fleet.",25,"[TEAM]:"):ToRed()
-    warehouse.RedNavalWarehouse:Stop()
-    warehouse.RedNavalWarehouse:__Save(15,nil,"RedNavalWarehouse")
+    war.RedNavalWarehouse:Stop()
+    war.RedNavalWarehouse:__Save(15,nil,"RedNavalWarehouse")
     end
 end
