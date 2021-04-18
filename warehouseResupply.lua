@@ -9,6 +9,11 @@
 -- Notes: The above items were not possible as everything was hardcoded and checked only at type level.  If you added a specific type to RED it was not possible to add it to BLUE.
 -- or it was not possible to sling tanks if they were in the warehouse
 
+-- you can now configure your warehouses and add new once without programming
+-- add a warhouse and a zone to the map and copy their names into here...then define the unit types for the warehouse plus coalition and type(naval, ground) of warhouse and you're done.
+-- warehouse and zone names must be unique
+-- count is per unit type for 1 round: 10 MOSCOWs, 10 Type_054A, 40 T90s
+
 local inspect = require("inspect")
 local utils = require("utils")
 
@@ -18,21 +23,28 @@ local shipRespawnDelay = 1800
 local vehicleRespawnDelay = 1800
 local warUnitPrefix = "Resupply" -- do not change this
 
--- you can now configure your warehouses and add new once without programming
--- add a warhouse and a zone to the map and copy their names into here...then define the unit types for the warehouse plus coalition and type(naval, ground) of warhouse and you're done.
--- warehouse and zone names must be unique
-war.warehouses = 
+war.warList = 
 {
     -- BLUE warehouses
-    ["Blue Northern Warehouse"] = {type = "ground", side = 2, count = 40, zone = "Blue Northern Warehouse Zone", unitTypes = {"MCV-80","Leopard-2"}},    -- North units must be different than South, otherwise you will get double units I think
-    ["Blue Southern Warehouse"] = {type = "ground", side = 2, count = 40, zone = "Blue Southern Warehouse Zone", unitTypes = {"LAV-25", "Merkava_Mk4"}},  -- South units must be different than North  
-    ["Blue Naval Warehouse"] = {type = "naval", side = 2, count = 10, zone = "Blue Naval Zone", unitTypes = {"CVN_73", "Type_052C", "Type_054A", "MOSCOW", "TICONDEROG", "PERRY", "MOLNIYA", "LHA_Tarawa"}}, -- ships can use same units
+    ["BlueNorthernWarehouse"] = {name="Blue Northern Warehouse", type = "ground", side = 2, count = 40, zone = "Blue Northern Warehouse Zone", unitTypes = {"MCV-80","Leopard-2"}},    -- North units must be different than South, otherwise you will get double units I think
+    ["BlueSouthernWarehouse"] = {name="Blue Southern Warehouse", type = "ground", side = 2, count = 40, zone = "Blue Southern Warehouse Zone", unitTypes = {"LAV-25", "Merkava_Mk4"}},  -- South units must be different than North  
+    ["BlueNavalWarehouse"] = {name="Blue Naval Warehouse", type = "naval", side = 2, count = 10, zone = "Blue Naval Zone", unitTypes = {"CVN_73", "Type_052C", "Type_054A", "MOSCOW", "TICONDEROG", "PERRY", "MOLNIYA", "LHA_Tarawa"}}, -- ships can use same units
     
     -- RED warehouses 
-    ["Red Northern Warehouse"] = {type = "ground", side = 1, count = 40, zone="Red Northern Warehouse Zone", unitTypes = {"BMD-1","T-90"}},    -- North units must be different than South, otherwise you will get double units I think
-    ["Red Southern Warehouse"] = {type = "ground", side = 1, count = 40, zone="Red Southern Warehouse Zone", unitTypes = {"BMP-1", "T-72B"}},  -- South units must be different than North
-    ["Red Naval Warehouse"] = {type = "naval", side = 1, count = 10, zone = "Red Naval Zone", unitTypes = {"CV_1143_5", "Type_052C", "Type_054A", "MOSCOW", "TICONDEROG", "PERRY", "MOLNIYA", "Type_071"}}, -- ships can use same units
+    ["RedNorthernWarehouse"] = {name="Red Northern Warehouse", type = "ground", side = 1, count = 40, zone="Red Northern Warehouse Zone", unitTypes = {"BMD-1","T-90"}},    -- North units must be different than South, otherwise you will get double units I think
+    ["RedSouthernWarehouse"] = {name="Red Southern Warehouse", type = "ground", side = 1, count = 40, zone="Red Southern Warehouse Zone", unitTypes = {"BMP-1", "T-72B"}},  -- South units must be different than North
+    ["RedNavalWarehouse"] = {name="Red Naval Warehouse", type = "naval", side = 1, count = 10, zone = "Red Naval Zone", unitTypes = {"CV_1143_5", "Type_052C", "Type_054A", "MOSCOW", "TICONDEROG", "PERRY", "MOLNIYA", "Type_071"}}, -- ships can use same units
 }
+
+-- Find warehouses from the mission and create them
+for i, _item in (war.warList) do  
+  war[i] = WAREHOUSE:New(STATIC:FindByName(_item.name))  
+end
+
+
+
+
+
 
 ----Defines the warehouses
 --the string is the name in the mission editor
