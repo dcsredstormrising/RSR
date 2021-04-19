@@ -28,24 +28,24 @@ local warehouses =
 {
     ["BlueNorthernWarehouse"] = {type="ground", side=2, zone="Blue Northern Warehouse Zone", 
       unitTypes = {
-        {name="MCV-80", template="Resupply Blue IFV North", iniSpawnCount=2, count=40, spawnDelay=1800}, 
-        {name="Leopard-2", template="Resupply Blue MBT North", iniSpawnCount=1, count=40, spawnDelay=1800}
+        {name="MCV-80", template="Resupply Blue IFV North", spawnCount=2, count=40, spawnDelay=10, respawnDelay=1800}, 
+        {name="Leopard-2", template="Resupply Blue MBT North", spawnCount=1, count=40, spawnDelay=10, respawnDelay=1800}
       }},    
     ["BlueSouthernWarehouse"] = {type="ground", side=2, zone="Blue Southern Warehouse Zone", 
       unitTypes = {
-        {name="LAV-25", template="Resupply Blue IFV South", iniSpawnCount=2, count=40, spawnDelay=1800},
-        {name="Merkava_Mk4", template="Resupply Blue MBT South", iniSpawnCount=1, count=40, spawnDelay=1800}
+        {name="LAV-25", template="Resupply Blue IFV South", spawnCount=2, count=40, spawnDelay=10, respawnDelay=1800},
+        {name="Merkava_Mk4", template="Resupply Blue MBT South", spawnCount=1, count=40, spawnDelay=10, respawnDelay=1800}
       }},  
     ["BlueNavalWarehouse"] = {type="naval", side=2, zone="Blue Naval Zone", 
       unitTypes = {
-        {name="CVN_73", template="Resupply Blue Carrier", count=10, spawnDelay=1800},
-        {name="LHA_Tarawa", template="Resupply Blue Tarawa", count=10, spawnDelay=1800},
-        {name="Type_052C", template="Resupply Blue Type 052C", count=8, spawnDelay=3600},
-        {name="Type_054A", template="Resupply Blue Type 054A", count=6, spawnDelay=3600},        
-        {name="TICONDEROG", template="Resupply Blue Ticonderoga", count=8, spawnDelay=1800},
-        {name="PERRY", template="Resupply Blue Perry", count=8, spawnDelay=1800},
-        {name="MOSCOW", template="Resupply Blue Moskva", count=6, spawnDelay=3600},
-        {name="MOLNIYA", template="Resupply Blue Molniya", count=8, spawnDelay=1800},        
+        {name="CVN_73", template="Resupply Blue Carrier", spawnCount=1, count=10, spawnDelay=10, respawnDelay=10},
+        {name="LHA_Tarawa", template="Resupply Blue Tarawa", spawnCount=1, count=10, spawnDelay=10, respawnDelay=10},
+        {name="Type_052C", template="Resupply Blue Type 052C", spawnCount=1, count=6, spawnDelay=10, respawnDelay=3600},
+        {name="Type_054A", template="Resupply Blue Type 054A", spawnCount=1, count=6, spawnDelay=3600, respawnDelay=3600},
+        {name="TICONDEROG", template="Resupply Blue Ticonderoga", spawnCount=1, count=8, spawnDelay=10, respawnDelay=1800},
+        {name="PERRY", template="Resupply Blue Perry", spawnCount=1, count=8, spawnDelay=10, respawnDelay=1800},
+        {name="MOSCOW", template="Resupply Blue Moskva", spawnCount=1, count=6, spawnDelay=10, respawnDelay=3600},
+        {name="MOLNIYA", template="Resupply Blue Molniya", spawnCount=1, count=8, spawnDelay=10, respawnDelay=1800},
       }},           
     ["RedNorthernWarehouse"] = {type="ground", side=1, zone="Red Northern Warehouse Zone", 
       unitTypes = {
@@ -59,14 +59,14 @@ local warehouses =
       }},     
     ["RedNavalWarehouse"] = {type="naval", side=1, zone="Red Naval Zone", 
       unitTypes = {
-        {name="CV_1143_5", template="Resupply Red Carrier", count=10, spawnDelay=1800},
-        {name="Type_071", template="Resupply Red Transport Dock", count=10, spawnDelay=1800},
-        {name="Type_052C", template="Resupply Red Type 052C", count=8, spawnDelay=3600},
-        {name="Type_054A", template="Resupply Red Type 054A", count=6, spawnDelay=3600},        
-        {name="TICONDEROG", template="Resupply Red Ticonderoga", count=8, spawnDelay=1800},
-        {name="PERRY", template="Resupply Red Perry", count=8, spawnDelay=1800},
-        {name="MOSCOW", template="Resupply Red Moskva", count=6, spawnDelay=3600},
-        {name="MOLNIYA", template="Resupply Red Molniya", count=8, spawnDelay=1800},
+        {name="CV_1143_5", template="Resupply Red Carrier", spawnCount=1, count=10, spawnDelay=10, respawnDelay=10},
+        {name="Type_071", template="Resupply Red Transport Dock", spawnCount=1, count=10, spawnDelay=10, respawnDelay=10},
+        {name="Type_052C", template="Resupply Red Type 052C", spawnCount=1, count=6, spawnDelay=10, respawnDelay=3600},
+        {name="Type_054A", template="Resupply Red Type 054A", spawnCount=1, count=6, spawnDelay=3600, respawnDelay=3600},
+        {name="TICONDEROG", template="Resupply Red Ticonderoga", spawnCount=1, count=8, spawnDelay=10, respawnDelay=1800},
+        {name="PERRY", template="Resupply Red Perry", spawnCount=1, count=8, spawnDelay=10, respawnDelay=1800},
+        {name="MOSCOW", template="Resupply Red Moskva", spawnCount=1, count=6, spawnDelay=10, respawnDelay=3600},
+        {name="MOLNIYA", template="Resupply Red Molniya", spawnCount=1, count=8, spawnDelay=10, respawnDelay=1800},
       }},
 }
 
@@ -109,6 +109,7 @@ end
 
 -- add assets to warehouses during new campaign start
 local function AddAssetsToWarehouse(warehouse, assets)
+  env.info("***=AW=33COM AddAssetsToWarehouse.")
   if warehouse ~= nil and assets ~= nil and assets.unitTypes ~= nil then
     for i,asset in pairs (assets) do
       warehouse:AddAsset(asset.template, asset.count)
@@ -118,6 +119,7 @@ end
 
 --When a unit dies we check if it came from the warhouse, if it did, we add a request to respawn it
 function Warehouse_EventHandler:OnEventDead(EventData)
+  
   if EventData.IniTypeName ~= nil and EventData.IniUnitName ~= nil then
     if M.isUnitFromWarehouse(inspect(EventData.IniUnitName)) then
       env.info("***=AW=33COM Unit is from the warehouse: IniTypeName: ".. inspect(EventData.IniTypeName) .. " IniUnitName:" .. inspect(EventData.IniUnitName) .. " - Add to Warehouse***")
@@ -125,7 +127,7 @@ function Warehouse_EventHandler:OnEventDead(EventData)
       local warehouseName = {}
       local warehouse = {}  -- get the affected warehouse details from the template
       local unit = {} -- get details from the template of the unit that died 
-      warehouse[1]:__AddRequest(unit.spawnDelay, warehouseName, WAREHOUSE.Descriptor.GROUPNAME, unit.template, 1, WAREHOUSE.TransportType.SELFPROPELLED)          
+      warehouse[1]:__AddRequest(unit.respawnDelay, warehouseName, WAREHOUSE.Descriptor.GROUPNAME, unit.template, 1, WAREHOUSE.TransportType.SELFPROPELLED)          
       warehouse[1]:__Save(saveDelay,nil,warehouseName)
       
     else
@@ -135,14 +137,17 @@ function Warehouse_EventHandler:OnEventDead(EventData)
 end
 
 --When a warehouse is captured we either stop and start the warehouse depending on the coaltion
+-- this runs on session start I believe, hence those full capacity messages
 function Warehouse_EventHandler:OnAfterCaptured(From, Event, To, Coalition, Country)
     
+  env.info("***=AW=33COM OnAfterCaptured")
+  
   -- may need to figure out what actually gets captured here
   local warehouseName = {} 
   local warehouse = {} --figure out which warehouse was captured
   local unitTypes = {} -- get details from the template of the unit types for a given warehouse
   
-  if Coalition==warehouse.side then
+  if Coalition==warehouse.side then -- if coalition matches warehouse produces
     if (Coalition == coalition.side.BLUE) then
       MESSAGE:New("The " .. warehouseName .. " is running at full capacity.",25,"[TEAM]:"):ToBlue()
     else
@@ -154,12 +159,12 @@ function Warehouse_EventHandler:OnAfterCaptured(From, Event, To, Coalition, Coun
     
     if warehouseName.unitTypes ~= nil then    
       for i, unit in pairs(warehouseName.unitTypes) do
-        warehouse[1]:__AddRequest(warehouseName, WAREHOUSE.Descriptor.GROUPNAME, unit.template, unit.iniSpawnCount, WAREHOUSE.TransportType.SELFPROPELLED)    
+        warehouse[1]:AddRequest(warehouseName, WAREHOUSE.Descriptor.GROUPNAME, unit.template, unit.iniSpawnCount, WAREHOUSE.TransportType.SELFPROPELLED)    
       end
     end        
-  else
+  else  -- if coalition does not matche warehouse produces
     
-    if (Coalition == coalition.side.BLUE) then
+    if (Coalition == coalition.side.BLUE) then  
       MESSAGE:New("We have captured ".. Coalition .." Team's ".. warehouseName ..", they will no longer receive re-enforcements.",25,"[TEAM]:"):ToBlue()
       MESSAGE:New("We have lost the ".. warehouseName .." and no longer able to re-enforce the front.",25,"[TEAM]:"):ToBlue()  
     else
