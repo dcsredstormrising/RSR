@@ -5,7 +5,8 @@
 -- 2. Be able to use the same type of ground units in the static mission and dynamic warehouses
 -- 3. Be able to use the same type of units across coalitions.
 -- 4. Be able to add warehouses through configuration.
--- 5. Be able to configure this without a programmer
+-- 5. Be able to add new warhouses to the map and configure them here and make them work withou programming
+-- 6. Be able to configure this without a programmer
 -- Notes: The above items were not possible as everything was hardcoded and checked only at type level.  If you added a specific type to RED it was not possible to add it to BLUE.
 -- or it was not possible to sling tanks if they were in the warehouse
 
@@ -16,162 +17,53 @@
 
 local inspect = require("inspect")
 local utils = require("utils")
-
-local warehouse= {}
 local warRespawnDelay = 3600
 local shipRespawnDelay = 1800
 local vehicleRespawnDelay = 1800
 local warUnitPrefix = "Resupply" -- do not change this
-
-warehouse.List = 
+local warehouses = 
 {
-    -- BLUE warehouses
     ["BlueNorthernWarehouse"] = {type = "ground", side = 2, count = 40, zone = "Blue Northern Warehouse Zone", unitTypes = {"MCV-80","Leopard-2"}},    -- North units must be different than South, otherwise you will get double units I think
     ["BlueSouthernWarehouse"] = {type = "ground", side = 2, count = 40, zone = "Blue Southern Warehouse Zone", unitTypes = {"LAV-25", "Merkava_Mk4"}},  -- South units must be different than North  
-    ["BlueNavalWarehouse"] = {type = "naval", side = 2, count = 10, zone = "Blue Naval Zone", unitTypes = {"CVN_73", "Type_052C", "Type_054A", "MOSCOW", "TICONDEROG", "PERRY", "MOLNIYA", "LHA_Tarawa"}}, -- ships can use same units
-    
-    -- RED warehouses 
+    ["BlueNavalWarehouse"] = {type = "naval", side = 2, count = 10, zone = "Blue Naval Zone", unitTypes = {"CVN_73", "Type_052C", "Type_054A", "MOSCOW", "TICONDEROG", "PERRY", "MOLNIYA", "LHA_Tarawa"}}, -- ships can use same units   
     ["RedNorthernWarehouse"] = {type = "ground", side = 1, count = 40, zone="Red Northern Warehouse Zone", unitTypes = {"BMD-1","T-90"}},    -- North units must be different than South, otherwise you will get double units I think
     ["RedSouthernWarehouse"] = {type = "ground", side = 1, count = 40, zone="Red Southern Warehouse Zone", unitTypes = {"BMP-1", "T-72B"}},  -- South units must be different than North
     ["RedNavalWarehouse"] = {type = "naval", side = 1, count = 10, zone = "Red Naval Zone", unitTypes = {"CV_1143_5", "Type_052C", "Type_054A", "MOSCOW", "TICONDEROG", "PERRY", "MOLNIYA", "Type_071"}}, -- ships can use same units
 }
 
--- Find warehouses from the mission and create them
-for i, _item in (warehouse.List) do  
-  warehouse[i] = WAREHOUSE:New(STATIC:FindByName(_item.name))  
+-- Find them on the map and create
+for i, warehouse in pairs(warehouses) do
+  table.insert(warehouse, WAREHOUSE:New(STATIC:FindByName(i)))
 end
 
 -- we check if the warehouse files exist, if they do, we load saved values from them
 if M.file_exists(warehouse.List[1]) then --note this only checks one file, which assumes if 1 file is there, they are all there...limitation
-  env.info("***=AW=33COM Warehouses loaded from files.")
   
-  -- load and start  
-  for i, _war in (warehouse) do    
-    _war:Load(nil,_war)
-    _war:Start()
-    _war.SetRespawnAfterDestroyed(warRespawnDelay)     
+  env.info("***=AW=33COM Warehouses loaded from files.")
+
+  -- Load them from files, start, setup zone, and set respawn delay
+  for i, warehouse in pairs(warehouses) do    
+    if warehouse[1]:GetCoalition()==i.side then 
+      warehouse[1]:Load(nil, i)
+      warehouse[1]:Start()    
+      warehouse[1]:SetRespawnAfterDestroyed(warRespawnDelay)
+      warehouse[1]:SetSpawnZone(ZONE_POLYGON:New(i.zone, GROUP:FindByName(i.zone))):SetReportOff()
+    end    
   end
   
 else  
   -- brand new campaign, we create the warehouse files first  
   env.info("***=AW=33COM Warehouses loaded for the first time.")
   
-  -- start
-  for i, _war in (warehouse) do 
-    _war:Start()
-    _war.SetRespawnAfterDestroyed(warRespawnDelay)     
-  end    
+  --start, setup zone, and set respawn delay
+  for i, warehouse in pairs(warehouses) do
+    warehouse[1]:Start()    
+    warehouse[1]:SetRespawnAfterDestroyed(warRespawnDelay)
+    warehouse[1]:SetSpawnZone(ZONE_POLYGON:New(i.zone, GROUP:FindByName(i.zone))):SetReportOff()
+  end 
   
-  -- add assets to warehouses
-  
-end
-
-
-
-----Defines the warehouses
---the string is the name in the mission editor
-warehouse.BlueNorthernWarehouse=WAREHOUSE:New(STATIC:FindByName("Blue Northern Warehouse"))
-warehouse.BlueNavalWarehouse=WAREHOUSE:New(STATIC:FindByName("Blue Naval Warehouse"))
-warehouse.BlueSouthernWarehouse=WAREHOUSE:New(STATIC:FindByName("Blue Southern Warehouse"))
-warehouse.RedNorthernWarehouse=WAREHOUSE:New(STATIC:FindByName("Red Northern Warehouse"))
-warehouse.RedSouthernWarehouse=WAREHOUSE:New(STATIC:FindByName("Red Southern Warehouse"))
-warehouse.RedNavalWarehouse=WAREHOUSE:New(STATIC:FindByName("Red Naval Warehouse"))
-
-----If previous file exists it will load last saved warehouse
-if M.file_exists("BlueNorthernWarehouse") then --Script has been run before, so we need to load the saved values
-  env.info("Existing warehouses, loading from File.")
-  warehouse.BlueNorthernWarehouse:Load(nil,"BlueNorthernWarehouse")
-  warehouse.BlueSouthernWarehouse:Load(nil,"BlueSouthernWarehouse")
-  warehouse.BlueNavalWarehouse:Load(nil,"BlueNavalWarehouse")
-  warehouse.RedNorthernWarehouse:Load(nil,"RedNorthernWarehouse")
-  warehouse.RedSouthernWarehouse:Load(nil,"RedSouthernWarehouse")
-  warehouse.RedNavalWarehouse:Load(nil,"RedNavalWarehouse")
-  warehouse.BlueNorthernWarehouse:Start()
-  warehouse.BlueNorthernWarehouse:SetRespawnAfterDestroyed(3600)
-  warehouse.BlueSouthernWarehouse:Start()
-  warehouse.BlueSouthernWarehouse:SetRespawnAfterDestroyed(3600)
-  warehouse.BlueNavalWarehouse:Start()
-  warehouse.BlueNavalWarehouse:SetRespawnAfterDestroyed(3600)
-  warehouse.RedNorthernWarehouse:Start()
-  warehouse.RedNorthernWarehouse:SetRespawnAfterDestroyed(3600)
-  warehouse.RedSouthernWarehouse:Start()
-  warehouse.RedSouthernWarehouse:SetRespawnAfterDestroyed(3600)
-  warehouse.RedNavalWarehouse:Start()
-  warehouse.RedNavalWarehouse:SetRespawnAfterDestroyed(3600)
-  
-  if warehouse.BlueNorthernWarehouse:GetCoalition()==2 then
-    warehouse.BlueNorthernWarehouse:Start()
-    warehouse.BlueNorthernWarehouse:SetRespawnAfterDestroyed(3600)
-  elseif warehouse.BlueNorthernWarehouse:GetCoalition()~=2 then
-    warehouse.BlueNorthernWarehouse:Stop()
-    warehouse.BlueNorthernWarehouse:SetRespawnAfterDestroyed(3600)
-  else    
-  end
-  
-  if warehouse.BlueSouthernWarehouse:GetCoalition()==2 then
-      warehouse.BlueSouthernWarehouse:Start()
-      warehouse.BlueSouthernWarehouse:SetRespawnAfterDestroyed(3600)
-    elseif warehouse.BlueSouthernWarehouse:GetCoalition()~=2 then
-      warehouse.BlueSouthernWarehouse:Stop()
-      warehouse.BlueSouthernWarehouse:SetRespawnAfterDestroyed(3600)    
-    else
-  end
-  
-  if warehouse.BlueNavalWarehouse:GetCoalition()==2 then
-      warehouse.BlueNavalWarehouse:Start()
-      warehouse.BlueNavalWarehouse:SetRespawnAfterDestroyed(3600)
-    elseif warehouse.BlueNavalWarehouse:GetCoalition()~=2 then
-      warehouse.BlueNavalWarehouse:Stop()
-      warehouse.BlueNavalWarehouse:SetRespawnAfterDestroyed(3600)  
-    else
-  end
-    
-  if warehouse.RedNorthernWarehouse:GetCoalition()==1 then
-      warehouse.RedNorthernWarehouse:Start()
-      warehouse.RedNorthernWarehouse:SetRespawnAfterDestroyed(3600)
-    elseif warehouse.RedNorthernWarehouse:GetCoalition()~=1 then
-      warehouse.RedNorthernWarehouse:Stop()
-      warehouse.RedNorthernWarehouse:SetRespawnAfterDestroyed(3600)  
-    else
-  end
-  
-  if warehouse.RedSouthernWarehouse:GetCoalition()==1 then
-      warehouse.RedSouthernWarehouse:Start()
-      warehouse.RedSouthernWarehouse:SetRespawnAfterDestroyed(3600)
-    elseif warehouse.RedSouthernWarehouse:GetCoalition()~=1 then
-      warehouse.RedSouthernWarehouse:Stop()
-      warehouse.RedSouthernWarehouse:SetRespawnAfterDestroyed(3600)    
-  end
-  
-  if warehouse.RedNavalWarehouse:GetCoalition()==1 then
-      warehouse.RedNavalWarehouse:Start()
-      warehouse.RedNavalWarehouse:SetRespawnAfterDestroyed(3600)
-    elseif warehouse.RedNavalWarehouse:GetCoalition()~=1 then
-      warehouse.RedNavalWarehouse:Stop()
-      warehouse.RedNavalWarehouse:SetRespawnAfterDestroyed(3600)  
-    else
-  end
-  
-else  
-    --Fresh Campaign, we starts warehouses, and loads assets
-  warehouse.BlueNorthernWarehouse:Start()
-  warehouse.BlueNorthernWarehouse:SetRespawnAfterDestroyed(3600)
-  
-  warehouse.BlueSouthernWarehouse:Start()
-  warehouse.BlueSouthernWarehouse:SetRespawnAfterDestroyed(3600)
-  
-  warehouse.BlueNavalWarehouse:Start()
-  warehouse.BlueNavalWarehouse:SetRespawnAfterDestroyed(3600)
-  
-  warehouse.RedNorthernWarehouse:Start()
-  warehouse.RedNorthernWarehouse:SetRespawnAfterDestroyed(3600)
-  
-  warehouse.RedSouthernWarehouse:Start()
-  warehouse.RedSouthernWarehouse:SetRespawnAfterDestroyed(3600)
-  
-  warehouse.RedNavalWarehouse:Start()
-  warehouse.RedNavalWarehouse:SetRespawnAfterDestroyed(3600)
-  
+  -- add assets to warehouses since this is new campaign
+      --Fresh Campaign, we starts warehouses, and loads assets
   ----Add Assets to the warehouses on new campaign
     --EXAMPLE*** WAREHOUSE:AddAsset(group, ngroups, forceattribute, forcecargobay, forceweight, loadradius, skill, liveries,    assignment) 
   warehouse.BlueNorthernWarehouse:AddAsset("Resupply Blue MBT North", 40) --Counted as tank  in stock
@@ -199,69 +91,6 @@ else
   warehouse.RedNavalWarehouse:AddAsset("Resupply Red Transport Dock", 10)
 end
 
-if warehouse.BlueNorthernWarehouse:GetCoalition()==2 or warehouse.BlueNorthernWarehouse:GetCoalition()==0 then
-    warehouse.BlueNorthernWarehouse:Start()
-    warehouse.BlueNorthernWarehouse:SetRespawnAfterDestroyed(3600)
-  elseif warehouse.BlueNorthernWarehouse:GetCoalition()~=2 then
-    warehouse.BlueNorthernWarehouse:Stop()
-    warehouse.BlueNorthernWarehouse:SetRespawnAfterDestroyed(3600)
-  else    
-end
-
-if warehouse.BlueSouthernWarehouse:GetCoalition()==2 or warehouse.BlueSouthernWarehouse:GetCoalition()==0 then
-    warehouse.BlueSouthernWarehouse:Start()
-    warehouse.BlueSouthernWarehouse:SetRespawnAfterDestroyed(3600)
-  elseif warehouse.BlueSouthernWarehouse:GetCoalition()~=2 then
-    warehouse.BlueSouthernWarehouse:Stop()
-    warehouse.BlueSouthernWarehouse:SetRespawnAfterDestroyed(3600)    
-  else
-end
-
-if warehouse.BlueNavalWarehouse:GetCoalition()==2 or warehouse.BlueNavalWarehouse:GetCoalition()==0 then
-    warehouse.BlueNavalWarehouse:Start()
-    warehouse.BlueNavalWarehouse:SetRespawnAfterDestroyed(3600)
-  elseif warehouse.BlueNavalWarehouse:GetCoalition()~=2 then
-    warehouse.BlueNavalWarehouse:Stop()
-    warehouse.BlueNavalWarehouse:SetRespawnAfterDestroyed(3600)
-  else    
-end
-
-if warehouse.RedNorthernWarehouse:GetCoalition()==1 or warehouse.RedNorthernWarehouse:GetCoalition()==0 then
-    warehouse.RedNorthernWarehouse:Start()
-    warehouse.RedNorthernWarehouse:SetRespawnAfterDestroyed(3600)
-  elseif warehouse.RedNorthernWarehouse:GetCoalition()~=1 then
-    warehouse.RedNorthernWarehouse:Stop()
-    warehouse.RedNorthernWarehouse:SetRespawnAfterDestroyed(3600)  
-  else
-end
-
-if warehouse.RedSouthernWarehouse:GetCoalition()==1 or warehouse.RedSouthernWarehouse:GetCoalition()==0 then
-    warehouse.RedSouthernWarehouse:Start()
-    warehouse.RedSouthernWarehouse:SetRespawnAfterDestroyed(3600)
-  elseif warehouse.RedSouthernWarehouse:GetCoalition()~=1 then
-    warehouse.RedSouthernWarehouse:Stop()
-    warehouse.RedSouthernWarehouse:SetRespawnAfterDestroyed(3600)    
-end
-
-if warehouse.RedNavalWarehouse:GetCoalition()==1 or warehouse.RedNavalWarehouse:GetCoalition()==0 then
-    warehouse.RedNavalWarehouse:Start()
-    warehouse.RedNavalWarehouse:SetRespawnAfterDestroyed(3600)
-  elseif warehouse.RedNavalWarehouse:GetCoalition()~=1 then
-    warehouse.RedNavalWarehouse:Stop()
-    warehouse.RedNavalWarehouse:SetRespawnAfterDestroyed(3600)  
-  else
-end
-
-----Set Spawn Zones for the warehouses
-warehouse.BlueNorthernWarehouse:SetSpawnZone(ZONE_POLYGON:New("Blue Northern Warehouse Spawn Zone #001", GROUP:FindByName("Blue Northern Warehouse Spawn Zone #001"))):SetReportOff()
-warehouse.BlueSouthernWarehouse:SetSpawnZone(ZONE_POLYGON:New("Blue Southern Warehouse Spawn Zone #001", GROUP:FindByName("Blue Southern Warehouse Spawn Zone #001"))):SetReportOff()
-
-warehouse.BlueNavalWarehouse:SetPortZone(ZONE_POLYGON:NewFromGroupName("Blue Naval Spawn Zone", GROUP:FindByName("Blue Naval Spawn Zone"))):SetReportOff()
-
-warehouse.RedNorthernWarehouse:SetSpawnZone(ZONE_POLYGON:New("Red Northern Warehouse Spawn Zone #001", GROUP:FindByName("Red Northern Warehouse Spawn Zone #001"))):SetReportOff()
-warehouse.RedSouthernWarehouse:SetSpawnZone(ZONE_POLYGON:New("Red Southern Warehouse Spawn Zone #001", GROUP:FindByName("Red Southern Warehouse Spawn Zone #001"))):SetReportOff()
-
-warehouse.RedNavalWarehouse:SetPortZone(ZONE_POLYGON:NewFromGroupName("Red Naval Spawn Zone", GROUP:FindByName("Red Naval Spawn Zone"))):SetReportOff()
 
 Warehouse_EventHandler = EVENTHANDLER:New()
 Warehouse_EventHandler:HandleEvent( EVENTS.Dead )
