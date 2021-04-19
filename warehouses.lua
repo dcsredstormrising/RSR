@@ -16,7 +16,7 @@
 
 local inspect = require("inspect")
 local utils = require("utils")
-local warRespawnDelay = 3600
+local warehouseRespawnDelay = 3600
 local warehouses = 
 {
     ["BlueNorthernWarehouse"] = {type="ground", side=2, zone="Blue Northern Warehouse Zone", 
@@ -78,7 +78,7 @@ if M.file_exists(warehouse.List[1]) then --note this only checks one file, which
     if warehouse[1]:GetCoalition()==i.side then 
       warehouse[1]:Load(nil, i)
       warehouse[1]:Start()    
-      warehouse[1]:SetRespawnAfterDestroyed(warRespawnDelay)
+      warehouse[1]:SetRespawnAfterDestroyed(warehouseRespawnDelay)
       warehouse[1]:SetSpawnZone(ZONE_POLYGON:New(i.zone, GROUP:FindByName(i.zone))):SetReportOff()
     end    
   end
@@ -90,7 +90,7 @@ else
   --start, setup zone, and set respawn delay
   for i, warehouse in pairs(warehouses) do
     warehouse[1]:Start()    
-    warehouse[1]:SetRespawnAfterDestroyed(warRespawnDelay)
+    warehouse[1]:SetRespawnAfterDestroyed(warehouseRespawnDelay)
     warehouse[1]:SetSpawnZone(ZONE_POLYGON:New(i.zone, GROUP:FindByName(i.zone))):SetReportOff()
     AddAssetsToWarehouse(warehouse[1], i)
   end 
