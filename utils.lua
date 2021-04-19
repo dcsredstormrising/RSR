@@ -38,9 +38,9 @@ function M.isUnitPlayerSlung(iniUnitName)
 
 end
 
--- This is the function that allows us to distinquish between ships of the same type, but different location: MIZ ship, Warehouse ship.  
--- everything works on the word: Resupply.  Once that word changes nothing will work.  This is similiar to the Player Slung unit check for tanks.
--- =AW=33COM  I added this, becuase our ships worked at TYPE level, and we could not have multiple ships of the same type.  Now we can.
+-- This is the function that allows us to distinquish between units of the same type, but different location: MIZ ship, Warehouse ship, slung tanks, miz tanks, etc  
+-- everything works on the word: Resupply.  Once that word changes nothing will work.  This is similiar to the Player Slung unit check.
+-- =AW=33COM  I added this, becuase our entrie warehouse logic had no way of figuring out where the unit came from and limits were introduced.  This fixes it.
 function M.isUnitFromWarehouse(iniUnitName)
 
   local retVal = false
