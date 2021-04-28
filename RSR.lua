@@ -12,7 +12,6 @@ require("Moose")
 require("CTLD")
 require("CSAR")
 local logging = require("logging")
-
 local log = logging.Logger:new("RSR")
 
 local rsrConfig = require("RSR_config")
@@ -38,15 +37,11 @@ local UAV_Designate = require("UAV_Designate")
 local warehouseResupply = require("warehouseResupply")
 local UAV_Recon = require("UAV_Recon")
 local botBases = require("botBases")
---local unitManagment = require("unitManagment")
 local CONVOY_MENU = require("CONVOY_Menu")
-require("weaponManager")
 require("EWRS_OPM")
-----STILL NEEDS TESTED (3-19-2021)----
---local EasyStats = require("EasyStats")
-----DELETE BELOW AFTER A COUPLE OF WEEKS (3-19-2021)----
 local AWACS_Tankers = require("AWACS_Tankers")
 local AI_CAP = require("AI_CAP")
+local unitManagement = require("unitManagement")
 
 slotBlocker.onMissionStart()
 baseCapturedHandler.register()

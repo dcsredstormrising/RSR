@@ -5,7 +5,6 @@
 -- Ultimately I couldn't integrate this into RSR-Caucuses because of the capture mechanism, but with the new Syria map we revamped the capture mechanism and went with Moose Zone Capture, so now exploring using these with RSR-Syria
 
 local inspect = require("inspect")
-local unitManagment = require("unitManagment")
 
 local warehouse={}
 ----function to check if a save warehouse file exist, stole it from pikey's SGS

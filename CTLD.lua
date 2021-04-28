@@ -30,7 +30,6 @@ local utils = require("utils")
 local rsrConfig = require("RSR_config")
 local baseOwnershipCheck = require("baseOwnershipCheck")
 local logisticsManager = require("logisticsManager")
-
 local log = logging.Logger:new("CTLD")
 
 --ctld.minimumDeployDistance = 600 -- minimum distance from a friendly pickup zone where you can deploy a crate
@@ -821,6 +820,8 @@ end
 
 function ctld.spawnCrateStatic(_country, _unitId, _point, _name, _weight, _side, _internal)
     --Ironwulf2000 added _internal for internal crate carriage support
+    
+    env.info("**=AW=33COM ctld.spawnCrateStatic")
 	
     local _crate
     local _spawnedCrate
@@ -883,39 +884,6 @@ function ctld.spawnCrateStatic(_country, _unitId, _point, _name, _weight, _side,
 
             ["shape_name"] = "ammo_box_cargo",
             ["type"] = "ammo_cargo",
-
-            ["shape_name"] = "barrels_cargo",
-            ["type"] = "barrels_cargo",
-
-            ["shape_name"] = "f_bar_cargo",
-            ["type"] = "f_bar_cargo",
-
-            ["shape_name"] = "fueltank_cargo",
-            ["type"] = "fueltank_cargo",
-
-            ["shape_name"] = "iso_container_cargo",
-            ["type"] = "iso_container",
-
-            ["shape_name"] = "iso_container_small_cargo",
-            ["type"] = "iso_container_small",
-
-            ["shape_name"] = "oiltank_cargo",
-            ["type"] = "oiltank_cargo",
-
-            ["shape_name"] = "pipes_big_cargo",
-            ["type"] = "pipes_big_cargo",
-
-            ["shape_name"] = "pipes_small_cargo",
-            ["type"] = "pipes_small_cargo",
-
-            ["shape_name"] = "tetrapod_cargo",
-            ["type"] = "tetrapod_cargo",
-
-            ["shape_name"] = "trunks_long_cargo",
-            ["type"] = "trunks_long_cargo",
-
-            ["shape_name"] = "trunks_small_cargo",
-            ["type"] = "trunks_small_cargo",
         ]]--
 
         if ctld.slingLoad and _internal ~= 1 then
@@ -1089,17 +1057,97 @@ function ctld.spawnLogisticsCentre(_point, _name, _sideName, _baseORfob, _baseOR
     return _spawnedLogiCentreObject
 end
 
+-- We check if group sling limit is reached
+function ctld.IsGroupLimitReached(_args, _crateType, _coalition)
+
+  local _limitReached = true -- we assume the worst and try to prove the opposite
+      
+  -- check to see if the unit we are trying to spawn is allowed no matter what the limit
+  for _, _unitType in pairs (ctld.UnitTypesOutsideOfGroupLimit) do      
+    if ctld.UnitTypesOutsideOfGroupLimit[_crateType.unit] then    
+      _limitReached = false
+      break
+    end
+  end
+  
+  -- since the unit we are spawning is not from the unlimited table of units (jtac, cc, support, etc), we need to keep checking for other conditions
+  if _limitReached == true then
+  
+    local _coalitionName = "red"
+    
+    if _coalition == 2 then
+      _coalitionName = "blue"
+    end
+    
+    -- gets all player slung units   
+    local _playerSlungGroups = SET_GROUP:New():FilterCategoryGround():FilterCoalitions(_coalitionName):FilterPrefixes("CTLD"):FilterActive():FilterOnce()
+    
+    if _playerSlungGroups ~= nil then
+      if _playerSlungGroups:Count() < ctld.GroupLimitCount then
+        _limitReached = false        
+      else
+        -- here we must deduct all ctld.UnitTypesOutsideOfGroupLimit from total        
+        local _groupsOfUnitsNotPartOfLimitCount = ctld.getGroupCountByUnitType(_playerSlungGroups, ctld.UnitTypesOutsideOfGroupLimit)
+        
+        -- we must remove ctld.UnitTypesOutsideOfGroupLimit (fuel trucks, EWRs, JTAC, CC crates are not part of the limit) from the list and then count it 
+        -- to make sure we only count limited items
+        local totalPlayerLimitedGroupCount = _playerSlungGroups:Count() - _groupsOfUnitsNotPartOfLimitCount
+        
+          --env.info("**=AW=33COM ctld.IsCrateLimitReached _playerSlungUnits count: [" .. inspect(_playerSlungGroups:Count()) .. "]")  
+          --env.info("**=AW=33COM ctld.IsCrateLimitReached _groupsOfUnitsNotPartOfLimitCount: [" .. inspect(_groupsOfUnitsNotPartOfLimitCount) .. "]")
+          --env.info("**=AW=33COM ctld.IsCrateLimitReached totalPlayerLimitedGroupCount: [" .. inspect(totalPlayerLimitedGroupCount) .. "]")  
+        
+        if totalPlayerLimitedGroupCount < ctld.GroupLimitCount then
+          _limitReached = false            
+        end
+      end
+    end
+  end
+      
+  return _limitReached
+end
+
+-- Fetches count of groups based on unit type.  
+-- @_playerSlungUnits groups of units
+-- @_unitTypes Unit types that interest you
+-- you can pass an array of unit types
+function ctld.getGroupCountByUnitType(_playerSlungGroups, _unitTypes)
+
+  local _counter = 0
+
+  if (_playerSlungGroups ~= nil) then
+      _playerSlungGroups:ForEachGroup(
+      function(grp)
+        local _units = grp:GetUnits()
+        if _units ~= nil then          
+          for _, _unit in pairs (_units) do            
+            local _unitTypeName = _unit:GetTypeName()                        
+            if ctld.UnitTypesOutsideOfGroupLimit[_unitTypeName] then    -- get groups that have units we don't count towards the limit                            
+              _counter = _counter + 1
+              break
+            end
+          end
+        end
+      end)
+  end
+  
+  return _counter  
+end
+
 --only helos should be able to spawn crates (check ctld.unitActions in CTLD_config.lua)
 function ctld.spawnCrate(_arguments)
-
+     
     local _status, _err = pcall(function(_args)
 
         -- use the cargo weight to guess the type of unit as no way to add description :(
-
         local _crateType = ctld.crateLookupTable[tostring(_args[2])]
-        --Ironwulf2000 added
         local _internal = _args[3] == 1 and 1 or 0
         local _heli = ctld.getTransportUnit(_args[1])
+        
+       if ctld.IsGroupLimitReached(_args, _crateType, _heli:getCoalition()) == true then          
+          ctld.displayMessageToGroup(_heli, "Shelter crate limit reached. You can only pickup JTAC, Logistics Center, Repair, and Support crates.", 10)-- message to player he can't sling units except JTAC, CC, Repair crates
+          return
+       end
 
         --{_inBaseZoneAndRSRrepairRadius,_inFOBexclusionZone,_closestBaseSideDist,_baseType}
         local _baseProximity = ctld.baseProximity(_heli)
@@ -2618,8 +2666,10 @@ function ctld.loadNearbyCrate(_aircraftName)
 
                 if (_crate.dist < 50.0) and (_crate.details.internal == 1) and (ctld.crateValidLoadPoint(_aircraft, _crate)) then
 				
-					ctld.displayMessageToGroup(_aircraft, "Loaded " .. _crate.details.desc .. " crate!", 10, true)
-					trigger.action.outTextForCoalition(_aircraftCoalition, "[TEAM] " .. _playerName .. " loaded a " .. _crate.details.desc .. " crate for transport from " .. _nearestLogisticsCentreBaseNameOrFOBgrid, 10)
+				  if _crate.details.weight == 891 then -- cc only
+					 ctld.displayMessageToGroup(_aircraft, "Loaded " .. _crate.details.desc .. " crate!", 10, true)
+					 trigger.action.outTextForCoalition(_aircraftCoalition, "[TEAM] " .. _playerName .. " loaded a " .. _crate.details.desc .. " crate for transport from " .. _nearestLogisticsCentreBaseNameOrFOBgrid, 10)
+					end
 					
                     if _aircraft:getCoalition() == 1 then
                         ctld.spawnedCratesRED[_crate.crateUnit:getName()] = nil
@@ -2998,15 +3048,31 @@ function ctld.findNearestAASystem(_heli, _aaSystem)
 
     local _closestHawkGroup = nil
     local _shortestDistance = -1
-
+    
+      env.info("******=AW=33COM ctld.findNearestAASystem: _aaSystem ******")
+      env.info(inspect(_aaSystem))      
+      env.info("***=AW=33COM End:")
+      
+      env.info("******=AW=33COM ctld.findNearestAASystem: ctld.completeAASystems ******")
+      env.info(inspect(ctld.completeAASystems))
+      env.info("***=AW=33COM End:")
+    
     for _groupName, _hawkDetails in pairs(ctld.completeAASystems) do
-
+          
+      env.info("******=AW=33COM ctld.findNearestAASystem: _groupName:" .. inspect(_groupName))
+    
         local _hawkGroup = Group.getByName(_groupName)
+        
+        env.info("******=AW=33COM ctld.findNearestAASystem: _hawkGroup:" .. inspect(_groupName))
 
-        --  env.info(_groupName..": "..mist.utils.tableShow(_hawkDetails))
         if _hawkGroup ~= nil and _hawkGroup:getCoalition() == _heli:getCoalition() and _hawkDetails[1].system.name == _aaSystem.name then
+        
+          env.info("******=AW=33COM ctld.findNearestAASystem: _aaSystem.name:" .. inspect(_aaSystem.name))        
+          env.info("******=AW=33COM ctld.findNearestAASystem: _hawkDetails[1].system.name:" .. inspect(_hawkDetails[1].system.name))
 
             local _units = _hawkGroup:getUnits()
+            
+            env.info("******=AW=33COM ctld.findNearestAASystem: _units: " .. inspect(_units))
 
             for _, _leader in pairs(_units) do
 
@@ -4345,18 +4411,18 @@ function ctld.unpackAASystem(_heli, _nearestCrate, _nearbyCrates, _aaSystemTempl
 
                     _point = { x = _point.x + _xOffset, y = _point.y, z = _point.z + _yOffset }
 
-                    table.insert(_posArray, _point)					
-					table.insert(_typeArray, _name)
+                    table.insert(_posArray, _point)
+                    table.insert(_typeArray, _name)					
                 end
             else
                 table.insert(_posArray, _systemPart.crate.crateUnit:getPoint())
                 table.insert(_typeArray, _name)
             end
+            
         end
     end
 
     local _activeLaunchers = ctld.countCompleteAASystems(_heli)
-
     local _allowed = ctld.getAllowedAASystems(_heli)
 
     env.info("Active: " .. _activeLaunchers .. " Allowed: " .. _allowed)
@@ -4387,14 +4453,26 @@ function ctld.unpackAASystem(_heli, _nearestCrate, _nearbyCrates, _aaSystemTempl
         end
 
         -- HAWK / BUK READY!
-        local _spawnedGroup = ctld.spawnCrateGroup(_heli, _posArray, _typeArray)
-
+        local _spawnedGroup = ctld.spawnCrateGroup(_heli, _posArray, _typeArray, 1, true)
+        
+        env.info("******=AW=33COM _spawnedGroup ******")
+        env.info(inspect(_spawnedGroup))
+        env.info("******=AW=33COM ******")
+        
+        env.info("******=AW=33COM _aaSystemTemplate ******")
+        env.info(inspect(_aaSystemTemplate))
+        env.info("******=AW=33COM ******")
+        
         ctld.completeAASystems[_spawnedGroup:getName()] = ctld.getAASystemDetails(_spawnedGroup, _aaSystemTemplate)
 		    log:info("ctld.completeAASystems: $1", inspect(ctld.completeAASystems, { newline = " ", indent = "" }))
         ctld.processCallback({ unit = _heli, crate = _nearestCrate, spawnedGroup = _spawnedGroup, action = "unpack" })
 
         trigger.action.outTextForCoalition(_heli:getCoalition(), "[TEAM] " .. ctld.getPlayerNameOrType(_heli) .. " successfully deployed a full " .. _aaSystemTemplate.name .. " to the field. \n\nAA Active System limit is: " .. _allowed .. "\nActive: " .. (_activeLaunchers + 1), 10)
         log:info("$1 unpacked a $2", ctld.getPlayerNameOrType(_heli), _aaSystemTemplate.name)
+        
+        env.info("******=AW=33COM ctld.completeAASystems ******")
+        env.info(inspect(ctld.completeAASystems))
+        env.info("******=AW=33COM ******")
     end
 end
 
@@ -4406,8 +4484,6 @@ function ctld.getAllowedAASystems(_heli)
     else
         return ctld.AASystemLimitRED
     end
-
-
 end
 
 function ctld.countCompleteAASystems(_heli)
@@ -4474,14 +4550,18 @@ function ctld.repairAASystem(_heli, _nearestCrate, _aaSystem)
             table.insert(_points, _part.point)
             table.insert(_types, _part.unit)
         end
-
-        --remove old system
+        
+        --remove old system        
         ctld.completeAASystems[_nearestHawk.group:getName()] = nil
         _nearestHawk.group:destroy()
+        
+        env.info("**=AW=33COM ctld.repairAASystem Removing AASystem " .. inspect(_nearestHawk.group:getName()))
 
-        local _spawnedGroup = ctld.spawnCrateGroup(_heli, _points, _types)
+        local _spawnedGroup = ctld.spawnCrateGroup(_heli, _points, _types, 1, true)
 
         ctld.completeAASystems[_spawnedGroup:getName()] = ctld.getAASystemDetails(_spawnedGroup, _aaSystem)
+        
+        env.info("**=AW=33COM ctld.repairAASystem Adding AASystem " .. inspect(ctld.getAASystemDetails(_spawnedGroup, _aaSystem)))
 
         ctld.processCallback({ unit = _heli, crate = _nearestCrate, spawnedGroup = _spawnedGroup, action = "repair" })
 
@@ -4617,13 +4697,23 @@ function ctld.unpackMultiCrate(_heli, _nearestCrate, _nearbyCrates)
     end
 end
 
-function ctld.spawnCrateGroup(_heli, _positions, _types, _unitQuantity)
-	
+function ctld.spawnCrateGroup(_heli, _positions, _types, _unitQuantity, _isAASystem)
+	   
     _unitQuantity = _unitQuantity or 1
     local _id = ctld.getNextGroupId()
     local _playerName = ctld.getPlayerNameOrType(_heli)
-    local _groupName = 'CTLD_' .. _types[1] .. '_' .. _id .. ' (' .. _playerName .. ')' -- encountered some issues with using "type #number" on some servers
+    local _groupName = 'CTLD_' .. _types[1] .. '_' .. _id .. ' (' .. _playerName .. ')' -- encountered some issues with using "type #number" on some servers   
+     
+    -- this is the place where we define if the crate is part of the AA system, if we put that in the name, we will be able to recreate the 
+    -- ctld.completeAASystems table and be able to always repair sams. _types[2] is the value that passes the ctld.completeAASystemsTag
+    if _isAASystem then
+        env.info("**=AW=33COM YES, is this AASystem: " .. inspect(_isAASystem)) 
+      _groupName = 'CTLD_' .. _types[1] .. '_' .. _id .. ' (' .. _playerName .. ')' .. ctld.completeAASystemsTag -- encountered some issues with using "type #number" on some servers
+    end
+       
+    env.info("**=AW=33COM " .. _groupName)    
     log:info("_playerName: $1, _groupName: $2", _playerName, _groupName)
+    
     local _group = {
         ["visible"] = false,
         -- ["groupId"] = _id,
@@ -4631,14 +4721,14 @@ function ctld.spawnCrateGroup(_heli, _positions, _types, _unitQuantity)
         ["units"] = {},
 --                ["y"] = _positions[1].z,
 --                ["x"] = _positions[1].x,
-        ["name"] = _groupName,
+        ["name"] = _groupName,        
         ["playerCanDrive"] = true,
         ["task"] = {},
     }
     if #_positions == 1 then
         for _i = 1, _unitQuantity do
             local _unitId = ctld.getNextUnitId()
-            local _details = { type = _types[1], unitId = _unitId, name = string.format("Unpacked %s #%i", _types[1], _unitId) }
+            local _details = { type = _types[1], unitId = _unitId, name = string.format("Unpacked %s #%i", _types[1], _unitId) } -- we rely on that "Unpacked" name somewhere else in order to know if the unit is from CTLD
 --            local _offset = (_i - 1) * 40 + 10
 --            local _offset = (_i - 1) * 10 + 10
             local _playerHeading = mist.getHeading(_heli)
@@ -4667,7 +4757,7 @@ Heading is definately output in radians
     else
         for _i, _pos in ipairs(_positions) do
             local _unitId = ctld.getNextUnitId()
-            local _details = { type = _types[_i], unitId = _unitId, name = string.format("Unpacked %s #%i", _types[_i], _unitId) }
+            local _details = { type = _types[_i], unitId = _unitId, name = string.format("Unpacked %s #%i", _types[_i], _unitId) } -- we rely on that "Unpacked" name somewhere else in order to know if the unit is from CTLD
             local _playerHeading = mist.getHeading(_heli)
 --[[
 Heading is definately output in radians
@@ -7226,6 +7316,30 @@ function ctld.getPositionString(_unit)
     return " @ " .. _latLngStr .. " - MGRS " .. _mgrsString
 end
 
+-- Here we update the AA System in CTLD upon each session start.
+function ctld.LoadAllExistingSystemsIntoCTLD(_spawnedGroup)
+    
+    env.info("***=AW=33COM LoadAllExistingSystemsIntoCTLD")
+        
+    if _spawnedGroup ~= nil and _spawnedGroup:getUnits() ~= nil and _spawnedGroup:getUnits()[1] ~= nil then
+    
+      local _units = _spawnedGroup:getUnits()  
+      local _firstUnitType = _units[1]:getTypeName()      
+    
+      env.info("***=AW=33COM _spawnedGroup Name: " .. inspect(_spawnedGroup:getName()))            
+      local _aaSystemDetails = ctld.getAASystemDetails(_spawnedGroup, ctld.getAATemplate(_firstUnitType))      
+      ctld.completeAASystems[_spawnedGroup:getName()] = _aaSystemDetails
+      
+      --env.info("******=AW=33COM sgs_rsr.LoadAllExistingSystemsIntoCTLD: ctld.completeAASystems ******")
+      --env.info(inspect(ctld.completeAASystems))      
+      --env.info("***=AW=33COM End:")
+
+    else
+      env.info("***=AW=33COM _spawnedGroup is empty")
+    end
+ end 
+
+
 
 -- ***************** SETUP SCRIPT ****************
 
@@ -7252,7 +7366,6 @@ ctld.droppedLogisticsCentreCratesBLUE = {}
 --ctld.FOBlogisticCentreObjects = {} -- stores fully built fobs 
 
 ctld.completeAASystems = {} -- stores complete spawned groups from multiple crates
-
 ctld.FOBbeacons = {} -- stores FOB radio beacon details, refreshed every 60 seconds
 
 ctld.deployedRadioBeacons = {} -- stores details of deployed radio beacons
@@ -7568,7 +7681,6 @@ for _coalitionName, _coalitionData in pairs(env.mission.coalition) do
     end
 end
 env.info("END search for crates")
-
 env.info("CTLD.LUA LOADED")
 
 

@@ -30,6 +30,8 @@
  --Statics are not included. See 'Simple Static Saving' for a solution
  --Routes are not saved. Uncomment lines 148-153 if you wish to keep them, but they won't activate them on restart. It is impossible to query a group for it's current
  --route, only for the original route it recieved from the Mission Editor. Therefore a DCS limitation.
+
+  
  -----------------------------------
  --Configurable for user:
  SaveScheduleUnits=120 --how many seconds between each check of all the units.
@@ -38,7 +40,7 @@
  -----------------------------------
  local version = "1.1 - March 2020"
  
- function IntegratedbasicSerialize(s)
+ function IntegratedbasicSerialize(s)  
     if s == nil then
       return "\"\""
     else
@@ -51,7 +53,7 @@
   end
   
 -- imported slmod.serializeWithCycles (Speed)
-  function IntegratedserializeWithCycles(name, value, saved)
+  function IntegratedserializeWithCycles(name, value, saved)  
     local basicSerialize = function (o)
       if type(o) == "number" then
         return tostring(o)
@@ -87,23 +89,21 @@
     end
   end
 
-function file_exists(name) --check if the file already exists for writing
+function file_exists(name) --check if the file already exists for writing    
     if lfs.attributes(name) then
     return true
     else
     return false end 
 end
 
-function writemission(data, file)--Function for saving to file (commonly found)
+function writemission(data, file)--Function for saving to file (commonly found)  
   File = io.open(file, "w")
   File:write(data)
   File:close()
 end
 
 --SCRIPT START
-env.info("Loaded Simple Group Saving, by Pikey, 2018, version " .. version)
-
-if file_exists("SaveUnits_RSR.lua") then --Script has been run before, so we need to load the save
+if file_exists("SaveUnits_RSR.lua") then --Script has been run before, so we need to load the saved items    
   env.info("Existing database, loading from File.")
   --AllGroups = SET_GROUP:New():FilterCategories("ground"):FilterActive(true):FilterStart()
   --AllGroups = SET_GROUP:New():FilterPrefixes( "Re-enforcements " ):FilterActive(true):FilterStart()
@@ -137,10 +137,8 @@ tempTable =
    ["heading"]=SaveUnits_RSR[k]["units"][i]["heading"],
    ["playerCanDrive"]=true,  --hardcoded but easily changed.  
   }
-
       table.insert(units,tempTable)
     end --end unit for loop
-
 
 groupData = 
 
@@ -169,6 +167,7 @@ groupData =
   end --end Group for loop
 
 else --Save File does not exist we start a fresh table, no spawns needed
+
   SaveUnits_RSR={}
   --AllGroups = SET_GROUP:New():FilterCategories("ground"):FilterActive(true):FilterStart()
   --AllGroups = SET_GROUP:New():FilterPrefixes( {"SAM", "MBT", "APC", "IFV"} ):FilterActive(true):FilterStart()
@@ -179,22 +178,15 @@ else --Save File does not exist we start a fresh table, no spawns needed
     --:FilterActive(true)
     --:FilterStart()
   AllGroups = SET_GROUP:New():FilterPrefixes( {"Re-enforcements", "Red Start","Blue Start", "Resupply ", " Convoy", "Dropped Group ","CTLD"} ):FilterActive(true):FilterStart()
-
-
---BlueTransportGroups = SET_GROUP:New()
---  :FilterCoalitions( "blue" )
---  :FilterPrefixes( {"Transport", "Helos", "Cargo", "APC", "IFV"} )
---  :FilterStart()
-------This activates 
-
+  
 end
 
 --THE SAVING SCHEDULE
 SCHEDULER:New( nil, function()
   AllGroups:ForEachGroupAlive(function (grp)
-  local DCSgroup = Group.getByName(grp:GetName() )
+  local DCSgroup = Group.getByName(grp:GetName())
   local size = DCSgroup:getSize()
-
+        
 _unittable={}
 
 for i = 1, size do
@@ -205,7 +197,7 @@ local tmpTable =
     ["type"]=grp:GetUnit(i):GetTypeName(),
     ["transportable"]=true,
     ["unitID"]=grp:GetUnit(i):GetID(),
-    ["skill"]="Excellent",
+    ["skill"]="Excellent",    
     ["y"]=grp:GetUnit(i):GetVec2().y,
     ["x"]=grp:GetUnit(i):GetVec2().x,
     ["name"]=grp:GetUnit(i):GetName(),
@@ -222,7 +214,7 @@ SaveUnits_RSR[grp:GetName()] =
    ["SpawnCoalitionID"]=grp:GetCountry(),
    ["tasks"]={}, 
    ["CategoryID"]=grp:GetCategory(),
-   ["task"]="Ground Nothing",
+   ["task"]="Ground Nothing",   
    ["route"]={}, 
    ["groupId"]=grp:GetID(),
    ["units"]= _unittable,
@@ -239,5 +231,5 @@ end)
 newMissionStr = IntegratedserializeWithCycles("SaveUnits_RSR",SaveUnits_RSR) --save the Table as a serialised type with key SaveUnits
 writemission(newMissionStr, "SaveUnits_RSR.lua")--write the file from the above to SaveUnits.lua
 SaveUnits_RSR={}--clear the table for a new write.
-env.info("Data saved.")
+env.info("Data saved SGS_RSR.")
 end, {}, 1, SaveScheduleUnits)

@@ -2,7 +2,6 @@ env.info("RSR STARTUP: baseOwnershipCheck.LUA INIT")
 local utils = require("utils")
 local logging = require("logging")
 local rsrConfig = require("RSR_config")
--- require("CTLD_config")
 require("Moose")
 local bases = require("bases")
 local missionUtils = require("missionUtils")
@@ -23,8 +22,8 @@ end
 
 function M.getAllBaseOwnership(_passedBaseName, _playerORunit, _campaignStartSetup)
     --mr: intercept first time campaign setup here to read FARP ownership from Trigger Zone Name or Color
-    log:info("_passedBaseName: $1, _playerORunit: $2, _campaignStartSetup: $3", _passedBaseName, _playerORunit, _campaignStartSetup)
-    log:info("ctld.logisticCentreObjects $1", ctld.logisticCentreObjects)
+    --log:info("_passedBaseName: $1, _playerORunit: $2, _campaignStartSetup: $3", _passedBaseName, _playerORunit, _campaignStartSetup)
+    --log:info("ctld.logisticCentreObjects $1", ctld.logisticCentreObjects)
     if _campaignStartSetup then
 
         -- wipe baseOwnership and reconstruct as checking all bases
