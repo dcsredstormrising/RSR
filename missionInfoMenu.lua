@@ -28,7 +28,6 @@ function M.addMenu(playerGroup, restartHours)
             
     MESSAGE:New(string.format("Campaign started on: %s", restartInfo.getSecondsAsString(secondsUntilRestart)), 5):ToGroup(playerGroup)
     MESSAGE:New(string.format("Campaign is in progress for: %s", restartInfo.getSecondsAsString(secondsUntilRestart)), 5):ToGroup(playerGroup)
-    MESSAGE:New(string.format("Campaign wind: %s", restartInfo.getSecondsAsString(secondsUntilRestart)), 5):ToGroup(playerGroup)
     MESSAGE:New(string.format("Campaign temperature and pressure: %s", restartInfo.getSecondsAsString(secondsUntilRestart)), 5):ToGroup(playerGroup)
     MESSAGE:New(string.format("Campaign weather: %s", restartInfo.getSecondsAsString(secondsUntilRestart)), 5):ToGroup(playerGroup)
     MESSAGE:New(string.format("Number of players online: %i", playerGroup:GetPlayerCount()), 5):ToGroup(playerGroup)        
@@ -44,7 +43,9 @@ function M.addMenu(playerGroup, restartHours)
         MESSAGE:New(string.format("You slung %i groups of units.", ctld.countGroupsByPlayer(playerName)), 5):ToGroup(playerGroup)
         MESSAGE:New(string.format("You slung %i SAM systems.", ctld.countAASystemsByPlayer(playerName)), 5):ToGroup(playerGroup)        
         MESSAGE:New(string.format("You delivered %i JTACs to the field.", ctld.countJTACsByPlayer(playerName)), 5):ToGroup(playerGroup)
-        MESSAGE:New(string.format("You were killed by deebix %i times.", 88), 5):ToGroup(playerGroup)    
+        MESSAGE:New(string.format("You were killed by deebix %i times.", 88), 5):ToGroup(playerGroup)
+        local windDirection, windStrength = utils.getWind(point)
+        MESSAGE:New(string.format("Your wind direction: %s, and strength: %s", windDirection, windStrength), 5):ToGroup(playerGroup)    
     end)
        
     
@@ -142,6 +143,8 @@ function M.addMenu(playerGroup, restartHours)
     end)
     
     MENU_GROUP_COMMAND:New(playerGroup, "Coalition Intel", infoMenu, function()
+        local secondsUntilRestart = restartInfo.getSecondsUntilRestart(os.date("*t"), restartHours)
+    
       MESSAGE:New(string.format("Enemy TEAM has %s SAMs", ctld.countAASystemsByCoalition(enemyCoalitionNum)), 5):ToGroup(playerGroup)
       MESSAGE:New(string.format("Enemy Team already has %i Groups of units on the ground", ctld.GetPlayerSpawnGroupCount(enemyCoalitionNum)), 5):ToGroup(playerGroup)
     
