@@ -18,9 +18,13 @@ function M.register()
         local _deadUnitCategory = Event.IniObjectCategory
         local _deadUnitType = Event.IniTypeName
         local _deadUnitName = Event.IniDCSUnitName
+        local _deadGroupName = Event.IniGroupName
         --log:info("eventHander DEAD: TEST1 DEAD LC = nil: $1",_deadUnit == nil)
-
-
+        
+        if string.match(_deadGroupName, "Convoy Transport") then
+            log:info("CONVOY: TRANSPORT DESPAWNED")
+        end
+        
         if _deadUnitCategory == Object.Category.STATIC then
             --[[
             -- MOOSE
