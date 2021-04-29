@@ -23,14 +23,9 @@ function M.addMenu(playerGroup, restartHours)
         --MESSAGE:New(string.format("Your coalition can sling %s more groups of units.", ctld.GetPlayerSpawnGroupCount() - ctld.GroupLimitCount), 5):ToGroup(playerGroup)
     end)
         
-    MENU_GROUP_COMMAND:New(playerGroup, "Campaign Settings", infoMenu, function()
-        local secondsUntilRestart = restartInfo.getSecondsUntilRestart(os.date("*t"), restartHours)
-            
-    MESSAGE:New(string.format("Campaign started on: %s", restartInfo.getSecondsAsString(secondsUntilRestart)), 5):ToGroup(playerGroup)
-    MESSAGE:New(string.format("Campaign is in progress for: %s", restartInfo.getSecondsAsString(secondsUntilRestart)), 5):ToGroup(playerGroup)
-    MESSAGE:New(string.format("Campaign temperature and pressure: %s", restartInfo.getSecondsAsString(secondsUntilRestart)), 5):ToGroup(playerGroup)
-    MESSAGE:New(string.format("Campaign weather: %s", restartInfo.getSecondsAsString(secondsUntilRestart)), 5):ToGroup(playerGroup)
-    MESSAGE:New(string.format("Number of players online: %i", playerGroup:GetPlayerCount()), 5):ToGroup(playerGroup)        
+    MENU_GROUP_COMMAND:New(playerGroup, "Campaign Status", infoMenu, function()
+    MESSAGE:New(string.format("Campaign is in progress for: %s", "1 day"), 20):ToGroup(playerGroup)
+    MESSAGE:New(string.format("Number of players online: %i", playerGroup:GetPlayerCount()), 20):ToGroup(playerGroup)        
     end)
     
     MENU_GROUP_COMMAND:New(playerGroup, "Personal Status", infoMenu, function()
