@@ -4486,6 +4486,96 @@ function ctld.getAllowedAASystems(_heli)
     end
 end
 
+function ctld.countAASystemsByPlayer(playerName)
+  local count = 0
+  if playerName ~= nil then  
+    for i, item in pairs(ctld.completeAASystems) do
+      local group = Group.getByName(i)
+      if group ~= nil then
+        local groupName = group.getName():lower()
+          if string.find(groupName, playerName:lower()) then
+            count = count + 1
+          end
+      end      
+    end
+  end
+  return count
+end
+
+function ctld.countGroupsByPlayer(playerName, coalition)
+  local count = 0
+  if playerName ~= nil then  
+    local groups = SET_GROUP:New():FilterCategoryGround():FilterPrefixes( {"CTLD"} ):FilterActive():FilterOnce()
+    if groups ~= nil then
+      GroupsSetToRed:ForEachGroup(
+        function(grp)
+          if grp ~= nil then
+            local groupName = grp:GetName():lower()
+            if string.find(groupName, name) then
+              count = count + 1
+            end
+          end        
+      end)    
+    end
+  end
+  return count
+end
+
+function ctld.countJTACsByPlayer(playerName, coalition)
+  local count = 0
+  if playerName ~= nil then    
+    local groups = SET_GROUP:New():FilterCategoryGround():FilterPrefixes( {"CTLD"} ):FilterActive():FilterOnce()
+    local JTAC = "Tigr_233036"
+    if coalition.side.BLUE then
+      local JTAC = "Hummer"
+    end
+    if groups ~= nil then
+      GroupsSetToRed:ForEachGroup(
+        function(grp)
+          if grp ~= nil then
+            local groupName = grp:GetName():lower()
+            if string.find(groupName, name) then
+              count = count + 1
+            end
+          end        
+      end)    
+    end
+  end
+  return count
+end
+
+function ctld.countAASystemsByCoalition(coalition)
+  local _count = 0
+  for _groupName, _hawkDetails in pairs(ctld.completeAASystems) do
+    local _hawkGroup = Group.getByName(_groupName)        
+    if _hawkGroup ~= nil and _hawkGroup:getCoalition() == coalition then
+      local _units = _hawkGroup:getUnits()
+      if _units ~= nil and #_units > 0 then
+        --get the system template
+        local _aaSystemTemplate = _hawkDetails[1].system
+        local _uniqueTypes = {} -- stores each unique part of system
+        local _types = {}
+        local _points = {}
+        if _units ~= nil and #_units > 0 then
+          for x = 1, #_units do
+            if _units[x]:getLife() > 0 then
+              --this allows us to count each type once
+              _uniqueTypes[_units[x]:getTypeName()] = _units[x]:getTypeName()
+              table.insert(_points, _units[x]:getPoint())
+              table.insert(_types, _units[x]:getTypeName())
+            end
+          end
+        end
+      end
+      -- do we have the correct number of unique pieces and do we have enough points for all the pieces
+      if ctld.countTableEntries(_uniqueTypes) == _aaSystemTemplate.count and #_points >= _aaSystemTemplate.count then
+        _count = _count + 1
+      end
+    end
+    end  
+  return _count
+end
+
 function ctld.countCompleteAASystems(_heli)
 
     local _count = 0
