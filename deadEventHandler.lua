@@ -19,12 +19,7 @@ function M.DEAD_EVENTHANDLER:_OnDead( event )
     local _deadUnitCategory = event.IniObjectCategory
     local _deadUnitType = event.IniTypeName
     local _deadUnitName = event.IniDCSUnitName
-    local _deadGroupName = event.IniGroupName
     --log:info("eventHander DEAD: TEST1 DEAD LC = nil: $1",_deadUnit == nil)
-    
-    if string.match(_deadGroupName, "Convoy Transport") then
-        env.info("CONVOY: TRANSPORT DESPAWNED")
-    end
 
     if _deadUnitCategory == Object.Category.STATIC then
         --[[
