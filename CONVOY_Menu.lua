@@ -80,9 +80,7 @@ local function SpawnConvoy(coalitionNumber)
   end
 
   -- DELETE TRANSPORT and DELETE Queued Information
-  _Coalitions[coalitionNumber].TransportGroup:Destroy(true, DELAY)
-  _Coalitions[coalitionNumber].TransportGroup = nil
-  _Coalitions[coalitionNumber].Queue = nil
+  _Coalitions[coalitionNumber].TransportGroup:Destroy(true, DELAY) 
 end
 
 local function SpawnTransport(heading, location, playerName, coalitionNumber)
@@ -131,5 +129,10 @@ function Convoy.OnLand( coalitionNumber )
   SpawnConvoy(coalitionNumber)
   trigger.action.outTextForCoalition(coalitionNumber,"[TEAM] " .. _Coalitions[coalitionNumber].String .." Resupply Mission Successful!", 10)
   trigger.action.outTextForCoalition(coalitionNumber == 1 and 2 or 1,"[TEAM] Enemy Transport Faded.\nIntercept Mission Failed!", 10)
+end
+
+function Convoy.OnTransportCrash ( coalitionNumber )
+  _Coalitions[coalitionNumber].TransportGroup = nil
+  _Coalitions[coalitionNumber].Queue = nil
 end
 ---END FUNCTIONS---
