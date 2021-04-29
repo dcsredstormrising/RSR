@@ -132,6 +132,7 @@ function Convoy.OnLand( coalitionNumber )
 end
 
 function Convoy.OnTransportCrash ( coalitionNumber )
+  env.info("CONVOY: Convoy Transport Deleting. Clearing queue.")
   _Coalitions[coalitionNumber].TransportGroup = nil
   _Coalitions[coalitionNumber].Queue = nil
 end
