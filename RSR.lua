@@ -42,7 +42,7 @@ local botBases = require("botBases")
 require("EWRS_OPM")
 local AWACS_Tankers = require("AWACS_Tankers")
 local AI_CAP = require("AI_CAP")
-local WeatherMark = require("WeatherMark")
+local weathermark = require("WeatherMark")
 local unitManagement = require("unitManagement")
 
 slotBlocker.onMissionStart()

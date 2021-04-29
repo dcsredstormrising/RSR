@@ -4489,11 +4489,10 @@ end
 function ctld.countAASystemsByPlayer(playerName)
   local count = 0
   if playerName ~= nil then  
-    for i, item in pairs(ctld.completeAASystems) do
+    for i, item in pairs(ctld.completeAASystems) do      
       local group = Group.getByName(i)
-      if group ~= nil then
-        local groupName = group.getName():lower()
-          if string.find(groupName, playerName:lower()) then
+      if group ~= nil then        
+          if string.find(i:lower(), playerName:lower()) then
             count = count + 1
           end
       end      
@@ -4502,12 +4501,12 @@ function ctld.countAASystemsByPlayer(playerName)
   return count
 end
 
-function ctld.countGroupsByPlayer(playerName, coalition)
+function ctld.countGroupsByPlayer(playerName, coalitionName)
   local count = 0
   if playerName ~= nil then  
-    local groups = SET_GROUP:New():FilterCategoryGround():FilterPrefixes( {"CTLD"} ):FilterActive():FilterOnce()
+    local groups = SET_GROUP:New():FilterCategoryGround():FilterCoalitions(coalitionName):FilterPrefixes({"CTLD"}):FilterActive():FilterOnce()
     if groups ~= nil then
-      GroupsSetToRed:ForEachGroup(
+      groups:ForEachGroup(
         function(grp)
           if grp ~= nil then
             local groupName = grp:GetName():lower()
@@ -4521,21 +4520,28 @@ function ctld.countGroupsByPlayer(playerName, coalition)
   return count
 end
 
-function ctld.countJTACsByPlayer(playerName, coalition)
+function ctld.countJTACsByPlayer(playerName, coalitionName)
   local count = 0
   if playerName ~= nil then    
-    local groups = SET_GROUP:New():FilterCategoryGround():FilterPrefixes( {"CTLD"} ):FilterActive():FilterOnce()
-    local JTAC = "Tigr_233036"
-    if coalition.side.BLUE then
-      local JTAC = "Hummer"
-    end
+    local groups = SET_GROUP:New():FilterCategoryGround():FilterPrefixes({"CTLD"}):FilterCoalitions(coalitionName):FilterActive():FilterOnce()    
     if groups ~= nil then
-      GroupsSetToRed:ForEachGroup(
+      local JTAC = "Tigr_233036"
+      if coalitionName == coalition.side.BLUE then
+        JTAC = "Hummer"
+      end
+      groups:ForEachGroup(
         function(grp)
           if grp ~= nil then
-            local groupName = grp:GetName():lower()
-            if string.find(groupName, name) then
-              count = count + 1
+            local groupName = grp:GetName():lower()            
+            local dcsGroup = Group.getByName(grp:GetName())          
+            if dcsGroup ~= nil then
+              local units = dcsGroup:getUnits()
+              if units ~= nil then
+                local unitTypeName = units[1]:getTypeName()
+                if string.find(unitTypeName, JTAC) then
+                  count = count + 1
+                end
+              end  
             end
           end        
       end)    
