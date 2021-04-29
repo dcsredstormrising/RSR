@@ -27,7 +27,7 @@ function M.CRASH_EVENTHANDLER:_NonPlayerRouter( event )
     local groupName = event.IniGroup:GetName()
     local coalitionNumber = event.IniCoalition
     if string.match(groupName, "Convoy Transport") then
-        -- Do Nothing
+        Convoy.OnTransportCrash(coalitionNumber)
     end
 end
     
