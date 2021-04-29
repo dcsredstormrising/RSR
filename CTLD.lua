@@ -4572,11 +4572,11 @@ function ctld.countAASystemsByCoalition(coalition)
             end
           end
         end
-      end
-      -- do we have the correct number of unique pieces and do we have enough points for all the pieces
-      if ctld.countTableEntries(_uniqueTypes) == _aaSystemTemplate.count and #_points >= _aaSystemTemplate.count then
-        _count = _count + 1
-      end
+        -- do we have the correct number of unique pieces and do we have enough points for all the pieces
+        if ctld.countTableEntries(_uniqueTypes) == _aaSystemTemplate.count and #_points >= _aaSystemTemplate.count then
+          _count = _count + 1
+        end
+      end      
     end
     end  
   return _count

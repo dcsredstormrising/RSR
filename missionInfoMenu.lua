@@ -125,10 +125,10 @@ MESSAGE:New(text, 20):ToGroup(playerGroup)
         MESSAGE:New(string.format("%s Team controls %s Airbases", coalitionName, coalitionAirbaseNames), 20):ToGroup(playerGroup)
         MESSAGE:New(string.format("%s Team controls %i FARPs", coalitionName, farpCount), 20):ToGroup(playerGroup)        
         MESSAGE:New(string.format("%s Team SAM sling limit is: %i", coalitionName, samSlingLimit), 20):ToGroup(playerGroup)
-        MESSAGE:New(string.format("%s Team already has %i SAMs", coalitionName, ctld.countAASystemsByCoalition(coalitionNum)), 20):ToGroup(playerGroup)                        
+        MESSAGE:New(string.format("%s Team has %i SAMs installed", coalitionName, ctld.countAASystemsByCoalition(coalitionNum)), 20):ToGroup(playerGroup)                        
         MESSAGE:New(string.format("%s Team GROUP sling limit is: %i", coalitionName, ctld.GroupLimitCount), 20):ToGroup(playerGroup)
-        MESSAGE:New(string.format("%s Team has already %i Groups", coalitionName, ctld.GetPlayerSpawnGroupCount(coalitionNum)), 20):ToGroup(playerGroup)
-        MESSAGE:New(string.format("%s Team can still deploy %1 JTACs to the field: %i", coalitionName, JTACLimit), 20):ToGroup(playerGroup)
+        MESSAGE:New(string.format("%s Team has %i Groups deployed", coalitionName, ctld.GetPlayerSpawnGroupCount(coalitionNum)), 20):ToGroup(playerGroup)
+        MESSAGE:New(string.format("%s Team can still deliver %1 JTACs to the field: %i", coalitionName, JTACLimit), 20):ToGroup(playerGroup)
         
         -- Air Resupply
         local convoyCount = Convoy.GetUpTransports(coalitionNum)
