@@ -44,7 +44,7 @@ function M.BIRTH_EVENTHANDLER:_AddMenus(event)
             end
 
             if missionUtils.isTransportType(playerGroup:GetTypeName()) then
-                self:_AddTransportMenus(groupId, unitName, playerGroup, playerName, coalitionNumber)
+                self:_AddTransportMenus(groupId, unitName, playerGroup)
             else
                 self:_AddRadioListMenu(groupId, unitName)
                 self:_AddLivesLeftMenu(playerGroup, unitName)
@@ -73,13 +73,13 @@ function M.BIRTH_EVENTHANDLER:_AddWeaponsManagerMenus(groupId)
     --missionCommands.addCommandForGroup(groupId, "Validate Loadout", nil, weaponManager.validateLoadout, groupId)
 end
 
-function M.BIRTH_EVENTHANDLER:_AddTransportMenus(groupId, unitName, playerGroup, playerName, coalitionNumber)
+function M.BIRTH_EVENTHANDLER:_AddTransportMenus(groupId, unitName, playerGroup)
     local _unit = ctld.getTransportUnit(unitName)
     local _unitActions = ctld.getUnitActions(_unit:getTypeName())
 
     csar.addMedevacMenuItem(unitName)
     ctld.addF10MenuOptions(unitName)
-    Convoy.AddMenu(playerGroup, playerName, coalitionNumber)
+    Convoy.AddMenu(playerGroup)
     -- mr: shortcuts disabled for now as intermittently not working for unknown reasons e.g. unitName not passed or = nil
     --[[
         if ctld.enableCrates and _unitActions.crates then

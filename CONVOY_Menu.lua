@@ -15,6 +15,8 @@
 -- TODO:
 -- 1. Complete any FIXME:s.
 ---
+local utils = require("utils")
+local inspect = require("inspect")
 
 -- Dont Remove
 Convoy = {}
@@ -26,7 +28,7 @@ Convoy = {}
 local DISCORD = "discord.gg/fVg9gut"
 
 -- Number of spawned in groups at one time.
-local ConvoyLimit = 2
+local ConvoyLimit = 4
 
 -- This defines the group names in ME without coalition prefix. This is less code than requesting a set of groups and iterating.
 local ConvoyLength = 6
@@ -83,29 +85,40 @@ local function SpawnConvoy(coalitionNumber)
   _Coalitions[coalitionNumber].TransportGroup:Destroy(true, DELAY) 
 end
 
-local function SpawnTransport(heading, location, playerName, coalitionNumber)
-  if not _Coalitions[coalitionNumber].Queue then
+local function SpawnTransport(playerGroup, coalitionNumber)
+  local heading = playerGroup:GetHeading()
+  local location = playerGroup:GetPointVec2()
+  local playerName = playerGroup:GetPlayerName()
+  local playerAirbase = utils.getNearestAirbase(location, coalitionNumber, Airbase.Category.AIRDROME)
+
+  if not _Coalitions[coalitionNumber].Queue and playerAirbase then
     env.info("CONVOY: Queue for team: " .. _Coalitions[coalitionNumber].String .. " is empty. Inserting " .. playerName .. "'s location and heading.")
-    _Coalitions[coalitionNumber].Queue = {Heading = heading, Location = location, PlayerName = playerName}
+    _Coalitions[coalitionNumber].Queue = {Heading = heading, Location = location, PlayerName = playerName, PlayerAirbase = playerAirbase}
     local spawnVec2 = TranslateAndReturnSpawnLocation(heading, location)
     _Coalitions[coalitionNumber].TransportGroup = _Coalitions[coalitionNumber].TransportSpawn:SpawnFromVec2(spawnVec2)
-  else
+  elseif not playerAirbase then
+    env.info("CONVOY: " .. playerName .. " is not at airbase, will not spawn convoy transport.")
+    trigger.action.outTextForCoalition(coalitionNumber, "[TEAM] " .. playerName .. " Must be at airbase to spawn convoy.", 10)
+  elseif _Coalitions[coalitionNumber] then
     env.info("CONVOY: Queue for team: " .. _Coalitions[coalitionNumber].String .. " is full!")
-    trigger.action.outTextForCoalition(coalitionNumber, "[TEAM] Transport is already in the air!", 10)
+    trigger.action.outTextForCoalition(coalitionNumber, "[TEAM] Transport is already in the air from " .. playerAirbase .. "!", 10)
   end
 end
 
 -- HANDLES BIRTH EVENTS OF TRANSPORT HELOS AND CARGO, TRANSPORTS, AND CONVOY GROUPS
-function Convoy.AddMenu( playerGroup, playerName, coalitionNumber )
-  env.info("CONVOY: Creating Convoy Menus for " .. playerName .. ".")
+function Convoy.AddMenu( playerGroup )
+  local groupName = playerGroup:GetName()
+  local coalitionNumber = playerGroup:GetCoalition()
 
-  local pos = {heading = playerGroup:GetHeading(), location = playerGroup:GetPointVec2()}
+  env.info("CONVOY: Creating Convoy Menus for " .. groupName .. ".")
+
+  --local pos = {heading = playerGroup:GetHeading(), location = playerGroup:GetPointVec2()}
   
   -- PARENT MENU
   local ConvoyMenuRoot = MENU_GROUP:New( playerGroup, "Air Resupply" )
     
   -- SUBMENU COMMANDS CHILD OF ConvoyMenuRoot
-  MENU_GROUP_COMMAND:New( playerGroup, "Spawn Air Resupply", ConvoyMenuRoot, SpawnTransport, pos.heading, pos.location, playerName, coalitionNumber)
+  MENU_GROUP_COMMAND:New( playerGroup, "Spawn Air Resupply", ConvoyMenuRoot, SpawnTransport, playerGroup, coalitionNumber)
   MENU_GROUP_COMMAND:New( playerGroup, "Air Resupplies Remaining", ConvoyMenuRoot, function() 
     trigger.action.outTextForCoalition(coalitionNumber, "[TEAM] Has " .. _Coalitions[coalitionNumber].ConvoysLeft .. " Remaining Air Resupplies.", 10)
   end)
@@ -136,4 +149,5 @@ function Convoy.OnTransportCrash ( coalitionNumber )
   _Coalitions[coalitionNumber].TransportGroup = nil
   _Coalitions[coalitionNumber].Queue = nil
 end
+
 ---END FUNCTIONS---
