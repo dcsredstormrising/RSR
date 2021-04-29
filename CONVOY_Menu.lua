@@ -16,7 +16,6 @@
 -- 1. Complete any FIXME:s.
 ---
 local utils = require("utils")
-local inspect = require("inspect")
 
 -- Dont Remove
 Convoy = {}
