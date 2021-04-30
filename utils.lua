@@ -486,4 +486,244 @@ function M.getAliveLogisticsCentreforBase(_airbaseORfarpORfob)
     return _aliveLCobj
 end
 
+-- functions below added by =AW=33COM
+function M.findUnitsInCircle(center, radius)
+    local result = {}
+    local units = mist.DBs.unitsByName -- local copy for faster execution
+    for name, _ in pairs(units) do
+        local unit = Unit.getByName(name)
+        if not unit then 
+            unit = StaticObject.getByName(name)
+        end
+        if unit then 
+            local pos = unit:getPosition().p
+            if pos then -- you never know O.o
+                distanceFromCenter = ((pos.x - center.x)^2 + (pos.z - center.z)^2)^0.5
+                if distanceFromCenter <= radius then
+                    result[name] = unit
+                end
+            end
+        end
+    end
+    return result
+end
+
+function M.getAvgGroupPos(groupName) -- stolen from Mist and corrected
+  local group = groupName -- sometimes this parameter is actually a group
+  if type(groupName) == 'string' and Group.getByName(groupName) and Group.getByName(groupName):isExist() == true then
+    group = Group.getByName(groupName)
+  end
+  local units = {}
+  for i = 1, group:getSize() do
+    table.insert(units, group:getUnit(i):getName())
+  end
+  return mist.getAvgPos(units)
+end
+
+-- Makes a group move to a specific waypoint at a specific speed
+function M.moveGroupTo(groupName, pos, speed)
+    env.info("veaf.moveGroupTo(groupName=" .. groupName .. ", speed=".. speed)
+    env.info("pos="..veaf.vecToString(pos))
+
+  local unitGroup = Group.getByName(groupName)
+    if unitGroup == nil then
+        env.info("veaf.moveGroupTo: " .. groupName .. ' not found')
+    return false
+  end
+    
+  -- new route point
+  local newWaypoint = {
+    ["action"] = "Turning Point",
+    ["alt"] = 0,
+    ["alt_type"] = "BARO",
+    ["form"] = "Turning Point",
+    ["speed"] = speed,
+    ["type"] = "Turning Point",
+    ["x"] = pos.x,
+    ["y"] = pos.z,
+  }
+  -- order group to new waypoint
+  mist.goRoute(groupName, {newWaypoint})
+  return true
+end
+
+-- Add a unit to the <group> on a suitable point in a <dispersion>-sized circle around a spot
+function M.addUnit(group, spawnSpot, dispersion, unitType, unitName, skill)
+    local unitPosition = M.findPointInZone(spawnSpot, dispersion, false)
+    if unitPosition ~= nil then
+        table.insert(
+            group,
+            {
+                ["x"] = unitPosition.x,
+                ["y"] = unitPosition.y,
+                ["type"] = unitType,
+                ["name"] = unitName,
+                ["heading"] = 0,
+                ["skill"] = skill
+            }
+        )
+    else
+        env.info("cannot find a suitable position for unit "..unitType)
+    end
+end
+
+-- Find a suitable point for spawning a unit in a <dispersion>-sized circle around a spot
+function M.findPointInZone(spawnSpot, dispersion, isShip)
+    local unitPosition
+    local tryCounter = 1000
+    
+    repeat -- Place the unit in a "dispersion" ft radius circle from the spawn spot
+        unitPosition = mist.getRandPointInCircle(spawnSpot, dispersion)
+        local landType = land.getSurfaceType(unitPosition)
+        tryCounter = tryCounter - 1
+    until ((isShip and landType == land.SurfaceType.WATER) or (not(isShip) and (landType == land.SurfaceType.LAND or landType == land.SurfaceType.ROAD or landType == land.SurfaceType.RUNWAY))) or tryCounter == 0
+    if tryCounter == 0 then
+        return nil
+    else
+        return unitPosition
+    end
+end
+
+-- Returns the wind direction (from) and strength.
+function M.getWind(point)
+
+    -- Get wind velocity vector.
+    local windvec3  = atmosphere.getWind(point)
+    local direction = math.floor(math.deg(math.atan2(windvec3.z, windvec3.x)))
+    
+    if direction < 0 then
+      direction = direction + 360
+    end
+    
+    -- Convert TO direction to FROM direction. 
+    if direction > 180 then
+      direction = direction-180
+    else
+      direction = direction+180
+    end
+    
+    -- Calc 2D strength.
+    local strength=math.floor(math.sqrt((windvec3.x)^2+(windvec3.z)^2))
+    
+    -- Debug output.
+    --env.info(string.format("Wind data: point x=%.1f y=%.1f, z=%.1f", point.x, point.y,point.z))
+    --env.info(string.format("Wind data: wind  x=%.1f y=%.1f, z=%.1f", windvec3.x, windvec3.y,windvec3.z))
+    --env.info(string.format("Wind data: |v| = %.1f", strength))
+    --env.info(string.format("Wind data: ang = %.1f", direction))
+    
+    -- Return wind direction and strength km/h.
+    return direction, strength, windvec3
+end
+
+-- Get the average center of a group position (average point of all units position)
+function M.getAveragePosition(group)
+    if type(group) == "string" then 
+        group = Group.getByName(group)
+    end
+
+    local count
+
+  local totalPosition = {x = 0,y = 0,z = 0}
+  if group then
+    local units = Group.getUnits(group)
+    for count = 1,#units do
+      if units[count] then 
+        totalPosition = mist.vec.add(totalPosition,Unit.getPosition(units[count]).p)
+      end
+    end
+    if #units > 0 then
+      return mist.vec.scalar_mult(totalPosition,1/#units)
+    else
+      return nil
+    end
+  else
+    return nil
+  end
+end
+
+-- Return a point at the same coordinates, but on the surface
+function M.placePointOnLand(vec3)
+    if not vec3.y then
+        vec3.y = 0
+    end
+    
+  --  env.info(string.format("getLandHeight: vec3  x=%.1f y=%.1f, z=%.1f", vec3.x, vec3.y, vec3.z))
+    local height = M.getLandHeight(vec3)
+--    env.info(string.format("getLandHeight: result  height=%.1f",height))
+    local result={x=vec3.x, y=height, z=vec3.z}
+    --env.info(string.format("placePointOnLand: result  x=%.1f y=%.1f, z=%.1f", result.x, result.y, result.z))
+    return result
+end
+
+-- Return the height of the land at the coordinate.
+function M.getLandHeight(vec3)
+    --env.info(string.format("getLandHeight: vec3  x=%.1f y=%.1f, z=%.1f", vec3.x, vec3.y, vec3.z))
+    local vec2 = {x = vec3.x, y = vec3.z}
+    --env.info(string.format("getLandHeight: vec2  x=%.1f z=%.1f", vec3.x, vec3.z))
+    -- We add 1 m "safety margin" because data from getlandheight gives the surface and wind at or below the surface is zero!
+    local height = math.floor(land.getHeight(vec2) + 1)
+    --env.info(string.format("getLandHeight: result  height=%.1f",height))
+    return height
+end
+
+function M.vecToString(vec)
+    local result = ""
+    if vec.x then
+        result = result .. string.format(" x=%.1f", vec.x)
+    end
+    if vec.y then
+        result = result .. string.format(" y=%.1f", vec.y)
+    end
+    if vec.z then
+        result = result .. string.format(" z=%.1f", vec.z)
+    end
+    return result
+end
+
+function M.discover(o)
+    local text = ""
+    for key,value in pairs(getmetatable(o)) do
+       text = text .. " - ".. key.."\n";
+    end
+  return text
+end
+
+function M.discoverTable(o)
+    local text = ""
+    for key,value in pairs(o) do
+       text = text .. " - ".. key.."\n";
+    end
+  return text
+end
+
+-- Trim a string
+function M.trim(s)
+    local a = s:match('^%s*()')
+    local b = s:match('()%s*$', a)
+    return s:sub(a,b-1)
+end
+
+-- Split string. C.f. http://stackoverflow.com/questions/1426954/split-string-in-lua
+function M.split(str, sep)
+    local result = {}
+    local regex = ("([^%s]+)"):format(sep)
+    for each in str:gmatch(regex) do
+        table.insert(result, each)
+    end
+    return result
+end
+
+-- Break string around a separator
+function M.breakString(str, sep)
+    local regex = ("^([^%s]+)%s(.*)$"):format(sep, sep)
+    local a, b = str:match(regex)
+    if not a then a = str end
+    local result = {a, b}
+    return result
+end
+
+function M.getNearestAirbase(vec3, coalition, category)
+  return "Vaziani"
+end
+
 return M

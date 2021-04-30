@@ -6,7 +6,7 @@
 local inspect = require("inspect")
 
 --This allows us to set TOR and Rolands to RED state
-GroupsSetToRed = SET_GROUP:New():FilterCategoryGround():FilterPrefixes( {"Red Start","Blue Start", "CTLD"} ):FilterActive():FilterOnce()
+local GroupsSetToRed = SET_GROUP:New():FilterCategoryGround():FilterPrefixes( {"Red Start","Blue Start", "CTLD"} ):FilterActive():FilterOnce()
 local _redTypes = {"Roland", "Tor"}
 
 -- can not run this due to performance until we figure out what is Moose/DCS doing with this: grp:CommandEPLRS(true, 3)
@@ -14,6 +14,12 @@ local _redTypes = {"Roland", "Tor"}
 -- This sets EPRLS ON
 --GroupsForEPLRS = SET_GROUP:New():FilterCategoryGround():FilterPrefixes( {"Red Start","Blue Start", "CTLD"} ):FilterActive():FilterOnce()
 --local _eplrsTypes = {"Hawk", "Buk", "Kub", "p-19", "SNR_75V", "Patriot", "S-300PS", "snr s-125"}
+
+-- logic to load saved AASystems into CTLD. This fixes the problem of static sams not being part of CTLD.  Now they are. This fixes half the problem, 
+  -- the other problem is CTLD Repair was written for 1 session.  It has to be rewritten in order to repair systems through out the entire round.  
+  -- this must run after State is reconstructed in order to load correct AASystem.  Otherwise you will load old miz level systems from default position and with different names.
+  -- when we repair a static AASystem, it's name changes to a player name.     
+ local _aaSystemGroups = SET_GROUP:New():FilterCategoryGround():FilterPrefixes({"AASystem"}):FilterActive(true):FilterOnce()
 
 SCHEDULER:New( nil, function()
 
@@ -84,17 +90,10 @@ SCHEDULER:New( nil, function()
      end
    end)
    ]]--
-       
-  -- logic to load saved AASystems into CTLD. This fixes the problem of static sams not being part of CTLD.  Now they are. This fixes half the problem, 
-  -- the other problem is CTLD Repair was written for 1 session.  It has to be rewritten in order to repair systems through out the entire round.  
-  -- this must run after State is reconstructed in order to load correct AASystem.  Otherwise you will load old miz level systems from default position and with different names.
-  -- when we repair a static AASystem, it's name changes to a player name.     
-  local _aaSystemGroups = SET_GROUP:New():FilterCategoryGround():FilterPrefixes( {"AASystem"} ):FilterActive(true):FilterOnce()  
   
   _aaSystemGroups:ForEachGroup(function (grp)  
     local _spawnedGroup = Group.getByName(grp:GetName())
     ctld.LoadAllExistingSystemsIntoCTLD(_spawnedGroup)    
-  end)
-   
+  end)   
 end, {}, 30)
   

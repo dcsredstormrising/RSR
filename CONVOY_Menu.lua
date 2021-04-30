@@ -132,4 +132,14 @@ function Convoy.OnLand( coalitionNumber )
   trigger.action.outTextForCoalition(coalitionNumber,"[TEAM] " .. _Coalitions[coalitionNumber].String .." Resupply Mission Successful!", 10)
   trigger.action.outTextForCoalition(coalitionNumber == 1 and 2 or 1,"[TEAM] Enemy Transport Faded.\nIntercept Mission Failed!", 10)
 end
+
+function Convoy.GetUpTransports(coalitionNum)
+  return 0
+end
+
+function Convoy.GetUpTransportBaseName(coalitionNum)
+  return "Vaziani"
+end
+
 ---END FUNCTIONS---
+

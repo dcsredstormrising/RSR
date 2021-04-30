@@ -1107,6 +1107,20 @@ function ctld.IsGroupLimitReached(_args, _crateType, _coalition)
   return _limitReached
 end
 
+-- gets total group slung count based on the limit logic by coalition
+function ctld.getLimitedGroupCount(coalition)  
+    local coalitionName = "red"    
+    if coalition == 2 then
+      coalitionName = "blue"
+    end    
+    -- gets all player slung groups
+    local playerSlungGroups = SET_GROUP:New():FilterCategoryGround():FilterCoalitions(coalitionName):FilterPrefixes("CTLD"):FilterActive():FilterOnce()    
+    -- here we must deduct all ctld.UnitTypesOutsideOfGroupLimit from total        
+    local groupsOfUnitsNotPartOfLimitCount = ctld.getGroupCountByUnitType(playerSlungGroups, ctld.UnitTypesOutsideOfGroupLimit)        
+    return playerSlungGroups:Count() - groupsOfUnitsNotPartOfLimitCount
+end
+
+
 -- Fetches count of groups based on unit type.  
 -- @_playerSlungUnits groups of units
 -- @_unitTypes Unit types that interest you
@@ -4484,6 +4498,86 @@ function ctld.getAllowedAASystems(_heli)
     else
         return ctld.AASystemLimitRED
     end
+end
+
+function ctld.countAASystemsByPlayer(playerName)
+  local count = 0
+  env.info("countAASystemsByPlayer: "..playerName)
+  if playerName ~= nil then  
+    for i, item in pairs(ctld.completeAASystems) do      
+      local group = Group.getByName(i)
+      if group ~= nil then
+          if string.find(i:lower(), playerName:lower()) then
+            count = count + 1
+          end
+      end      
+    end
+  end
+  return count
+end
+
+function ctld.countGroupsByPlayer(playerName, coalitionName)
+  local count = 0
+  env.info("countGroupsByPlayer:"..coalitionName.." "..playerName)
+  if playerName ~= nil then  
+    local groups = SET_GROUP:New():FilterCategoryGround():FilterCoalitions(coalitionName):FilterPrefixes({"CTLD"}):FilterActive():FilterOnce()
+    if groups ~= nil then
+      env.info("countGroupsByPlayer groups exist")
+      groups:ForEachGroup(
+        function(grp)
+          if grp ~= nil then
+            local groupName = grp:GetName():lower()
+            if string.find(groupName, name) then
+              count = count + 1
+            end
+          end        
+      end)    
+    end
+  end
+  return count
+end
+
+function ctld.countJTACsByPlayer(playerName, coalitionName)
+  local count = 0
+  if playerName ~= nil then    
+    local groups = SET_GROUP:New():FilterCategoryGround():FilterPrefixes({"CTLD"}):FilterCoalitions(coalitionName):FilterActive():FilterOnce()    
+    if groups ~= nil then
+      local JTAC = "Tigr_233036"
+      if coalitionName == coalition.side.BLUE then
+        JTAC = "Hummer"
+      end
+      groups:ForEachGroup(
+        function(grp)
+          if grp ~= nil then
+            local groupName = grp:GetName():lower()            
+            local dcsGroup = Group.getByName(grp:GetName())          
+            if dcsGroup ~= nil then
+              local units = dcsGroup:getUnits()
+              if units ~= nil then
+                local unitTypeName = units[1]:getTypeName()
+                if string.find(unitTypeName, JTAC) then
+                  count = count + 1
+                end
+              end  
+            end
+          end        
+      end)    
+    end
+  end
+  return count
+end
+
+function ctld.countAASystemsByCoalition(coalition)
+  local count = 0  
+  if ctld.completeAASystems ~= nil then    
+    for groupName, aaSystem in pairs(ctld.completeAASystems) do
+      local group = Group.getByName(groupName)
+      if group ~= nil and group:getCoalition() == coalition then
+        count = count + 1
+      end
+    end
+  end
+  return count
 end
 
 function ctld.countCompleteAASystems(_heli)

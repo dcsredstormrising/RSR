@@ -122,29 +122,29 @@ else
   
   ----Add Assets to the warehouses on new campaign
     --EXAMPLE*** WAREHOUSE:AddAsset(group, ngroups, forceattribute, forcecargobay, forceweight, loadradius, skill, liveries,    assignment) 
-  warehouse.BlueNorthernWarehouse:AddAsset("Resupply Blue MBT North", 40) --Counted as tank  in stock
-  warehouse.BlueNorthernWarehouse:AddAsset("Resupply Blue IFV North", 40)    --Counted as APC in stock
+  warehouse.BlueNorthernWarehouse:AddAsset("Resupply Blue MBT North", 10) --Counted as tank  in stock
+  warehouse.BlueNorthernWarehouse:AddAsset("Resupply Blue IFV North", 10)    --Counted as APC in stock
   
-  warehouse.BlueSouthernWarehouse:AddAsset("Resupply Blue MBT South", 40) --Counted as tank  in stock
-  warehouse.BlueSouthernWarehouse:AddAsset("Resupply Blue IFV South", 40)    --Counted as APC in stock
+  warehouse.BlueSouthernWarehouse:AddAsset("Resupply Blue MBT South", 10) --Counted as tank  in stock
+  warehouse.BlueSouthernWarehouse:AddAsset("Resupply Blue IFV South", 10)    --Counted as APC in stock
   
-  warehouse.BlueNavalWarehouse:AddAsset("Resupply Blue Ticonderoga", 10)
-  warehouse.BlueNavalWarehouse:AddAsset("Resupply Blue Type 052C", 15)
-  warehouse.BlueNavalWarehouse:AddAsset("Resupply Blue Perry", 15) 
-  warehouse.BlueNavalWarehouse:AddAsset("Resupply Blue Carrier", 10)
-  warehouse.BlueNavalWarehouse:AddAsset("Resupply Blue Tarawa", 10)
+  warehouse.BlueNavalWarehouse:AddAsset("Resupply Blue Ticonderoga", 3)
+  warehouse.BlueNavalWarehouse:AddAsset("Resupply Blue Type 052C", 3)
+  warehouse.BlueNavalWarehouse:AddAsset("Resupply Blue Perry", 3) 
+  warehouse.BlueNavalWarehouse:AddAsset("Resupply Blue Carrier", 5)
+  warehouse.BlueNavalWarehouse:AddAsset("Resupply Blue Tarawa", 5)
   
-  warehouse.RedNorthernWarehouse:AddAsset("Resupply Red MBT North", 40)    --counted as tank  in stock
-  warehouse.RedNorthernWarehouse:AddAsset("Resupply Red IFV North", 40)   --counted as APC in stock
+  warehouse.RedNorthernWarehouse:AddAsset("Resupply Red MBT North", 10)    --counted as tank  in stock
+  warehouse.RedNorthernWarehouse:AddAsset("Resupply Red IFV North", 10)   --counted as APC in stock
   
-  warehouse.RedSouthernWarehouse:AddAsset("Resupply Red MBT South", 40)    --counted as tank  in stock
-  warehouse.RedSouthernWarehouse:AddAsset("Resupply Red IFV South", 40)   --counted as APC in stock
+  warehouse.RedSouthernWarehouse:AddAsset("Resupply Red MBT South", 10)    --counted as tank  in stock
+  warehouse.RedSouthernWarehouse:AddAsset("Resupply Red IFV South", 10)   --counted as APC in stock
   
-  warehouse.RedNavalWarehouse:AddAsset("Resupply Red Moskva", 10)
-  warehouse.RedNavalWarehouse:AddAsset("Resupply Red Molniya", 15)
-  warehouse.RedNavalWarehouse:AddAsset("Resupply Red Type 054A", 15) 
-  warehouse.RedNavalWarehouse:AddAsset("Resupply Red Carrier", 10)
-  warehouse.RedNavalWarehouse:AddAsset("Resupply Red Transport Dock", 10)
+  warehouse.RedNavalWarehouse:AddAsset("Resupply Red Moskva", 3)
+  warehouse.RedNavalWarehouse:AddAsset("Resupply Red Molniya", 3)
+  warehouse.RedNavalWarehouse:AddAsset("Resupply Red Type 054A", 3) 
+  warehouse.RedNavalWarehouse:AddAsset("Resupply Red Carrier", 5)
+  warehouse.RedNavalWarehouse:AddAsset("Resupply Red Transport Dock", 5)
 end
 
 if warehouse.BlueNorthernWarehouse:GetCoalition()==2 or warehouse.BlueNorthernWarehouse:GetCoalition()==0 then
@@ -356,15 +356,15 @@ end
 function warehouse.BlueNorthernWarehouse:OnAfterCaptured(From, Event, To, Coalition, Country)
 --function warehouse.BlueNorthernWarehouse:OnAfterAirbaseCaptured(From,Event,To,Coalition)
   if Coalition==coalition.side.BLUE then
-    MESSAGE:New("The Northern Warehouse is running at full capacity.",25,"[TEAM]:"):ToBlue()
+    MESSAGE:New("The Northern Warehouse is running at full capacity.",5,"[TEAM]:"):ToBlue()
     warehouse.BlueNorthernWarehouse:Start()
     warehouse.BlueNorthernWarehouse:__Save(15,nil,"BlueNorthernWarehouse")
     warehouse.BlueNorthernWarehouse:AddRequest(warehouse.BlueNorthernWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Blue MBT North", 1, WAREHOUSE.TransportType.SELFPROPELLED)
     warehouse.BlueNorthernWarehouse:AddRequest(warehouse.BlueNorthernWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Blue IFV North", 2, WAREHOUSE.TransportType.SELFPROPELLED)
   
   elseif Coalition==coalition.side.RED then
-    MESSAGE:New("We have captured Blue Team's Northern Warehouse, they will no longer receive re-enforcements.",25,"[TEAM]:"):ToRed()
-    MESSAGE:New("We have lost the Northern Warehouse and no longer able to re-enforce the front.",25,"[TEAM]:"):ToBlue()
+    MESSAGE:New("We have captured Blue Team's Northern Warehouse, they will no longer receive re-enforcements.",5,"[TEAM]:"):ToRed()
+    MESSAGE:New("We have lost the Northern Warehouse and no longer able to re-enforce the front.",5,"[TEAM]:"):ToBlue()
     warehouse.BlueNorthernWarehouse:Stop()
     warehouse.BlueNorthernWarehouse:__Save(15,nil,"BlueNorthernWarehouse")
     end
@@ -386,15 +386,15 @@ end
 function warehouse.BlueSouthernWarehouse:OnAfterCaptured(From, Event, To, Coalition, Country)
 --function  warehouse.BlueSouthernWarehouse:OnAfterAirbaseCaptured(From,Event,To,Coalition)
   if Coalition==coalition.side.BLUE then
-    MESSAGE:New("The Southern Warehouse is running at full capacity.",25,"[TEAM]:"):ToBlue()
+    MESSAGE:New("The Southern Warehouse is running at full capacity.",5,"[TEAM]:"):ToBlue()
     warehouse.BlueSouthernWarehouse:Start()
     warehouse.BlueSouthernWarehouse:__Save(4,nil,"BlueSouthernWarehouse")
     warehouse.BlueSouthernWarehouse:AddRequest(warehouse.BlueSouthernWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Blue MBT South", 1, WAREHOUSE.TransportType.SELFPROPELLED)
     warehouse.BlueSouthernWarehouse:AddRequest(warehouse.BlueSouthernWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Blue IFV South", 2, WAREHOUSE.TransportType.SELFPROPELLED)
   
   elseif Coalition==coalition.side.RED then
-    MESSAGE:New("We have captured Blue Team's Southern Warehouse, they will no longer receive re-enforcements.",25,"[TEAM]:"):ToRed()
-    MESSAGE:New("We have lost the Southern Warehouse and no longer able to re-enforce the front.",25,"[TEAM]:"):ToBlue()
+    MESSAGE:New("We have captured Blue Team's Southern Warehouse, they will no longer receive re-enforcements.",5,"[TEAM]:"):ToRed()
+    MESSAGE:New("We have lost the Southern Warehouse and no longer able to re-enforce the front.",5,"[TEAM]:"):ToBlue()
     warehouse.BlueSouthernWarehouse:Stop()
     warehouse.BlueSouthernWarehouse:__Save(15,nil,"BlueSouthernWarehouse")
     end
@@ -403,15 +403,15 @@ end
 function warehouse.RedNorthernWarehouse:OnAfterCaptured(From, Event, To, Coalition, Country)
 --function warehouse.RedNorthernWarehouse:OnAfterAirbaseCaptured(From,Event,To,Coalition)
   if Coalition==coalition.side.RED then
-    MESSAGE:New("The Northern Warehouse is running at full capacity.",25,"[TEAM]:"):ToRed()
+    MESSAGE:New("The Northern Warehouse is running at full capacity.",5,"[TEAM]:"):ToRed()
     warehouse.RedNorthernWarehouse:Start()
     warehouse.RedNorthernWarehouse:__Save(7,nil,"RedNorthernWarehouse")
     warehouse.RedNorthernWarehouse:AddRequest(warehouse.RedNorthernWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Red MBT North", 1, WAREHOUSE.TransportType.SELFPROPELLED)
     warehouse.RedNorthernWarehouse:AddRequest(warehouse.RedNorthernWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Red IFV North", 2, WAREHOUSE.TransportType.SELFPROPELLED)
   
   elseif Coalition==coalition.side.BLUE then
-    MESSAGE:New("We have captured Red Team's Northern Warehouse, they will no longer receive re-enforcements.",25,"[TEAM]:"):ToBlue()
-    MESSAGE:New("We have lost the Northern Warehouse and no longer able to re-enforce the front.",25,"[TEAM]:"):ToRed()
+    MESSAGE:New("We have captured Red Team's Northern Warehouse, they will no longer receive re-enforcements.",5,"[TEAM]:"):ToBlue()
+    MESSAGE:New("We have lost the Northern Warehouse and no longer able to re-enforce the front.",5,"[TEAM]:"):ToRed()
     warehouse.RedNorthernWarehouse:Stop()
     warehouse.RedNorthernWarehouse:__Save(10,nil,"RedNorthernWarehouse")
     end
@@ -420,15 +420,15 @@ end
 function warehouse.RedSouthernWarehouse:OnAfterCaptured(From, Event, To, Coalition, Country)
 --function warehouse.RedSouthernWarehouse:OnAfterAirbaseCaptured(From,Event,To,Coalition)
   if Coalition==coalition.side.RED then
-    MESSAGE:New("The Southern Warehouse is running at full capacity.",25,"[TEAM]:"):ToRed()
+    MESSAGE:New("The Southern Warehouse is running at full capacity.",5,"[TEAM]:"):ToRed()
     warehouse.RedSouthernWarehouse:Start()
     warehouse.RedSouthernWarehouse:__Save(9,nil,"RedSouthernWarehouse")
     warehouse.RedSouthernWarehouse:AddRequest(warehouse.RedSouthernWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Red MBT South", 1, WAREHOUSE.TransportType.SELFPROPELLED)
     warehouse.RedSouthernWarehouse:AddRequest(warehouse.RedSouthernWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Red IFV South", 2, WAREHOUSE.TransportType.SELFPROPELLED)
   
   elseif Coalition==coalition.side.BLUE then
-    MESSAGE:New("We have captured Red Team's Southern Warehouse, they will no longer receive re-enforcements.",25,"[TEAM]:"):ToBlue()
-    MESSAGE:New("We have lost the Southern Warehouse and no longer able to re-enforce the front.",25,"[TEAM]:"):ToRed()
+    MESSAGE:New("We have captured Red Team's Southern Warehouse, they will no longer receive re-enforcements.",5,"[TEAM]:"):ToBlue()
+    MESSAGE:New("We have lost the Southern Warehouse and no longer able to re-enforce the front.",5,"[TEAM]:"):ToRed()
     warehouse.RedSouthernWarehouse:Stop()
     warehouse.RedSouthernWarehouse:__Save(15,nil,"RedSouthernWarehouse")
     end
@@ -449,8 +449,8 @@ function warehouse.BlueNavalWarehouse:OnAfterCaptured(From, Event, To, Coalition
     warehouse.BlueNavalWarehouse:AddRequest(warehouse.BlueNavalWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Blue Tarawa", 1, WAREHOUSE.TransportType.SELFPROPELLED)
   
   elseif Coalition==coalition.side.RED then
-    MESSAGE:New("We have captured Blue Team's Drydock! They will no longer be able to reinforce their fleet!",25,"[TEAM]:"):ToRed()
-    MESSAGE:New("We have lost our Drydock and will no longer able to re-enforce the fleet.",25,"[TEAM]:"):ToBlue()
+    MESSAGE:New("We have captured Blue Team's Drydock! They will no longer be able to reinforce their fleet!",5,"[TEAM]:"):ToRed()
+    MESSAGE:New("We have lost our Drydock and will no longer able to re-enforce the fleet.",5,"[TEAM]:"):ToBlue()
     warehouse.BlueNavalWarehouse:Stop()
     warehouse.BlueNavalWarehouse:__Save(15,nil,"BlueNavalWarehouse")
     end
@@ -459,7 +459,7 @@ end
 function warehouse.RedNavalWarehouse:OnAfterCaptured(From, Event, To, Coalition, Country)
 --function warehouse.RedSouthernWarehouse:OnAfterAirbaseCaptured(From,Event,To,Coalition)
   if Coalition==coalition.side.RED then
-    MESSAGE:New("Our Drydock is running at full capacity.",25,"[TEAM]:"):ToRed()
+    MESSAGE:New("Our Drydock is running at full capacity.",5,"[TEAM]:"):ToRed()
     warehouse.RedNavalWarehouse:Start()
     warehouse.RedNavalWarehouse:__Save(9,nil,"RedNavalWarehouse")	
 --initial spawn of ships as well as when captured by red team
@@ -469,8 +469,8 @@ function warehouse.RedNavalWarehouse:OnAfterCaptured(From, Event, To, Coalition,
     warehouse.RedNavalWarehouse:AddRequest(warehouse.RedNavalWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Red Carrier", 1, WAREHOUSE.TransportType.SELFPROPELLED)
 	  warehouse.RedNavalWarehouse:AddRequest(warehouse.RedNavalWarehouse, WAREHOUSE.Descriptor.GROUPNAME, "Resupply Red Transport Dock", 1, WAREHOUSE.TransportType.SELFPROPELLED)
   elseif Coalition==coalition.side.BLUE then
-    MESSAGE:New("We have captured Red Team's Drydock! They will no longer be able to reinforce their fleet!",25,"[TEAM]:"):ToBlue()
-    MESSAGE:New("We have lost our Drydock and will no longer able to re-enforce the fleet.",25,"[TEAM]:"):ToRed()
+    MESSAGE:New("We have captured Red Team's Drydock! They will no longer be able to reinforce their fleet!",5,"[TEAM]:"):ToBlue()
+    MESSAGE:New("We have lost our Drydock and will no longer able to re-enforce the fleet.",5,"[TEAM]:"):ToRed()
     warehouse.RedNavalWarehouse:Stop()
     warehouse.RedNavalWarehouse:__Save(15,nil,"RedNavalWarehouse")
     end
