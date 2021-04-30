@@ -1,9 +1,6 @@
 local missionUtils = require("missionUtils")
 local missionInfoMenu = require("missionInfoMenu")
---local weaponManager = require("weaponManager")
-
 local M = {}
-
 M.eventHandler = nil  -- constructed in onMissionStart
 
 M.BIRTH_EVENTHANDLER = {
@@ -37,11 +34,8 @@ function M.BIRTH_EVENTHANDLER:_AddMenus(event)
             self:I("Adding menus for " .. playerGroup:GetName())
             self.groupsMenusAdded[groupName] = true
             local unitName = event.IniUnitName
-            self:_AddMissionInfoMenu(playerGroup)
+            self:AddMissionStatusMenu(playerGroup)
             self:_AddJTACStatusMenu(groupId, unitName)
-            if playerGroup:GetCategory() == Group.Category.AIRPLANE then
-                self:_AddWeaponsManagerMenus(groupId)
-            end
 
             if missionUtils.isTransportType(playerGroup:GetTypeName()) then
                 self:_AddTransportMenus(groupId, unitName, playerGroup, playerName, coalitionNumber)
@@ -57,20 +51,11 @@ function M.BIRTH_EVENTHANDLER:_AddMenus(event)
     end
 end
 
-function M.BIRTH_EVENTHANDLER:_AddMissionInfoMenu(playerGroup)
-    missionInfoMenu.addMenu(playerGroup, self.restartHours)
-end
-
 --luacheck: push no unused
 function M.BIRTH_EVENTHANDLER:_AddJTACStatusMenu(groupId, unitName)
     if ctld.JTAC_jtacStatusF10 then
         missionCommands.addCommandForGroup(groupId, "JTAC Status", nil, ctld.getJTACStatus, { unitName })
     end
-end
-
-function M.BIRTH_EVENTHANDLER:_AddWeaponsManagerMenus(groupId)
-    --missionCommands.addCommandForGroup(groupId, "Show weapons left", nil, weaponManager.printHowManyLeft, groupId)
-    --missionCommands.addCommandForGroup(groupId, "Validate Loadout", nil, weaponManager.validateLoadout, groupId)
 end
 
 function M.BIRTH_EVENTHANDLER:_AddTransportMenus(groupId, unitName, playerGroup, playerName, coalitionNumber)
@@ -80,33 +65,6 @@ function M.BIRTH_EVENTHANDLER:_AddTransportMenus(groupId, unitName, playerGroup,
     csar.addMedevacMenuItem(unitName)
     ctld.addF10MenuOptions(unitName)
     Convoy.AddMenu(playerGroup, playerName, coalitionNumber)
-    -- mr: shortcuts disabled for now as intermittently not working for unknown reasons e.g. unitName not passed or = nil
-    --[[
-        if ctld.enableCrates and _unitActions.crates then
-            if ctld.unitCanCarryVehicles(_unit) == false then
-                if _unit:getTypeName() == "Mi-8MT" or _unit:getTypeName() == "Ka-50" then
-                    ctld.addCrateMenu(nil, "Heavy crates", _unit, groupId, ctld.spawnableCrates, ctld.heavyCrateWeightMultiplier)
-                else
-                    ctld.addCrateMenu(nil, "Light crates", _unit, groupId, ctld.spawnableCrates, 1)
-                end
-            end
-        end
-        if (ctld.enabledFOBBuilding or ctld.enableCrates) and _unitActions.crates then
-            if ctld.hoverPickup == false then
-                if ((ctld.slingLoad == false) or ((ctld.internalCargo == true) and (_unitActions.internal == true))) then
-                    missionCommands.addCommandForGroup(groupId, "Load Nearby Crate", nil, ctld.loadNearbyCrate, unitName)
-                end
-            end
-            missionCommands.addCommandForGroup(groupId, "Unpack Nearby Crate", nil, ctld.unpackCrates, { unitName })
-            if (ctld.slingLoad == false) or (ctld.internalCargo == true) then
-                missionCommands.addCommandForGroup(groupId, "Load Nearby Crate", nil, ctld.loadNearbyCrate, { unitName })
-                missionCommands.addCommandForGroup(groupId, "Drop Crate", nil, ctld.unloadInternalCrate, { unitName })
-            end
-        end
-        if _unitActions.troops then
-            missionCommands.addCommandForGroup(groupId, "Unload / Extract Troops", nil, ctld.unloadExtractTroops, { unitName })
-        end
-        --]]
 end
 
 function M.BIRTH_EVENTHANDLER:_AddRadioListMenu(groupId, unitName)
@@ -128,6 +86,12 @@ function M.BIRTH_EVENTHANDLER:_AddLivesLeftMenu(playerGroup, unitName)
                 end
             end
         end
+    end)
+end
+
+function M.BIRTH_EVENTHANDLER:AddMissionStatusMenu(playerGroup)
+    MENU_GROUP_COMMAND:New(playerGroup, "Mission Status", nil, function()
+      MESSAGE:New(missionInfoMenu.getMissionStatus(playerGroup), 25):ToGroup(playerGroup)
     end)
 end
 

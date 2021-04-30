@@ -3,6 +3,10 @@ local inspect = require("inspect")
 local utils = require("utils")
 local M = {}
 
+function M.getMissionStatus(playerGrou)
+return "total gay cock"
+end
+
 function M.addMenu(playerGroup, restartHours)
     local vec3 = playerGroup:GetVec3()
     local enemyCoalitionNum = 1
@@ -14,7 +18,8 @@ function M.addMenu(playerGroup, restartHours)
     end 
     
     local infoMenu = MENU_GROUP:New(playerGroup, "Mission info")
-    MENU_GROUP_COMMAND:New(playerGroup, "Time Until Restart", infoMenu, function()
+    missionCommands.addCommandForGroup(groupId, "JTAC Status", nil, ctld.getJTACStatus, { unitName })
+      MENU_GROUP_COMMAND:New(playerGroup, "Time Until Restart", infoMenu, function()
         local secondsUntilRestart = restartInfo.getSecondsUntilRestart(os.date("*t"), restartHours)
     
         --env.info("**=AW=33COM player group: ".. inspect(playerGroup))
@@ -121,22 +126,22 @@ MESSAGE:New(text, 20):ToGroup(playerGroup)
             farpCount = farpCount + 1
           end
         end
-        --MESSAGE:New(string.format("%s Team controls %s Airbases", coalitionName, coalitionAirbaseNames), 20):ToGroup(playerGroup)
-        --MESSAGE:New(string.format("%s Team controls %i FARPs", coalitionName, farpCount), 20):ToGroup(playerGroup)        
-        --MESSAGE:New(string.format("%s Team SAM sling limit is: %i", coalitionName, samSlingLimit), 20):ToGroup(playerGroup)
-        --MESSAGE:New(string.format("%s Team has %i SAMs installed", coalitionName, ctld.countAASystemsByCoalition(coalitionNum)), 20):ToGroup(playerGroup)                        
---        MESSAGE:New(string.format("%s Team GROUP sling limit is: %i", coalitionName, ctld.GroupLimitCount), 20):ToGroup(playerGroup)
-  --      MESSAGE:New(string.format("%s Team has %i Groups deployed", coalitionName, ctld.getLimitedGroupCount(coalitionNum)), 20):ToGroup(playerGroup)
-        --MESSAGE:New(string.format("%s Team can still deliver %i JTACs to the field", coalitionName, JTACLimit), 20):ToGroup(playerGroup)
+        MESSAGE:New(string.format("%s Team controls %s Airbases", coalitionName, coalitionAirbaseNames), 20):ToGroup(playerGroup)
+        MESSAGE:New(string.format("%s Team controls %i FARPs", coalitionName, farpCount), 20):ToGroup(playerGroup)        
+        MESSAGE:New(string.format("%s Team SAM sling limit is: %i", coalitionName, samSlingLimit), 20):ToGroup(playerGroup)
+        MESSAGE:New(string.format("%s Team has %i SAMs installed", coalitionName, ctld.countAASystemsByCoalition(coalitionNum)), 20):ToGroup(playerGroup)                        
+        MESSAGE:New(string.format("%s Team GROUP sling limit is: %i", coalitionName, ctld.GroupLimitCount), 20):ToGroup(playerGroup)
+       MESSAGE:New(string.format("%s Team has %i Groups deployed", coalitionName, ctld.getLimitedGroupCount(coalitionNum)), 20):ToGroup(playerGroup)
+        MESSAGE:New(string.format("%s Team can still deliver %i JTACs to the field", coalitionName, JTACLimit), 20):ToGroup(playerGroup)
         
         -- Air Resupply        
         local convoyCount = Convoy.GetUpTransports(coalitionNum)
         local convoyOverBaseName = Convoy.GetUpTransportBaseName(coalitionNum)
 
         if convoyCount > 0 then            
-          MESSAGE:New(string.format("%s Team has %i Air Resupply cargo plane in the air over %s.",coalitionName,convoyCount,convoyOverBaseName), 20):ToGroup(playerGroup)
+          MESSAGE:New(string.format("%s Team has %i Air Resupply cargo plane in the air over %s",coalitionName,convoyCount,convoyOverBaseName), 20):ToGroup(playerGroup)
         else
-          MESSAGE:New(string.format("%s Team does not have any Air Resupply cargo plane in the air.",coalitionName), 20):ToGroup(playerGroup)
+          MESSAGE:New(string.format("%s Team does not have any Air Resupply cargo plane in the air",coalitionName), 20):ToGroup(playerGroup)
         end
                 
         -- UAVs
@@ -158,9 +163,9 @@ MESSAGE:New(text, 20):ToGroup(playerGroup)
         end
        
         if UAVsCount > 0 then            
-          MESSAGE:New(string.format("%s Team has %i UAV RECON Drones in the air.",coalitionName,UAVsCount), 20):ToGroup(playerGroup)
+          MESSAGE:New(string.format("%s Team has %i UAV RECON Drones in the air",coalitionName,UAVsCount), 20):ToGroup(playerGroup)
         else
-          MESSAGE:New(string.format("%s Team does not have any UAV RECON Drones in the air at the moment.",coalitionName,UAVsCount), 20):ToGroup(playerGroup)
+          MESSAGE:New(string.format("%s Team does not have any UAV RECON Drones in the air at the moment",coalitionName,UAVsCount), 20):ToGroup(playerGroup)
         end
         
         -- AWACS 
