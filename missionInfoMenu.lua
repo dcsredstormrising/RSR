@@ -188,7 +188,7 @@ end
 local function getIntelStatus(enemyCoalitionNum)
   return  "Coalition Intel:\n"..         
           "Enemy TEAM has "..ctld.countAASystemsByCoalition(enemyCoalitionNum).." SAMs\n"..
-          "Enemy TEAM was able to sling "..ctld.getLimitedGroupCount(enemyCoalitionNum).." units\n\n"    
+          "Enemy TEAM was able to sling "..ctld.getLimitedGroupCount(enemyCoalitionNum).." units\n\n\n"    
 end
 
 function M.getMissionStatus(playerGroup, restartHours)
@@ -205,7 +205,7 @@ function M.getMissionStatus(playerGroup, restartHours)
   local playerStatus = getPlayerStatus(playerGroup, playerName, coalitionName)
   local coalitionStatus = getCoalitionStatus(playerGroup,coalitionNum,coalitionName)
   local intelStatus = getIntelStatus(enemyCoalitionNum)
-  return campaignStatus..playerStatus..coalitionStatus
+  return "\n"..campaignStatus..playerStatus..coalitionStatus..intelStatus
 end
 
 return M
