@@ -134,9 +134,9 @@ MESSAGE:New(text, 20):ToGroup(playerGroup)
         local convoyOverBaseName = Convoy.GetUpTransportBaseName(coalitionNum)
 
         if convoyCount > 0 then            
-          --MESSAGE:New(string.format("%s Team has %i Air Resupply cargo plane in the air over %s.",coalitionName,convoyCount,convoyOverBaseName), 20):ToGroup(playerGroup)
+          MESSAGE:New(string.format("%s Team has %i Air Resupply cargo plane in the air over %s.",coalitionName,convoyCount,convoyOverBaseName), 20):ToGroup(playerGroup)
         else
-         -- MESSAGE:New(string.format("%s Team does not have any Air Resupply cargo plane in the air.",coalitionName), 20):ToGroup(playerGroup)
+          MESSAGE:New(string.format("%s Team does not have any Air Resupply cargo plane in the air.",coalitionName), 20):ToGroup(playerGroup)
         end
                 
         -- UAVs
@@ -158,9 +158,9 @@ MESSAGE:New(text, 20):ToGroup(playerGroup)
         end
        
         if UAVsCount > 0 then            
-          --MESSAGE:New(string.format("%s Team has %i UAV RECON Drones in the air.",coalitionName,UAVsCount), 20):ToGroup(playerGroup)
+          MESSAGE:New(string.format("%s Team has %i UAV RECON Drones in the air.",coalitionName,UAVsCount), 20):ToGroup(playerGroup)
         else
-          --MESSAGE:New(string.format("%s Team does not have any UAV RECON Drones in the air at the moment.",coalitionName,UAVsCount), 20):ToGroup(playerGroup)
+          MESSAGE:New(string.format("%s Team does not have any UAV RECON Drones in the air at the moment.",coalitionName,UAVsCount), 20):ToGroup(playerGroup)
         end
         
         -- AWACS 
@@ -180,7 +180,7 @@ MESSAGE:New(text, 20):ToGroup(playerGroup)
               local vec3 = grp:GetVec3()
               if vec3 ~= nil then
                 local nearBase = utils.getNearestAirbase(vec3, coalitionNum, Airbase.Category.AIRDROME)                
-                bases = bases..nearBase + " "
+                bases = bases..string.format("%s ", nearBase)
               end
                AWACsCount = AWACsCount+1
              end
