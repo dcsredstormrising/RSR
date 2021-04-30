@@ -76,7 +76,7 @@ local function getPlayerStatus(playerGroup,playerName,coalitionName)
           "You installed "..ctld.countAASystemsByPlayer(playerName).." SAM systems\n"..
           "You delivered "..ctld.countJTACsByPlayer(playerName, coalitionName).." JTACs to the field\n\n"..
           "Weather at your location:\n"..
-          getWeather.."\n\n"
+          getWeather(playerGroup).."\n\n"
 end
 
 local function getCoalitionStatus(playerGroup,coalitionNum,coalitionName)
@@ -185,7 +185,7 @@ local function getCoalitionStatus(playerGroup,coalitionNum,coalitionName)
           AWACsText.."\n\n"
 end
 
-local function getIntelStatus()
+local function getIntelStatus(enemyCoalitionNum)
   return  "Coalition Intel:\n"..         
           "Enemy TEAM has "..ctld.countAASystemsByCoalition(enemyCoalitionNum).." SAMs\n"..
           "Enemy TEAM was able to sling "..ctld.GetPlayerSpawnGroupCount(enemyCoalitionNum).." units\n\n"    
