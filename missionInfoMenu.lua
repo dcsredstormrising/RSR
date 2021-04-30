@@ -121,31 +121,31 @@ MESSAGE:New(text, 20):ToGroup(playerGroup)
             farpCount = farpCount + 1
           end
         end
-        MESSAGE:New(string.format("%s Team controls %s Airbases", coalitionName, coalitionAirbaseNames), 20):ToGroup(playerGroup)
-        MESSAGE:New(string.format("%s Team controls %i FARPs", coalitionName, farpCount), 20):ToGroup(playerGroup)        
-        MESSAGE:New(string.format("%s Team SAM sling limit is: %i", coalitionName, samSlingLimit), 20):ToGroup(playerGroup)
-        MESSAGE:New(string.format("%s Team has %i SAMs installed", coalitionName, ctld.countAASystemsByCoalition(coalitionNum)), 20):ToGroup(playerGroup)                        
-        MESSAGE:New(string.format("%s Team GROUP sling limit is: %i", coalitionName, ctld.GroupLimitCount), 20):ToGroup(playerGroup)
-        MESSAGE:New(string.format("%s Team has %i Groups deployed", coalitionName, ctld.getLimitedGroupCount(coalitionNum)), 20):ToGroup(playerGroup)
-        MESSAGE:New(string.format("%s Team can still deliver %i JTACs to the field", coalitionName, JTACLimit), 20):ToGroup(playerGroup)
+        --MESSAGE:New(string.format("%s Team controls %s Airbases", coalitionName, coalitionAirbaseNames), 20):ToGroup(playerGroup)
+        --MESSAGE:New(string.format("%s Team controls %i FARPs", coalitionName, farpCount), 20):ToGroup(playerGroup)        
+        --MESSAGE:New(string.format("%s Team SAM sling limit is: %i", coalitionName, samSlingLimit), 20):ToGroup(playerGroup)
+        --MESSAGE:New(string.format("%s Team has %i SAMs installed", coalitionName, ctld.countAASystemsByCoalition(coalitionNum)), 20):ToGroup(playerGroup)                        
+--        MESSAGE:New(string.format("%s Team GROUP sling limit is: %i", coalitionName, ctld.GroupLimitCount), 20):ToGroup(playerGroup)
+  --      MESSAGE:New(string.format("%s Team has %i Groups deployed", coalitionName, ctld.getLimitedGroupCount(coalitionNum)), 20):ToGroup(playerGroup)
+        --MESSAGE:New(string.format("%s Team can still deliver %i JTACs to the field", coalitionName, JTACLimit), 20):ToGroup(playerGroup)
         
         -- Air Resupply        
         local convoyCount = Convoy.GetUpTransports(coalitionNum)
         local convoyOverBaseName = Convoy.GetUpTransportBaseName(coalitionNum)
 
         if convoyCount > 0 then            
-          MESSAGE:New(string.format("%s Team has %i Air Resupply cargo plane in the air over %s.",coalitionName,convoyCount,convoyOverBaseName), 20):ToGroup(playerGroup)
+          --MESSAGE:New(string.format("%s Team has %i Air Resupply cargo plane in the air over %s.",coalitionName,convoyCount,convoyOverBaseName), 20):ToGroup(playerGroup)
         else
-          MESSAGE:New(string.format("%s Team does not have any Air Resupply cargo plane in the air.",coalitionName), 20):ToGroup(playerGroup)
+         -- MESSAGE:New(string.format("%s Team does not have any Air Resupply cargo plane in the air.",coalitionName), 20):ToGroup(playerGroup)
         end
                 
         -- UAVs
         local UAVsCount = 0
         local UAVs = nil
         
-        if coalition == coalition.side.BLUE then
+        if coalitionNum == coalition.side.BLUE then
           UAVs = SET_GROUP:New():FilterCategoryAirplane():FilterPrefixes( {"Pontiac 1"} ):FilterActive():FilterOnce()
-        elseif coalition == coalition.side.RED then
+        elseif coalitionNum == coalition.side.RED then
           UAVs = SET_GROUP:New():FilterCategoryAirplane():FilterPrefixes( {"Pontiac 6"} ):FilterActive():FilterOnce()
         end
                 
@@ -158,33 +158,37 @@ MESSAGE:New(text, 20):ToGroup(playerGroup)
         end
        
         if UAVsCount > 0 then            
-          MESSAGE:New(string.format("%s Team has %i UAV RECON Drones in the air.",coalitionName,UAVsCount), 20):ToGroup(playerGroup)
+          --MESSAGE:New(string.format("%s Team has %i UAV RECON Drones in the air.",coalitionName,UAVsCount), 20):ToGroup(playerGroup)
         else
-          MESSAGE:New(string.format("%s Team does not have any UAV RECON Drones in the air at the moment.",coalitionName,UAVsCount), 20):ToGroup(playerGroup)
+          --MESSAGE:New(string.format("%s Team does not have any UAV RECON Drones in the air at the moment.",coalitionName,UAVsCount), 20):ToGroup(playerGroup)
         end
         
         -- AWACS 
         local AWACsCount = 0
         local AWACs = nil
         
-        if coalition == coalition.side.BLUE then
-          AWACs = SET_GROUP:New():FilterPrefixes({"Magic 1-1"}):FilterActive():FilterOnce()
-        elseif coalition == coalition.side.RED then
-          AWACs = SET_GROUP:New():FilterPrefixes({"Overlord 1-1"}):FilterActive():FilterOnce()
-        end
-        
-        env.info("AWACs: "..inspect(AWACs))
+        if coalitionNum == coalition.side.BLUE then
+          AWACs = SET_GROUP:New():FilterCategoryAirplane():FilterPrefixes({"Magic 1-1"}):FilterActive():FilterOnce()
+        elseif coalitionNum == coalition.side.RED then
+          AWACs = SET_GROUP:New():FilterCategoryAirplane():FilterPrefixes({"Overlord 1-1"}):FilterActive():FilterOnce()          
+        end        
+        local bases = ""
         
         if AWACs ~= nil then
           AWACs:ForEachGroup(
              function(grp)
-               AWACsCount = AWACsCount+1             
+              local vec3 = grp:GetVec3()
+              if vec3 ~= nil then
+                local nearBase = utils.getNearestAirbase(vec3, coalitionNum, Airbase.Category.AIRDROME)                
+                bases = bases..nearBase + " "
+              end
+               AWACsCount = AWACsCount+1
              end
           )  
         end
        
         if AWACsCount > 0 then            
-          MESSAGE:New(string.format("%s Team has %i AWACs in the air.",coalitionName,UAVsCount), 20):ToGroup(playerGroup)
+          MESSAGE:New(string.format("%s Team has %i AWACs in the air by: %s",coalitionName,AWACsCount, bases), 20):ToGroup(playerGroup)
         else
           MESSAGE:New(string.format("%s Team does not have any AWACs in the air at the moment.",coalitionName,UAVsCount), 20):ToGroup(playerGroup)
         end

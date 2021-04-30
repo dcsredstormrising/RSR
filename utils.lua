@@ -722,4 +722,8 @@ function M.breakString(str, sep)
     return result
 end
 
+function M.getNearestAirbase(vec3, coalition, category)
+  return "Vaziani"
+end
+
 return M
