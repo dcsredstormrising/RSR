@@ -172,9 +172,7 @@ local function getCoalitionStatus(playerGroup,coalitionNum,coalitionName)
     AWACsText = string.format("%s Team does not have any AWACs in the air at the moment.",coalitionName,UAVsCount)
   end
         
-  return  "Coalition Status:\n"..         
-          coalitionName.." Team controls: "..coalitionAirbaseNames.."\n".. 
-          coalitionName.." Team owns: "..farpCount.." FARPs\n".. 
+  return  "Coalition Status:\n"..                   
           coalitionName.." Team\'s SAM sling limit is: "..samSlingLimit.."\n"..
           coalitionName.." Team has "..ctld.countAASystemsByCoalition(coalitionNum).." SAMs installed\n".. 
           coalitionName.." Team GROUP sling limit is "..ctld.GroupLimitCount.."\n".. 
@@ -182,13 +180,16 @@ local function getCoalitionStatus(playerGroup,coalitionNum,coalitionName)
           coalitionName.." Team can still deliver "..JTACLimit.." JTACs to the field\n"..
           airResupplyText.."\n"..
           uavText.."\n"..
-          AWACsText.."\n\n"
+          AWACsText.."\n"..
+          coalitionName.." Team owns: "..farpCount.." FARPs\n".. 
+          coalitionName.." Team controls: "..coalitionAirbaseNames.."\n\n"
 end
 
 local function getIntelStatus(enemyCoalitionNum)
   return  "Coalition Intel:\n"..         
           "Enemy TEAM has "..ctld.countAASystemsByCoalition(enemyCoalitionNum).." SAMs\n"..
-          "Enemy TEAM was able to sling "..ctld.getLimitedGroupCount(enemyCoalitionNum).." units\n\n\n"    
+          "Enemy TEAM was able to sling "..ctld.getLimitedGroupCount(enemyCoalitionNum).." units\n"..
+          " \n\n"    
 end
 
 function M.getMissionStatus(playerGroup, restartHours)
@@ -205,7 +206,7 @@ function M.getMissionStatus(playerGroup, restartHours)
   local playerStatus = getPlayerStatus(playerGroup, playerName, coalitionName)
   local coalitionStatus = getCoalitionStatus(playerGroup,coalitionNum,coalitionName)
   local intelStatus = getIntelStatus(enemyCoalitionNum)
-  return "\n"..campaignStatus..playerStatus..coalitionStatus..intelStatus
+  return " \n"..campaignStatus..playerStatus..coalitionStatus..intelStatus
 end
 
 return M
