@@ -122,29 +122,29 @@ else
   
   ----Add Assets to the warehouses on new campaign
     --EXAMPLE*** WAREHOUSE:AddAsset(group, ngroups, forceattribute, forcecargobay, forceweight, loadradius, skill, liveries,    assignment) 
-  warehouse.BlueNorthernWarehouse:AddAsset("Resupply Blue MBT North", 40) --Counted as tank  in stock
-  warehouse.BlueNorthernWarehouse:AddAsset("Resupply Blue IFV North", 40)    --Counted as APC in stock
+  warehouse.BlueNorthernWarehouse:AddAsset("Resupply Blue MBT North", 10) --Counted as tank  in stock
+  warehouse.BlueNorthernWarehouse:AddAsset("Resupply Blue IFV North", 10)    --Counted as APC in stock
   
-  warehouse.BlueSouthernWarehouse:AddAsset("Resupply Blue MBT South", 40) --Counted as tank  in stock
-  warehouse.BlueSouthernWarehouse:AddAsset("Resupply Blue IFV South", 40)    --Counted as APC in stock
+  warehouse.BlueSouthernWarehouse:AddAsset("Resupply Blue MBT South", 10) --Counted as tank  in stock
+  warehouse.BlueSouthernWarehouse:AddAsset("Resupply Blue IFV South", 10)    --Counted as APC in stock
   
-  warehouse.BlueNavalWarehouse:AddAsset("Resupply Blue Ticonderoga", 10)
-  warehouse.BlueNavalWarehouse:AddAsset("Resupply Blue Type 052C", 15)
-  warehouse.BlueNavalWarehouse:AddAsset("Resupply Blue Perry", 15) 
-  warehouse.BlueNavalWarehouse:AddAsset("Resupply Blue Carrier", 10)
-  warehouse.BlueNavalWarehouse:AddAsset("Resupply Blue Tarawa", 10)
+  warehouse.BlueNavalWarehouse:AddAsset("Resupply Blue Ticonderoga", 3)
+  warehouse.BlueNavalWarehouse:AddAsset("Resupply Blue Type 052C", 3)
+  warehouse.BlueNavalWarehouse:AddAsset("Resupply Blue Perry", 3) 
+  warehouse.BlueNavalWarehouse:AddAsset("Resupply Blue Carrier", 5)
+  warehouse.BlueNavalWarehouse:AddAsset("Resupply Blue Tarawa", 5)
   
-  warehouse.RedNorthernWarehouse:AddAsset("Resupply Red MBT North", 40)    --counted as tank  in stock
-  warehouse.RedNorthernWarehouse:AddAsset("Resupply Red IFV North", 40)   --counted as APC in stock
+  warehouse.RedNorthernWarehouse:AddAsset("Resupply Red MBT North", 10)    --counted as tank  in stock
+  warehouse.RedNorthernWarehouse:AddAsset("Resupply Red IFV North", 10)   --counted as APC in stock
   
-  warehouse.RedSouthernWarehouse:AddAsset("Resupply Red MBT South", 40)    --counted as tank  in stock
-  warehouse.RedSouthernWarehouse:AddAsset("Resupply Red IFV South", 40)   --counted as APC in stock
+  warehouse.RedSouthernWarehouse:AddAsset("Resupply Red MBT South", 10)    --counted as tank  in stock
+  warehouse.RedSouthernWarehouse:AddAsset("Resupply Red IFV South", 10)   --counted as APC in stock
   
-  warehouse.RedNavalWarehouse:AddAsset("Resupply Red Moskva", 10)
-  warehouse.RedNavalWarehouse:AddAsset("Resupply Red Molniya", 15)
-  warehouse.RedNavalWarehouse:AddAsset("Resupply Red Type 054A", 15) 
-  warehouse.RedNavalWarehouse:AddAsset("Resupply Red Carrier", 10)
-  warehouse.RedNavalWarehouse:AddAsset("Resupply Red Transport Dock", 10)
+  warehouse.RedNavalWarehouse:AddAsset("Resupply Red Moskva", 3)
+  warehouse.RedNavalWarehouse:AddAsset("Resupply Red Molniya", 3)
+  warehouse.RedNavalWarehouse:AddAsset("Resupply Red Type 054A", 3) 
+  warehouse.RedNavalWarehouse:AddAsset("Resupply Red Carrier", 5)
+  warehouse.RedNavalWarehouse:AddAsset("Resupply Red Transport Dock", 5)
 end
 
 if warehouse.BlueNorthernWarehouse:GetCoalition()==2 or warehouse.BlueNorthernWarehouse:GetCoalition()==0 then

@@ -67,15 +67,14 @@ ewrs.validSearchRadars = {
     "Hawk sr", --Hawk SAM Search Radar
     "Roland Radar", --Roland Search Radar
     "1L13 EWR", --Early Warning Radar
-	"55G6 EWR", -- Big EWR
+	   "55G6 EWR", -- Big EWR
 
     -- AWACS
     "A-50",
     "E-2C",
     "E-3A",
 
-    -- Other items we could add (IDs to be verified)
-    -- Big EWR ("55G6 EWR")
+    -- Other items we could add (IDs to be verified)    
     -- SA-10 ("S-300PS 64H6E sr" and "S-300 PS 40B6MD sr")
     -- Patriot ("Patriot str")
     -- The ships

@@ -91,7 +91,7 @@ end
 
 function M.BIRTH_EVENTHANDLER:AddMissionStatusMenu(playerGroup)
     MENU_GROUP_COMMAND:New(playerGroup, "Mission Status", nil, function()
-      MESSAGE:New(missionInfoMenu.getMissionStatus(playerGroup), 25):ToGroup(playerGroup)
+      MESSAGE:New(missionInfoMenu.getMissionStatus(playerGroup, self.restartHours), 25):ToGroup(playerGroup)
     end)
 end
 

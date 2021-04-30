@@ -57,161 +57,155 @@ local function getWeather(playerGroup)
   return text
 end
 
-function M.getMissionStatus(playerGroup)
-  local weather = getWeather(playerGroup)
-  return weather
+local function getCampaignStatus(playerGroup, restartHours)
+  local secondsUntilRestart = restartInfo.getSecondsUntilRestart(os.date("*t"), restartHours)
+  return  "Campaign Status:\n"..         
+          "The server will restart in "..restartInfo.getSecondsAsString(secondsUntilRestart).."\n"..
+          "Campaign is in progress for 1 day and 3 hours\n"..
+          "There is "..playerGroup:GetPlayerCount().." players online\n\n"
 end
 
-function M.addMenu(playerGroup, restartHours)
-    local vec3 = playerGroup:GetVec3()
-    local enemyCoalitionNum = 1
-    local coalitionNum = playerGroup:GetCoalition()
-    local coalitionName = "BLUE"        
-    if coalitionNum == 1 then
-      coalitionName = "RED"
-      enemyCoalitionNum = 2
-    end 
-    
-    local infoMenu = MENU_GROUP:New(playerGroup, "Mission info")
-    missionCommands.addCommandForGroup(groupId, "JTAC Status", nil, ctld.getJTACStatus, { unitName })
-      MENU_GROUP_COMMAND:New(playerGroup, "Time Until Restart", infoMenu, function()
-        local secondsUntilRestart = restartInfo.getSecondsUntilRestart(os.date("*t"), restartHours)
-    
-        --env.info("**=AW=33COM player group: ".. inspect(playerGroup))
-            
-        MESSAGE:New(string.format("The server will restart in %s", restartInfo.getSecondsAsString(secondsUntilRestart)), 5):ToGroup(playerGroup)
-        --MESSAGE:New(string.format("Your coalition can sling %s more groups of units.", ctld.GetPlayerSpawnGroupCount() - ctld.GroupLimitCount), 5):ToGroup(playerGroup)
-    end)
-        
-    MENU_GROUP_COMMAND:New(playerGroup, "Campaign Status", infoMenu, function()
-    MESSAGE:New(string.format("Campaign is in progress for: %s", "1 day"), 20):ToGroup(playerGroup)
-    MESSAGE:New(string.format("Number of players online: %i", playerGroup:GetPlayerCount()), 20):ToGroup(playerGroup)        
-    end)
-    
-    MENU_GROUP_COMMAND:New(playerGroup, "Personal Status", infoMenu, function()
-        local playerName = playerGroup:GetPlayerName()        
-        MESSAGE:New(string.format("Your are on the %s TEAM", coalitionName), 20):ToGroup(playerGroup)
-        MESSAGE:New(string.format("Your player name is: %s", playerName), 20):ToGroup(playerGroup)
-        MESSAGE:New(string.format("Your callsign is: %s", playerGroup:GetCallsign()), 20):ToGroup(playerGroup)
-        MESSAGE:New(string.format("You are in : %s", playerGroup.GroupName), 20):ToGroup(playerGroup)
-        MESSAGE:New(string.format("Your have %i lives remaining", csar.getLivesLeft(playerName)), 20):ToGroup(playerGroup)
-        MESSAGE:New(string.format("You deployed %i Groups of units.", ctld.countGroupsByPlayer(playerName, coalitionName)), 20):ToGroup(playerGroup)
-        MESSAGE:New(string.format("You installed %i SAM systems.", ctld.countAASystemsByPlayer(playerName)), 20):ToGroup(playerGroup)
-        MESSAGE:New(string.format("You delivered %i JTACs to the field.", ctld.countJTACsByPlayer(playerName, coalitionName)), 20):ToGroup(playerGroup)
-        MESSAGE:New(string.format("You were killed by deebix %i in this campaign", 88), 20):ToGroup(playerGroup)
-        MESSAGE:New("You shut down nobody in this round", 20):ToGroup(playerGroup)        
-        
+local function getPlayerStatus(playerGroup,playerName,coalitionName)
+  return  "Personal Status:\n"..         
+          "You are on the "..coalitionName.." TEAM\n"..
+          "Your player name is: "..playerName.."\n"..
+          "Your callsign is: "..playerGroup:GetCallsign().."\n"..
+          "You are in: "..playerGroup.GroupName.."\n"..
+          "You have "..csar.getLivesLeft(playerName).." lives remaining\n"..
+          "You deployed "..ctld.countGroupsByPlayer(playerName, coalitionName).." Groups of units\n"..
+          "You installed "..ctld.countAASystemsByPlayer(playerName).." SAM systems\n"..
+          "You delivered "..ctld.countJTACsByPlayer(playerName, coalitionName).." JTACs to the field\n\n"..
+          "Weather at your location:\n"..
+          getWeather.."\n\n"
+end
 
+local function getCoalitionStatus(playerGroup,coalitionNum,coalitionName)
+  local coalitionAirbaseNames = inspect(AIRBASE.GetAllAirbaseNames(coalition.side.BLUE, Airbase.Category.AIRDROME)):gsub("%{", ""):gsub("%}", ""):gsub("%\"", "")
+  local coalitionFARPNames = AIRBASE.GetAllAirbaseNames(coalition.side.BLUE, Airbase.Category.FARP)
+  local farpCount = 0
+  local samSlingLimit = 0
+  local JTACLimit = 0
+        
+  if coalitionNum == coalition.side.BLUE then
+    samSlingLimit = ctld.AASystemLimitBLUE
+  elseif coalitionNum == coalition.side.RED then
+    samSlingLimit = ctld.AASystemLimitRED
+  end
+        
+  if coalitionNum == coalition.side.BLUE then
+    JTACLimit = ctld.JTAC_LIMIT_BLUE
+  elseif coalitionNum == coalition.side.RED then
+    JTACLimit = ctld.JTAC_LIMIT_RED
+  end
+                
+  if coalitionFARPNames ~= nil then   
+    for _,farp in pairs (coalitionFARPNames) do
+      farpCount = farpCount + 1
+    end
+  end
+  
+  -- Air Resupply        
+  local convoyCount = Convoy.GetUpTransports(coalitionNum)
+  local convoyOverBaseName = Convoy.GetUpTransportBaseName(coalitionNum)
+  local airResupplyText = ""
 
-MESSAGE:New(text, 20):ToGroup(playerGroup)
+  if convoyCount > 0 then            
+    airResupplyText = string.format("%s Team has %i Air Resupply cargo plane in the air over %s",coalitionName,convoyCount,convoyOverBaseName)
+  else
+    airResupplyText = string.format("%s Team does not have any Air Resupply cargo plane in the air",coalitionName)
+  end
+  
+  -- UAVs
+  local UAVsCount = 0
+  local UAVs = nil
+  local uavText = ""
         
-          
-    end)
-    
-    MENU_GROUP_COMMAND:New(playerGroup, "Coalition Status", infoMenu, function()                
-        local coalitionAirbaseNames = inspect(AIRBASE.GetAllAirbaseNames(coalition.side.BLUE, Airbase.Category.AIRDROME)):gsub("%{", ""):gsub("%}", ""):gsub("%\"", "")
-        local coalitionFARPNames = AIRBASE.GetAllAirbaseNames(coalition.side.BLUE, Airbase.Category.FARP)
-        local farpCount = 0
-        local samSlingLimit = 0
-        local JTACLimit = 0
-        
-        if coalitionNum == coalition.side.BLUE then
-          samSlingLimit = ctld.AASystemLimitBLUE
-        elseif coalitionNum == coalition.side.RED then
-          samSlingLimit = ctld.AASystemLimitRED
-        end
-        
-        if coalitionNum == coalition.side.BLUE then
-          JTACLimit = ctld.JTAC_LIMIT_BLUE
-        elseif coalitionNum == coalition.side.RED then
-          JTACLimit = ctld.JTAC_LIMIT_RED
-        end
+  if coalitionNum == coalition.side.BLUE then
+    UAVs = SET_GROUP:New():FilterCategoryAirplane():FilterPrefixes( {"Pontiac 1"} ):FilterActive():FilterOnce()
+  elseif coalitionNum == coalition.side.RED then
+    UAVs = SET_GROUP:New():FilterCategoryAirplane():FilterPrefixes( {"Pontiac 6"} ):FilterActive():FilterOnce()
+  end
                 
-        if coalitionFARPNames ~= nil then   
-          for _,farp in pairs (coalitionFARPNames) do
-            farpCount = farpCount + 1
-          end
-        end
-        MESSAGE:New(string.format("%s Team controls %s Airbases", coalitionName, coalitionAirbaseNames), 20):ToGroup(playerGroup)
-        MESSAGE:New(string.format("%s Team controls %i FARPs", coalitionName, farpCount), 20):ToGroup(playerGroup)        
-        MESSAGE:New(string.format("%s Team SAM sling limit is: %i", coalitionName, samSlingLimit), 20):ToGroup(playerGroup)
-        MESSAGE:New(string.format("%s Team has %i SAMs installed", coalitionName, ctld.countAASystemsByCoalition(coalitionNum)), 20):ToGroup(playerGroup)                        
-        MESSAGE:New(string.format("%s Team GROUP sling limit is: %i", coalitionName, ctld.GroupLimitCount), 20):ToGroup(playerGroup)
-       MESSAGE:New(string.format("%s Team has %i Groups deployed", coalitionName, ctld.getLimitedGroupCount(coalitionNum)), 20):ToGroup(playerGroup)
-        MESSAGE:New(string.format("%s Team can still deliver %i JTACs to the field", coalitionName, JTACLimit), 20):ToGroup(playerGroup)
-        
-        -- Air Resupply        
-        local convoyCount = Convoy.GetUpTransports(coalitionNum)
-        local convoyOverBaseName = Convoy.GetUpTransportBaseName(coalitionNum)
-
-        if convoyCount > 0 then            
-          MESSAGE:New(string.format("%s Team has %i Air Resupply cargo plane in the air over %s",coalitionName,convoyCount,convoyOverBaseName), 20):ToGroup(playerGroup)
-        else
-          MESSAGE:New(string.format("%s Team does not have any Air Resupply cargo plane in the air",coalitionName), 20):ToGroup(playerGroup)
-        end
-                
-        -- UAVs
-        local UAVsCount = 0
-        local UAVs = nil
-        
-        if coalitionNum == coalition.side.BLUE then
-          UAVs = SET_GROUP:New():FilterCategoryAirplane():FilterPrefixes( {"Pontiac 1"} ):FilterActive():FilterOnce()
-        elseif coalitionNum == coalition.side.RED then
-          UAVs = SET_GROUP:New():FilterCategoryAirplane():FilterPrefixes( {"Pontiac 6"} ):FilterActive():FilterOnce()
-        end
-                
-        if UAVs ~= nil then
-          UAVs:ForEachGroup(
-             function(grp)
-               UAVsCount = UAVsCount+1             
-             end
-          )  
-        end
+  if UAVs ~= nil then
+    UAVs:ForEachGroup(
+      function(grp)
+        UAVsCount = UAVsCount+1             
+      end
+    )  
+  end
        
-        if UAVsCount > 0 then            
-          MESSAGE:New(string.format("%s Team has %i UAV RECON Drones in the air",coalitionName,UAVsCount), 20):ToGroup(playerGroup)
-        else
-          MESSAGE:New(string.format("%s Team does not have any UAV RECON Drones in the air at the moment",coalitionName,UAVsCount), 20):ToGroup(playerGroup)
+  if UAVsCount > 0 then            
+    uavText = string.format("%s Team has %i UAV RECON Drones in the air",coalitionName,UAVsCount)
+  else
+    uavText = string.format("%s Team does not have any UAV RECON Drones in the air at the moment",coalitionName,UAVsCount)
+  end
+  
+  -- AWACS 
+  local AWACsCount = 0
+  local AWACs = nil
+  local AWACsText = ""
+        
+  if coalitionNum == coalition.side.BLUE then
+    AWACs = SET_GROUP:New():FilterCategoryAirplane():FilterPrefixes({"Magic 1-1"}):FilterActive():FilterOnce()
+  elseif coalitionNum == coalition.side.RED then
+    AWACs = SET_GROUP:New():FilterCategoryAirplane():FilterPrefixes({"Overlord 1-1"}):FilterActive():FilterOnce()          
+  end        
+  
+  local bases = ""
+        
+  if AWACs ~= nil then
+    AWACs:ForEachGroup(
+      function(grp)
+        local vec3 = grp:GetVec3()
+        if vec3 ~= nil then
+          local nearBase = utils.getNearestAirbase(vec3, coalitionNum, Airbase.Category.AIRDROME)                
+          bases = bases..string.format("%s ", nearBase)
         end
-        
-        -- AWACS 
-        local AWACsCount = 0
-        local AWACs = nil
-        
-        if coalitionNum == coalition.side.BLUE then
-          AWACs = SET_GROUP:New():FilterCategoryAirplane():FilterPrefixes({"Magic 1-1"}):FilterActive():FilterOnce()
-        elseif coalitionNum == coalition.side.RED then
-          AWACs = SET_GROUP:New():FilterCategoryAirplane():FilterPrefixes({"Overlord 1-1"}):FilterActive():FilterOnce()          
-        end        
-        local bases = ""
-        
-        if AWACs ~= nil then
-          AWACs:ForEachGroup(
-             function(grp)
-              local vec3 = grp:GetVec3()
-              if vec3 ~= nil then
-                local nearBase = utils.getNearestAirbase(vec3, coalitionNum, Airbase.Category.AIRDROME)                
-                bases = bases..string.format("%s ", nearBase)
-              end
-               AWACsCount = AWACsCount+1
-             end
-          )  
-        end
+        AWACsCount = AWACsCount+1
+      end
+     )  
+  end
        
-        if AWACsCount > 0 then            
-          MESSAGE:New(string.format("%s Team has %i AWACs in the air by: %s",coalitionName,AWACsCount, bases), 20):ToGroup(playerGroup)
-        else
-          MESSAGE:New(string.format("%s Team does not have any AWACs in the air at the moment.",coalitionName,UAVsCount), 20):ToGroup(playerGroup)
-        end
-    end)
-    
-    MENU_GROUP_COMMAND:New(playerGroup, "Coalition Intel", infoMenu, function()
-        local secondsUntilRestart = restartInfo.getSecondsUntilRestart(os.date("*t"), restartHours)
-    
-      MESSAGE:New(string.format("Enemy TEAM has %s SAMs", ctld.countAASystemsByCoalition(enemyCoalitionNum)), 20):ToGroup(playerGroup)
-      MESSAGE:New(string.format("Enemy Team already has %i Groups of units on the ground", ctld.GetPlayerSpawnGroupCount(enemyCoalitionNum)), 20):ToGroup(playerGroup)
-    
-    end)
+  if AWACsCount > 0 then            
+    AWACsText = string.format("%s Team has %i AWACs in the air by: %s",coalitionName,AWACsCount, bases)
+  else
+    AWACsText = string.format("%s Team does not have any AWACs in the air at the moment.",coalitionName,UAVsCount)
+  end
+        
+  return  "Coalition Status:\n"..         
+          coalitionName.." Team controls: "..coalitionAirbaseNames.."\n".. 
+          coalitionName.." Team owns: "..farpCount.." FARPs\n".. 
+          coalitionName.." Team\'s SAM sling limit is: "..samSlingLimit.."\n"..
+          coalitionName.." Team has "..ctld.countAASystemsByCoalition(coalitionNum).." SAMs installed\n".. 
+          coalitionName.." Team GROUP sling limit is "..ctld.GroupLimitCount.."\n".. 
+          coalitionName.." Team has "..ctld.getLimitedGroupCount(coalitionNum).." Groups deployed\n".. 
+          coalitionName.." Team can still deliver "..JTACLimit.." JTACs to the field\n"..
+          airResupplyText.."\n"..
+          uavText.."\n"..
+          AWACsText.."\n\n"
+end
+
+local function getIntelStatus()
+  return  "Coalition Intel:\n"..         
+          "Enemy TEAM has "..ctld.countAASystemsByCoalition(enemyCoalitionNum).." SAMs\n"..
+          "Enemy TEAM was able to sling "..ctld.GetPlayerSpawnGroupCount(enemyCoalitionNum).." units\n\n"    
+end
+
+function M.getMissionStatus(playerGroup, restartHours)
+  local vec3 = playerGroup:GetVec3()
+  local enemyCoalitionNum = 1
+  local coalitionNum = playerGroup:GetCoalition()
+  local coalitionName = "BLUE"        
+  if coalitionNum == 1 then
+    coalitionName = "RED"
+    enemyCoalitionNum = 2
+  end
+  local playerName = playerGroup:GetPlayerName()  
+  local campaignStatus = getCampaignStatus(playerGroup, restartHours)
+  local playerStatus = getPlayerStatus(playerGroup, playerName, coalitionName)
+  local coalitionStatus = getCoalitionStatus(playerGroup,coalitionNum,coalitionName)
+  local intelStatus = getIntelStatus(enemyCoalitionNum)
+  return campaignStatus..playerStatus..coalitionStatus
 end
 
 return M
