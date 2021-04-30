@@ -98,9 +98,11 @@ local function SpawnTransport(playerGroup, coalitionNumber)
   elseif not playerAirbase then
     env.info("CONVOY: " .. playerName .. " is not at airbase, will not spawn convoy transport.")
     trigger.action.outTextForCoalition(coalitionNumber, "[TEAM] " .. playerName .. " Must be at airbase to spawn convoy.", 10)
-  elseif _Coalitions[coalitionNumber] then
+  elseif _Coalitions[coalitionNumber].Queue then
     env.info("CONVOY: Queue for team: " .. _Coalitions[coalitionNumber].String .. " is full!")
     trigger.action.outTextForCoalition(coalitionNumber, "[TEAM] Transport is already in the air from " .. playerAirbase .. "!", 10)
+  else
+    env.info("CONVOY: Unhandled case in function SpawnTransport()")
   end
 end
 
@@ -110,8 +112,6 @@ function Convoy.AddMenu( playerGroup )
   local coalitionNumber = playerGroup:GetCoalition()
 
   env.info("CONVOY: Creating Convoy Menus for " .. groupName .. ".")
-
-  --local pos = {heading = playerGroup:GetHeading(), location = playerGroup:GetPointVec2()}
   
   -- PARENT MENU
   local ConvoyMenuRoot = MENU_GROUP:New( playerGroup, "Air Resupply" )
