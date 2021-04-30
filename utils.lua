@@ -722,8 +722,34 @@ function M.breakString(str, sep)
     return result
 end
 
-function M.getNearestAirbase(vec3, coalition, category)
-  return "Vaziani"
+local function getDistSq(x1, y1, x2, y2)
+    local dX = x1 - x2
+    local dY = y1 - y2
+    return dX * dX + dY * dY
+end
+
+function M.findNearest(point, points)
+    local pX = point.x
+    local pY = point.y
+    local minIdx, minDist
+    for idx, p in pairs(points) do
+        local dist = getDistSq(pX, pY, p.x, p.y)
+        if minDist == nil or dist < minDist then
+            minIdx = idx
+            minDist = dist
+        end
+    end
+    return minIdx, minDist and math.sqrt(minDist) or nil
+end
+
+-- Returns nearest airbase or FARP based on location (vec2), coalition and category (Airbase (Moose))
+function M.getNearestAirbase(location, coalition, category)
+    local point = {x = location.x, y = location.y}
+    local baseLocations = {}
+    for _, base in pairs(AIRBASE.GetAllAirbases(coalition, category)) do
+        baseLocations[base:GetName()] = base:GetVec2()
+    end
+    return M.findNearest(point, baseLocations)
 end
 
 return M

@@ -37,7 +37,7 @@ function M.BIRTH_EVENTHANDLER:_AddMenus(event)
             self:_AddJTACStatusMenu(groupId, unitName)
             
             if missionUtils.isTransportType(playerGroup:GetTypeName()) then
-                self:_AddTransportMenus(groupId, unitName)
+                self:_AddTransportMenus(groupId, unitName, playerGroup)
             else
                 self:_AddRadioListMenu(groupId, unitName)
                 self:_AddLivesLeftMenu(playerGroup, unitName)
@@ -55,12 +55,45 @@ function M.BIRTH_EVENTHANDLER:_AddJTACStatusMenu(groupId, unitName)
     end
 end
 
-function M.BIRTH_EVENTHANDLER:_AddTransportMenus(groupId, unitName)
+function M.BIRTH_EVENTHANDLER:_AddWeaponsManagerMenus(groupId)
+    --missionCommands.addCommandForGroup(groupId, "Show weapons left", nil, weaponManager.printHowManyLeft, groupId)
+    --missionCommands.addCommandForGroup(groupId, "Validate Loadout", nil, weaponManager.validateLoadout, groupId)
+end
+
+function M.BIRTH_EVENTHANDLER:_AddTransportMenus(groupId, unitName, playerGroup)
     local _unit = ctld.getTransportUnit(unitName)
     local _unitActions = ctld.getUnitActions(_unit:getTypeName())
 
     csar.addMedevacMenuItem(unitName)
     ctld.addF10MenuOptions(unitName)
+    Convoy.AddMenu(playerGroup)
+    -- mr: shortcuts disabled for now as intermittently not working for unknown reasons e.g. unitName not passed or = nil
+    --[[
+        if ctld.enableCrates and _unitActions.crates then
+            if ctld.unitCanCarryVehicles(_unit) == false then
+                if _unit:getTypeName() == "Mi-8MT" or _unit:getTypeName() == "Ka-50" then
+                    ctld.addCrateMenu(nil, "Heavy crates", _unit, groupId, ctld.spawnableCrates, ctld.heavyCrateWeightMultiplier)
+                else
+                    ctld.addCrateMenu(nil, "Light crates", _unit, groupId, ctld.spawnableCrates, 1)
+                end
+            end
+        end
+        if (ctld.enabledFOBBuilding or ctld.enableCrates) and _unitActions.crates then
+            if ctld.hoverPickup == false then
+                if ((ctld.slingLoad == false) or ((ctld.internalCargo == true) and (_unitActions.internal == true))) then
+                    missionCommands.addCommandForGroup(groupId, "Load Nearby Crate", nil, ctld.loadNearbyCrate, unitName)
+                end
+            end
+            missionCommands.addCommandForGroup(groupId, "Unpack Nearby Crate", nil, ctld.unpackCrates, { unitName })
+            if (ctld.slingLoad == false) or (ctld.internalCargo == true) then
+                missionCommands.addCommandForGroup(groupId, "Load Nearby Crate", nil, ctld.loadNearbyCrate, { unitName })
+                missionCommands.addCommandForGroup(groupId, "Drop Crate", nil, ctld.unloadInternalCrate, { unitName })
+            end
+        end
+        if _unitActions.troops then
+            missionCommands.addCommandForGroup(groupId, "Unload / Extract Troops", nil, ctld.unloadExtractTroops, { unitName })
+        end
+        --]]
 end
 
 function M.BIRTH_EVENTHANDLER:_AddRadioListMenu(groupId, unitName)
