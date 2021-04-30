@@ -3,8 +3,63 @@ local inspect = require("inspect")
 local utils = require("utils")
 local M = {}
 
-function M.getMissionStatus(playerGrou)
-return "total gay cock"
+local function getWeather(playerGroup)         
+  local vec3 = playerGroup:GetVec3()
+  local T
+  local Pqfe
+  if not alt then
+     alt = utils.getLandHeight(vec3)
+  end
+  
+  -- At user specified altitude.
+  T,Pqfe=atmosphere.getTemperatureAndPressure({x=vec3.x, y=alt, z=vec3.z})
+  
+  -- Get pressure at sea level.
+  local _,Pqnh=atmosphere.getTemperatureAndPressure({x=vec3.x, y=0, z=vec3.z})
+  
+  -- Convert pressure from Pascal to hecto Pascal.
+  Pqfe=Pqfe/100
+  Pqnh=Pqnh/100
+  
+  -- Pressure unit conversion hPa --> mmHg or inHg
+  local _Pqnh=string.format("%.1f mmHg (%.1f inHg)", Pqnh * weathermark.hPa2mmHg, Pqnh * weathermark.hPa2inHg)
+  local _Pqfe=string.format("%.1f mmHg (%.1f inHg)", Pqfe * weathermark.hPa2mmHg, Pqfe * weathermark.hPa2inHg)
+  
+  -- Temperature unit conversion: Kelvin to Celsius or Fahrenheit.
+  T=T-273.15
+  local _T=string.format('%d C (%d F)', T, weathermark._CelsiusToFahrenheit(T))
+  
+  -- Get wind direction and speed.
+  local Dir,Vel=weathermark._GetWind(vec3, alt)
+  
+  -- Get Beaufort wind scale.
+  local Bn,Bd=weathermark._BeaufortScale(Vel)
+  
+  -- Formatted wind direction.
+  local Ds = string.format('%03d', Dir)
+  
+  -- Velocity in player units.
+  local Vs=string.format('%.1f m/s (%.1f kn)', Vel, Vel * weathermark.mps2knots)
+  
+  -- Altitude.
+  local _Alt=string.format("%d m (%d ft)", alt, alt * weathermark.meter2feet)
+  
+  local text=""
+  text=text..string.format("Altitude %s ASL\n",_Alt)
+  text=text..string.format("QFE %.1f hPa = %s\n", Pqfe,_Pqfe)
+  text=text..string.format("QNH %.1f hPa = %s\n", Pqnh,_Pqnh)
+  text=text..string.format("Temperature %s\n",_T)
+  if Vel > 0 then
+     text=text..string.format("Wind from %s at %s (%s)", Ds, Vs, Bd)
+  else
+     text=text.."No wind"
+  end
+  return text
+end
+
+function M.getMissionStatus(playerGroup)
+  local weather = getWeather(playerGroup)
+  return weather
 end
 
 function M.addMenu(playerGroup, restartHours)
@@ -46,56 +101,7 @@ function M.addMenu(playerGroup, restartHours)
         MESSAGE:New(string.format("You were killed by deebix %i in this campaign", 88), 20):ToGroup(playerGroup)
         MESSAGE:New("You shut down nobody in this round", 20):ToGroup(playerGroup)        
         
-        -- Get Temperature [K] and Pressure [Pa] at vec3.
-local T
-local Pqfe
-if not alt then
-   alt = utils.getLandHeight(vec3)
-end
 
--- At user specified altitude.
-T,Pqfe=atmosphere.getTemperatureAndPressure({x=vec3.x, y=alt, z=vec3.z})
-
--- Get pressure at sea level.
-local _,Pqnh=atmosphere.getTemperatureAndPressure({x=vec3.x, y=0, z=vec3.z})
-
--- Convert pressure from Pascal to hecto Pascal.
-Pqfe=Pqfe/100
-Pqnh=Pqnh/100
-
--- Pressure unit conversion hPa --> mmHg or inHg
-local _Pqnh=string.format("%.1f mmHg (%.1f inHg)", Pqnh * weathermark.hPa2mmHg, Pqnh * weathermark.hPa2inHg)
-local _Pqfe=string.format("%.1f mmHg (%.1f inHg)", Pqfe * weathermark.hPa2mmHg, Pqfe * weathermark.hPa2inHg)
-
--- Temperature unit conversion: Kelvin to Celsius or Fahrenheit.
-T=T-273.15
-local _T=string.format('%d C (%d F)', T, weathermark._CelsiusToFahrenheit(T))
-
--- Get wind direction and speed.
-local Dir,Vel=weathermark._GetWind(vec3, alt)
-
--- Get Beaufort wind scale.
-local Bn,Bd=weathermark._BeaufortScale(Vel)
-
--- Formatted wind direction.
-local Ds = string.format('%03d', Dir)
-
--- Velocity in player units.
-local Vs=string.format('%.1f m/s (%.1f kn)', Vel, Vel * weathermark.mps2knots)
-
--- Altitude.
-local _Alt=string.format("%d m (%d ft)", alt, alt * weathermark.meter2feet)
-
-local text=""
-text=text..string.format("Altitude %s ASL\n",_Alt)
-text=text..string.format("QFE %.1f hPa = %s\n", Pqfe,_Pqfe)
-text=text..string.format("QNH %.1f hPa = %s\n", Pqnh,_Pqnh)
-text=text..string.format("Temperature %s\n",_T)
-if Vel > 0 then
-   text=text..string.format("Wind from %s at %s (%s)", Ds, Vs, Bd)
-else
-   text=text.."No wind"
-end
 
 MESSAGE:New(text, 20):ToGroup(playerGroup)
         
