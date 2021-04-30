@@ -120,17 +120,16 @@ MESSAGE:New(text, 20):ToGroup(playerGroup)
           for _,farp in pairs (coalitionFARPNames) do
             farpCount = farpCount + 1
           end
-        end  
-        
+        end
         MESSAGE:New(string.format("%s Team controls %s Airbases", coalitionName, coalitionAirbaseNames), 20):ToGroup(playerGroup)
         MESSAGE:New(string.format("%s Team controls %i FARPs", coalitionName, farpCount), 20):ToGroup(playerGroup)        
         MESSAGE:New(string.format("%s Team SAM sling limit is: %i", coalitionName, samSlingLimit), 20):ToGroup(playerGroup)
         MESSAGE:New(string.format("%s Team has %i SAMs installed", coalitionName, ctld.countAASystemsByCoalition(coalitionNum)), 20):ToGroup(playerGroup)                        
         MESSAGE:New(string.format("%s Team GROUP sling limit is: %i", coalitionName, ctld.GroupLimitCount), 20):ToGroup(playerGroup)
-        MESSAGE:New(string.format("%s Team has %i Groups deployed", coalitionName, ctld.GetPlayerSpawnGroupCount(coalitionNum)), 20):ToGroup(playerGroup)
-        MESSAGE:New(string.format("%s Team can still deliver %1 JTACs to the field: %i", coalitionName, JTACLimit), 20):ToGroup(playerGroup)
+        MESSAGE:New(string.format("%s Team has %i Groups deployed", coalitionName, ctld.getLimitedGroupCount(coalitionNum)), 20):ToGroup(playerGroup)
+        MESSAGE:New(string.format("%s Team can still deliver %i JTACs to the field", coalitionName, JTACLimit), 20):ToGroup(playerGroup)
         
-        -- Air Resupply
+        -- Air Resupply        
         local convoyCount = Convoy.GetUpTransports(coalitionNum)
         local convoyOverBaseName = Convoy.GetUpTransportBaseName(coalitionNum)
 
@@ -139,17 +138,17 @@ MESSAGE:New(text, 20):ToGroup(playerGroup)
         else
           MESSAGE:New(string.format("%s Team does not have any Air Resupply cargo plane in the air.",coalitionName), 20):ToGroup(playerGroup)
         end
-        
+                
         -- UAVs
         local UAVsCount = 0
-        local UAVs = {}
+        local UAVs = nil
         
         if coalition == coalition.side.BLUE then
           UAVs = SET_GROUP:New():FilterCategoryAirplane():FilterPrefixes( {"Pontiac 1"} ):FilterActive():FilterOnce()
         elseif coalition == coalition.side.RED then
           UAVs = SET_GROUP:New():FilterCategoryAirplane():FilterPrefixes( {"Pontiac 6"} ):FilterActive():FilterOnce()
         end
-        
+                
         if UAVs ~= nil then
           UAVs:ForEachGroup(
              function(grp)
@@ -166,13 +165,15 @@ MESSAGE:New(text, 20):ToGroup(playerGroup)
         
         -- AWACS 
         local AWACsCount = 0
-        local AWACs = {}
+        local AWACs = nil
         
         if coalition == coalition.side.BLUE then
-          AWACs = SET_GROUP:New():FilterCategoryAirplane():FilterPrefixes( {"AWACS Blue"} ):FilterActive():FilterOnce()
+          AWACs = SET_GROUP:New():FilterPrefixes({"Magic 1-1"}):FilterActive():FilterOnce()
         elseif coalition == coalition.side.RED then
-          AWACs = SET_GROUP:New():FilterCategoryAirplane():FilterPrefixes( {"AWACS Red"} ):FilterActive():FilterOnce()
+          AWACs = SET_GROUP:New():FilterPrefixes({"Overlord 1-1"}):FilterActive():FilterOnce()
         end
+        
+        env.info("AWACs: "..inspect(AWACs))
         
         if AWACs ~= nil then
           AWACs:ForEachGroup(

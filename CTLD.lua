@@ -1107,6 +1107,20 @@ function ctld.IsGroupLimitReached(_args, _crateType, _coalition)
   return _limitReached
 end
 
+-- gets total group slung count based on the limit logic by coalition
+function ctld.getLimitedGroupCount(coalition)  
+    local coalitionName = "red"    
+    if coalition == 2 then
+      coalitionName = "blue"
+    end    
+    -- gets all player slung groups
+    local playerSlungGroups = SET_GROUP:New():FilterCategoryGround():FilterCoalitions(coalitionName):FilterPrefixes("CTLD"):FilterActive():FilterOnce()    
+    -- here we must deduct all ctld.UnitTypesOutsideOfGroupLimit from total        
+    local groupsOfUnitsNotPartOfLimitCount = ctld.getGroupCountByUnitType(playerSlungGroups, ctld.UnitTypesOutsideOfGroupLimit)        
+    return playerSlungGroups:Count() - groupsOfUnitsNotPartOfLimitCount
+end
+
+
 -- Fetches count of groups based on unit type.  
 -- @_playerSlungUnits groups of units
 -- @_unitTypes Unit types that interest you
