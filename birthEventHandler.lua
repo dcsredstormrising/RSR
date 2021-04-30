@@ -19,14 +19,13 @@ function M.BIRTH_EVENTHANDLER:_OnBirth(event)
     self:_AddMenus(event)
 end
 
+
 function M.BIRTH_EVENTHANDLER:_AddMenus(event)
     if event.IniPlayerName then
         local playerGroup = event.IniGroup
         if playerGroup then
             local groupId = playerGroup:GetDCSObject():getID()
             local groupName = playerGroup:GetName()
-            local playerName = event.IniPlayerName
-            local coalitionNumber = event.IniCoalition
             if self.groupsMenusAdded[groupName] then
                 self:I("Not adding menus again for " .. groupName)
                 return
@@ -36,9 +35,9 @@ function M.BIRTH_EVENTHANDLER:_AddMenus(event)
             local unitName = event.IniUnitName
             self:AddMissionStatusMenu(playerGroup)
             self:_AddJTACStatusMenu(groupId, unitName)
-
+            
             if missionUtils.isTransportType(playerGroup:GetTypeName()) then
-                self:_AddTransportMenus(groupId, unitName, playerGroup, playerName, coalitionNumber)
+                self:_AddTransportMenus(groupId, unitName)
             else
                 self:_AddRadioListMenu(groupId, unitName)
                 self:_AddLivesLeftMenu(playerGroup, unitName)
@@ -46,8 +45,6 @@ function M.BIRTH_EVENTHANDLER:_AddMenus(event)
 
             self:_AddEWRS(groupId, event.IniDCSUnit)
         end
-    else
-        self:_NonPlayerRouter(event)
     end
 end
 
@@ -58,13 +55,12 @@ function M.BIRTH_EVENTHANDLER:_AddJTACStatusMenu(groupId, unitName)
     end
 end
 
-function M.BIRTH_EVENTHANDLER:_AddTransportMenus(groupId, unitName, playerGroup, playerName, coalitionNumber)
+function M.BIRTH_EVENTHANDLER:_AddTransportMenus(groupId, unitName)
     local _unit = ctld.getTransportUnit(unitName)
     local _unitActions = ctld.getUnitActions(_unit:getTypeName())
 
     csar.addMedevacMenuItem(unitName)
     ctld.addF10MenuOptions(unitName)
-    Convoy.AddMenu(playerGroup, playerName, coalitionNumber)
 end
 
 function M.BIRTH_EVENTHANDLER:_AddRadioListMenu(groupId, unitName)
@@ -103,17 +99,6 @@ function M.BIRTH_EVENTHANDLER:_AddEWRS(groupId, unit)
     end
 end
 -- luacheck: pop
-
-function M.BIRTH_EVENTHANDLER:_NonPlayerRouter(event)
-    local groupName = event.IniGroup:GetName()
-    local coalitionNumber = event.IniCoalition
-    
-    if string.match(groupName, "Convoy Transport") then
-        Convoy.ConvoyTransportGroupBorn(coalitionNumber)
-    elseif string.match(groupName, "Convoy Group 1") then
-        Convoy.ConvoyGroupBorn(coalitionNumber)
-    end
-end
 
 function M.onMissionStart(restartHours)
     M.eventHandler = M.BIRTH_EVENTHANDLER:New(restartHours)

@@ -4502,10 +4502,11 @@ end
 
 function ctld.countAASystemsByPlayer(playerName)
   local count = 0
+  env.info("countAASystemsByPlayer: "..playerName)
   if playerName ~= nil then  
     for i, item in pairs(ctld.completeAASystems) do      
       local group = Group.getByName(i)
-      if group ~= nil then        
+      if group ~= nil then
           if string.find(i:lower(), playerName:lower()) then
             count = count + 1
           end
@@ -4517,9 +4518,11 @@ end
 
 function ctld.countGroupsByPlayer(playerName, coalitionName)
   local count = 0
+  env.info("countGroupsByPlayer:"..coalitionName.." "..playerName)
   if playerName ~= nil then  
     local groups = SET_GROUP:New():FilterCategoryGround():FilterCoalitions(coalitionName):FilterPrefixes({"CTLD"}):FilterActive():FilterOnce()
     if groups ~= nil then
+      env.info("countGroupsByPlayer groups exist")
       groups:ForEachGroup(
         function(grp)
           if grp ~= nil then
@@ -4566,9 +4569,14 @@ end
 
 function ctld.countAASystemsByCoalition(coalition)
   local _count = 0
+  env.info("countAASystemsByCoalition:"..coalition)
   for _groupName, _hawkDetails in pairs(ctld.completeAASystems) do
-    local _hawkGroup = Group.getByName(_groupName)        
+    local _hawkGroup = Group.getByName(_groupName)       
+    
+    env.info("_hawkGroup:getCoalition(): ".._hawkGroup:getCoalition().." == "..coalition)
+     
     if _hawkGroup ~= nil and _hawkGroup:getCoalition() == coalition then
+      env.info("countAASystemsByCoalition groups exist")
       local _units = _hawkGroup:getUnits()
       if _units ~= nil and #_units > 0 then
         --get the system template

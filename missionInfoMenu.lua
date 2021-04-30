@@ -176,7 +176,7 @@ local function getCoalitionStatus(playerGroup,coalitionNum,coalitionName)
           coalitionName.." Team\'s SAM sling limit is: "..samSlingLimit.."\n"..
           coalitionName.." Team has "..ctld.countAASystemsByCoalition(coalitionNum).." SAMs installed\n".. 
           coalitionName.." Team GROUP sling limit is "..ctld.GroupLimitCount.."\n".. 
-          coalitionName.." Team has "..ctld.getLimitedGroupCount(coalitionNum).." Groups deployed\n".. 
+          coalitionName.." Team has "..ctld.getLimitedGroupCount(coalitionName).." Groups deployed\n".. 
           coalitionName.." Team can still deliver "..JTACLimit.." JTACs to the field\n"..
           airResupplyText.."\n"..
           uavText.."\n"..
@@ -185,27 +185,30 @@ local function getCoalitionStatus(playerGroup,coalitionNum,coalitionName)
           coalitionName.." Team controls: "..coalitionAirbaseNames.."\n\n"
 end
 
-local function getIntelStatus(enemyCoalitionNum)
+local function getIntelStatus(enemyCoalitionNum, enemyCoalitionName)
+  
   return  "Coalition Intel:\n"..         
           "Enemy TEAM has "..ctld.countAASystemsByCoalition(enemyCoalitionNum).." SAMs\n"..
-          "Enemy TEAM was able to sling "..ctld.getLimitedGroupCount(enemyCoalitionNum).." units\n"..
+          "Enemy TEAM was able to sling "..ctld.getLimitedGroupCount(enemyCoalitionName).." units\n"..
           " \n\n"    
 end
 
 function M.getMissionStatus(playerGroup, restartHours)
   local vec3 = playerGroup:GetVec3()
   local enemyCoalitionNum = 1
+  local enemyCoalitionName = "RED"
   local coalitionNum = playerGroup:GetCoalition()
   local coalitionName = "BLUE"        
   if coalitionNum == 1 then
     coalitionName = "RED"
     enemyCoalitionNum = 2
+    enemyCoalitionName = "BLUE"
   end
   local playerName = playerGroup:GetPlayerName()  
   local campaignStatus = getCampaignStatus(playerGroup, restartHours)
   local playerStatus = getPlayerStatus(playerGroup, playerName, coalitionName)
   local coalitionStatus = getCoalitionStatus(playerGroup,coalitionNum,coalitionName)
-  local intelStatus = getIntelStatus(enemyCoalitionNum)
+  local intelStatus = getIntelStatus(enemyCoalitionNum,enemyCoalitionName)
   return " \n"..campaignStatus..playerStatus..coalitionStatus..intelStatus
 end
 
