@@ -4568,40 +4568,16 @@ function ctld.countJTACsByPlayer(playerName, coalitionName)
 end
 
 function ctld.countAASystemsByCoalition(coalition)
-  local _count = 0
-  env.info("countAASystemsByCoalition:"..coalition)
-  for _groupName, _hawkDetails in pairs(ctld.completeAASystems) do
-    local _hawkGroup = Group.getByName(_groupName)       
-    
-    env.info("_hawkGroup:getCoalition(): ".._hawkGroup:getCoalition().." == "..coalition)
-     
-    if _hawkGroup ~= nil and _hawkGroup:getCoalition() == coalition then
-      env.info("countAASystemsByCoalition groups exist")
-      local _units = _hawkGroup:getUnits()
-      if _units ~= nil and #_units > 0 then
-        --get the system template
-        local _aaSystemTemplate = _hawkDetails[1].system
-        local _uniqueTypes = {} -- stores each unique part of system
-        local _types = {}
-        local _points = {}
-        if _units ~= nil and #_units > 0 then
-          for x = 1, #_units do
-            if _units[x]:getLife() > 0 then
-              --this allows us to count each type once
-              _uniqueTypes[_units[x]:getTypeName()] = _units[x]:getTypeName()
-              table.insert(_points, _units[x]:getPoint())
-              table.insert(_types, _units[x]:getTypeName())
-            end
-          end
-        end
-        -- do we have the correct number of unique pieces and do we have enough points for all the pieces
-        if ctld.countTableEntries(_uniqueTypes) == _aaSystemTemplate.count and #_points >= _aaSystemTemplate.count then
-          _count = _count + 1
-        end
-      end      
+  local count = 0  
+  if ctld.completeAASystems ~= nil then    
+    for groupName, aaSystem in pairs(ctld.completeAASystems) do
+      local group = Group.getByName(groupName)
+      if group ~= nil and group:getCoalition() == coalition then
+        count = count + 1
+      end
     end
-    end  
-  return _count
+  end
+  return count
 end
 
 function ctld.countCompleteAASystems(_heli)
