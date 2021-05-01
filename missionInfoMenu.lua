@@ -61,7 +61,7 @@ local function getCampaignStatus(playerGroup, restartHours)
   local secondsUntilRestart = restartInfo.getSecondsUntilRestart(os.date("*t"), restartHours)
   return  "Campaign Status:\n"..         
           "The server will restart in "..restartInfo.getSecondsAsString(secondsUntilRestart).."\n"..
-          "Campaign is in progress for 1 day and 3 hours\n"..
+          "Campaign started on: " ..utils.getDataFromCampaign("CampaignStartDateTime").."\n"..
           "There is "..playerGroup:GetPlayerCount().." players online\n\n"
 end
 
@@ -141,8 +141,8 @@ local function getCoalitionStatus(playerGroup,coalitionNum,coalitionName)
       function(grp)
         local vec3 = grp:GetVec3()
         if vec3 ~= nil then
-          local nearBase = utils.getNearestAirbase(vec3, coalitionNum, Airbase.Category.AIRDROME)                
-          uavBases = uavBases..string.format("%s ", nearBase)
+          local uavNearBase = utils.getNearestAirbase(vec3, coalitionNum, Airbase.Category.AIRDROME)                
+          uavBases = uavBases..string.format("%s ", uavNearBase)
         end
         UAVsCount = UAVsCount+1
       end
@@ -166,15 +166,15 @@ local function getCoalitionStatus(playerGroup,coalitionNum,coalitionName)
     AWACs = SET_GROUP:New():FilterCategoryAirplane():FilterPrefixes({"Overlord 1-1"}):FilterActive():FilterOnce()          
   end        
   
-  local bases = ""
+  local AWACsBases = ""
         
   if AWACs ~= nil then
     AWACs:ForEachGroup(
       function(grp)
         local vec3 = grp:GetVec3()
         if vec3 ~= nil then
-          local nearBase = utils.getNearestAirbase(vec3, coalitionNum, Airbase.Category.AIRDROME)                
-          bases = bases..string.format("%s ", nearBase)
+          local AWACsNearBase = utils.getNearestAirbase(vec3, coalitionNum, Airbase.Category.AIRDROME)                
+          AWACsBases = AWACsBases..string.format("%s ", AWACsNearBase)
         end
         AWACsCount = AWACsCount+1
       end
@@ -182,7 +182,7 @@ local function getCoalitionStatus(playerGroup,coalitionNum,coalitionName)
   end
        
   if AWACsCount > 0 then            
-    AWACsText = string.format("%s Team has %i AWACs in the air by: %s",coalitionName,AWACsCount, bases)
+    AWACsText = string.format("%s Team has %i AWACs in the air by: %s",coalitionName,AWACsCount, AWACsBases)
   else
     AWACsText = string.format("%s Team does not have any AWACs in the air at the moment.",coalitionName,UAVsCount)
   end
@@ -196,7 +196,7 @@ local function getCoalitionStatus(playerGroup,coalitionNum,coalitionName)
           airResupplyText.."\n"..
           uavText.."\n"..
           AWACsText.."\n"..
-          coalitionName.." Team Navy has: "..shipCount.." Ships\n".. 
+          coalitionName.." Team Navy has: "..shipCount.." Ships sailing\n".. 
           coalitionName.." Team owns: "..farpCount.." FARPs\n".. 
           coalitionName.." Team controls: "..coalitionAirbaseNames.."\n\n"
 end
@@ -206,7 +206,7 @@ local function getIntelStatus(enemyCoalitionNum, enemyCoalitionName)
   local shipCount = ships:Count()
   
   return  "Coalition Intel:\n"..
-          "Enemy Navy has: "..shipCount.." Ships\n"..         
+          "Enemy Navy has: "..shipCount.." Ships sailing\n"..         
           "Enemy TEAM has "..ctld.countAASystemsByCoalition(enemyCoalitionNum).." SAMs\n"..
           "Enemy TEAM was able to sling "..ctld.getLimitedGroupCount(enemyCoalitionName).." units\n"..
           " \n\n"    

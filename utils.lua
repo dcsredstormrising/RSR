@@ -1,5 +1,8 @@
 local logging = require("logging")
 local log = logging.Logger:new("utils")
+local JSON = require("JSON")
+local inspect = require("inspect")
+local campaignFileName = "CampaignData.json"
 
 local M = {}
 
@@ -750,6 +753,40 @@ function M.getNearestAirbase(location, coalition, category)
         baseLocations[base:GetName()] = base:GetVec2()
     end
     return M.findNearest(point, baseLocations)
+end
+
+-- this is mega temporary, a hack if you will to help me test something
+-- this stores data for the campaign and the file needs to be deleted after restart
+-- for now it stores only 1 thing, but i need to rewrite it to be able to add to it
+function M.storeCampaignData(key, data)
+  if data ~= nil and key ~= nil then    
+    local dataTable = {}
+    dataTable[key] = data 
+    env.info("dataTable: "..inspect(dataTable))
+    local json = JSON:encode_pretty(dataTable)
+    File = io.open(campaignFileName, "w")
+    File:write(json)
+    File:close()
+  end
+end
+
+-- we probably need to read this data on mission start and keep it in memory
+function M.getDataFromCampaign(key)
+  local retVal = ""
+  if key ~= nil then
+    local f = io.open(campaignFileName, "r")
+    local json = f:read("*all")
+    f:close()
+    local data = JSON:decode(json)
+    retVal = data[key]     
+  end
+  return retVal
+end  
+  
+function M.fileExists(name) --check if the file already exists for writing
+    if lfs.attributes(name) then
+      return true 
+    end 
 end
 
 return M
