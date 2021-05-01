@@ -154,7 +154,9 @@ function Convoy.GetUpTransports( coalitionNumber )
 end
 
 function Convoy.GetUpTransportBaseName( coalitionNumber )
-  return "TEST TEXT"
+  if _Coalitions ~= nil and _Coalitions[coalitionNumber] ~= nil and _Coalitions[coalitionNumber].TransportGroup ~= nil and _Coalitions[coalitionNumber].Queue ~= nil then
+    return _Coalitions[coalitionNumber].Queue.PlayerAirbase
+  end
 end
 
 ---END FUNCTIONS---

@@ -86,8 +86,7 @@ local function getCoalitionStatus(playerGroup,coalitionNum,coalitionName)
   --[Airbase.Category.SHIP]="Ship",  -- this will never work
   local coalitionAirbaseNames = inspect(AIRBASE.GetAllAirbaseNames(coalitionNum, Airbase.Category.AIRDROME)):gsub("%{", ""):gsub("%}", ""):gsub("%\"", "")
   local coalitionFARPNames = AIRBASE.GetAllAirbaseNames(coalitionNum, Airbase.Category.HELIPAD)
-  env.info("coalitionFARPNames: "..inspect(coalitionFARPNames))
-  
+    
   -- get ships
   local ships = SET_GROUP:New():FilterCategoryShip():FilterCoalitions(coalitionName:lower()):FilterActive(true):FilterOnce()  
   local shipCount = ships:Count()  
@@ -134,17 +133,24 @@ local function getCoalitionStatus(playerGroup,coalitionNum,coalitionName)
   elseif coalitionNum == coalition.side.RED then
     UAVs = SET_GROUP:New():FilterCategoryAirplane():FilterPrefixes( {"Pontiac 6"} ):FilterActive():FilterOnce()
   end
-                
+  
+  local uavBases = ""
+        
   if UAVs ~= nil then
     UAVs:ForEachGroup(
       function(grp)
-        UAVsCount = UAVsCount+1             
+        local vec3 = grp:GetVec3()
+        if vec3 ~= nil then
+          local nearBase = utils.getNearestAirbase(vec3, coalitionNum, Airbase.Category.AIRDROME)                
+          uavBases = uavBases..string.format("%s ", nearBase)
+        end
+        UAVsCount = UAVsCount+1
       end
-    )  
+     )  
   end
        
   if UAVsCount > 0 then            
-    uavText = string.format("%s Team has %i UAV RECON Drones in the air",coalitionName,UAVsCount)
+    uavText = string.format("%s Team has %i UAV RECON Drones in the air by: %s",coalitionName,UAVsCount, uavBases)    
   else
     uavText = string.format("%s Team does not have any UAV RECON Drones in the air at the moment",coalitionName,UAVsCount)
   end
