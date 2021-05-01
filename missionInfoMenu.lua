@@ -80,9 +80,18 @@ local function getPlayerStatus(playerGroup,playerName,coalitionName)
 end
 
 local function getCoalitionStatus(playerGroup,coalitionNum,coalitionName)
-  local coalitionAirbaseNames = inspect(AIRBASE.GetAllAirbaseNames(coalition.side.BLUE, Airbase.Category.AIRDROME)):gsub("%{", ""):gsub("%}", ""):gsub("%\"", "")
-  local coalitionFARPNames = AIRBASE.GetAllAirbaseNames(coalition.side.BLUE, Airbase.Category.FARP)
-  local farpCount = 0
+  -- Moose has a bug in catogories documentation.  No such thing as Airbase.Category.FARP  
+  --[Airbase.Category.AIRDROME]="Airdrome",
+  --[Airbase.Category.HELIPAD]="Helipad",
+  --[Airbase.Category.SHIP]="Ship",  -- this will never work
+  local coalitionAirbaseNames = inspect(AIRBASE.GetAllAirbaseNames(coalitionNum, Airbase.Category.AIRDROME)):gsub("%{", ""):gsub("%}", ""):gsub("%\"", "")
+  local coalitionFARPNames = AIRBASE.GetAllAirbaseNames(coalitionNum, Airbase.Category.HELIPAD)
+  env.info("coalitionFARPNames: "..inspect(coalitionFARPNames))
+  
+  -- get ships
+  local ships = SET_GROUP:New():FilterCategoryShip():FilterCoalitions(coalitionName:lower()):FilterActive(true):FilterOnce()  
+  local shipCount = ships:Count()  
+  local farpCount = 0  
   local samSlingLimit = 0
   local JTACLimit = 0
         
@@ -99,12 +108,12 @@ local function getCoalitionStatus(playerGroup,coalitionNum,coalitionName)
   end
                 
   if coalitionFARPNames ~= nil then   
-    for _,farp in pairs (coalitionFARPNames) do
+    for _,item in pairs (coalitionFARPNames) do
       farpCount = farpCount + 1
     end
   end
-  
-  -- Air Resupply        
+    
+  -- Air Resupply
   local convoyCount = Convoy.GetUpTransports(coalitionNum)
   local convoyOverBaseName = Convoy.GetUpTransportBaseName(coalitionNum)
   local airResupplyText = ""
@@ -181,13 +190,17 @@ local function getCoalitionStatus(playerGroup,coalitionNum,coalitionName)
           airResupplyText.."\n"..
           uavText.."\n"..
           AWACsText.."\n"..
+          coalitionName.." Team Navy has: "..shipCount.." Ships\n".. 
           coalitionName.." Team owns: "..farpCount.." FARPs\n".. 
           coalitionName.." Team controls: "..coalitionAirbaseNames.."\n\n"
 end
 
-local function getIntelStatus(enemyCoalitionNum, enemyCoalitionName)
+local function getIntelStatus(enemyCoalitionNum, enemyCoalitionName)  
+  local ships = SET_GROUP:New():FilterCategoryShip():FilterCoalitions(enemyCoalitionName:lower()):FilterActive(true):FilterOnce()  
+  local shipCount = ships:Count()
   
-  return  "Coalition Intel:\n"..         
+  return  "Coalition Intel:\n"..
+          "Enemy Navy has: "..shipCount.." Ships\n"..         
           "Enemy TEAM has "..ctld.countAASystemsByCoalition(enemyCoalitionNum).." SAMs\n"..
           "Enemy TEAM was able to sling "..ctld.getLimitedGroupCount(enemyCoalitionName).." units\n"..
           " \n\n"    
