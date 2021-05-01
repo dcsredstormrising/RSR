@@ -149,16 +149,12 @@ function Convoy.OnTransportCrash ( coalitionNumber )
   _Coalitions[coalitionNumber].Queue = nil
 end
 
-function Convoy.GetUpTransports(coalitionNum)
-  return 0
+function Convoy.GetUpTransports( coalitionNumber )
+  return not _Coalitions[coalitionNumber].TransportGroup and 0 or 1
 end
 
-function Convoy.GetUpTransportBaseName(coalitionNum)
-  return "Vaziani"
-
+function Convoy.GetUpTransportBaseName( coalitionNumber )
+  return "TEST TEXT"
 end
-
-
 
 ---END FUNCTIONS---
-
