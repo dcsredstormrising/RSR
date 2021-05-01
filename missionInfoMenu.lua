@@ -139,9 +139,9 @@ local function getCoalitionStatus(playerGroup,coalitionNum,coalitionName)
   if UAVs ~= nil then
     UAVs:ForEachGroup(
       function(grp)
-        local vec3 = grp:GetVec3()
-        if vec3 ~= nil then
-          local uavNearBase = utils.getNearestAirbase(vec3, coalitionNum, Airbase.Category.AIRDROME)                
+        local vec = grp:GetVec2()
+        if vec ~= nil then
+          local uavNearBase = utils.getNearestAirbase(vec, coalitionNum, Airbase.Category.AIRDROME)                
           uavBases = uavBases..string.format("%s ", uavNearBase)
         end
         UAVsCount = UAVsCount+1
@@ -171,9 +171,9 @@ local function getCoalitionStatus(playerGroup,coalitionNum,coalitionName)
   if AWACs ~= nil then
     AWACs:ForEachGroup(
       function(grp)
-        local vec3 = grp:GetVec3()
-        if vec3 ~= nil then
-          local AWACsNearBase = utils.getNearestAirbase(vec3, coalitionNum, Airbase.Category.AIRDROME)                
+        local vec = grp:GetVec2()
+        if vec ~= nil then
+          local AWACsNearBase = utils.getNearestAirbase(vec, coalitionNum, Airbase.Category.AIRDROME)                
           AWACsBases = AWACsBases..string.format("%s ", AWACsNearBase)
         end
         AWACsCount = AWACsCount+1
@@ -212,8 +212,7 @@ local function getIntelStatus(enemyCoalitionNum, enemyCoalitionName)
           " \n\n"    
 end
 
-function M.getMissionStatus(playerGroup, restartHours)
-  local vec3 = playerGroup:GetVec3()
+function M.getMissionStatus(playerGroup, restartHours)  
   local enemyCoalitionNum = 1
   local enemyCoalitionName = "RED"
   local coalitionNum = playerGroup:GetCoalition()
