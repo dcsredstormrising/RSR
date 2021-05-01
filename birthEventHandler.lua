@@ -45,6 +45,8 @@ function M.BIRTH_EVENTHANDLER:_AddMenus(event)
 
             self:_AddEWRS(groupId, event.IniDCSUnit)
         end
+    else
+        self:_NonPlayerRouter(event)
     end
 end
 
@@ -129,6 +131,17 @@ function M.BIRTH_EVENTHANDLER:_AddEWRS(groupId, unit)
     if playerName ~= nil and ewrs.enabledAircraftTypes[unit:getTypeName()] then
         ewrs.buildF10Menu(groupId)
         ewrs.addPlayer(playerName, groupId, unit)
+    end
+end
+
+function M.BIRTH_EVENTHANDLER:_NonPlayerRouter(event)
+    local groupName = event.IniGroup:GetName()
+    local coalitionNumber = event.IniCoalition
+    
+    if string.match(groupName, "Convoy Transport") then
+        Convoy.ConvoyTransportGroupBorn(coalitionNumber)
+    elseif string.match(groupName, "Convoy Group 1") then
+        Convoy.ConvoyGroupBorn(coalitionNumber)
     end
 end
 -- luacheck: pop
