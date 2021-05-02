@@ -13,36 +13,8 @@
     "Ships": []
   },
   "ctld": {
-    "nextGroupId": 3,
-    "nextUnitId": 8
+    "nextGroupId": 1,
+    "nextUnitId": 1
   },
-  "persistentGroupData": [ {
-    "category": "vehicle",
-    "coalition": "blue",
-    "coalitionId": 2,
-    "countryId": 2,
-    "name": "CTLD_Hummer_3 (=AW=33COM)",
-    "units": [ {
-      "heading": 3.0531085447062,
-      "name": "Unpacked Hummer #8",
-      "skill": "Excellent",
-      "type": "Hummer",
-      "x": -316630.53125005,
-      "y": 902542.25
-    } ]
-  }, {
-    "category": "vehicle",
-    "coalition": "blue",
-    "coalitionId": 2,
-    "countryId": 2,
-    "name": "CTLD_Leopard1A3_2 (=AW=33COM)",
-    "units": [ {
-      "heading": 3.0531085511693,
-      "name": "Unpacked Leopard1A3 #5",
-      "skill": "Excellent",
-      "type": "Leopard1A3",
-      "x": -316692.53125014,
-      "y": 902418.18750001
-    } ]
-  } ]
+  "persistentGroupData": []
 }
