@@ -132,7 +132,7 @@ end
 function Convoy.ConvoyTransportGroupBorn( coalitionNumber )
   env.info("CONVOY: Convoy Transport Spawned.")
   trigger.action.outTextForCoalition(coalitionNumber,"[TEAM] " .. _Coalitions[coalitionNumber].Queue.PlayerName .. "  Requested an Air Resupply in " .. _Coalitions[coalitionNumber].Queue.PlayerAirbase .. ".\nESCORT REQUESTED!", 10)
-  trigger.action.outTextForCoalition(coalitionNumber == 1 and 2 or 1,"[TEAM] The Air Operations Center has detected an enemy cargo transport in " .. _Coalitions[coalitionNumber].Queue.PlayerName .. ".\nINTERCEPT IMMEDIATELY!", 10)
+  trigger.action.outTextForCoalition(coalitionNumber == 1 and 2 or 1,"[TEAM] The Air Operations Center has detected an enemy cargo transport in " .. _Coalitions[coalitionNumber].Queue.PlayerAirbase .. ".\nINTERCEPT IMMEDIATELY!", 10)
 end
 
 --HANDLES LAND EVENTS OF TRANSPORTS ONLY
