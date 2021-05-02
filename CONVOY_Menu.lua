@@ -118,7 +118,7 @@ function Convoy.AddMenu( playerGroup )
     
   -- SUBMENU COMMANDS CHILD OF ConvoyMenuRoot
   MENU_GROUP_COMMAND:New( playerGroup, "Spawn Air Resupply", ConvoyMenuRoot, SpawnTransport, playerGroup, coalitionNumber)
-  MENU_GROUP_COMMAND:New( playerGroup, "Air Resupplies Remaining", ConvoyMenuRoot, function() 
+  MENU_GROUP_COMMAND:New( playerGroup, "Air Resupplies Remaining", ConvoyMenuRoot, function()
     trigger.action.outTextForCoalition(coalitionNumber, "[TEAM] Has " .. _Coalitions[coalitionNumber].ConvoysLeft .. " Remaining Air Resupplies.", 10)
   end)
 end
@@ -154,9 +154,7 @@ function Convoy.GetUpTransports( coalitionNumber )
 end
 
 function Convoy.GetUpTransportBaseName( coalitionNumber )
-  if _Coalitions ~= nil and _Coalitions[coalitionNumber] ~= nil and _Coalitions[coalitionNumber].TransportGroup ~= nil and _Coalitions[coalitionNumber].Queue ~= nil then
-    return _Coalitions[coalitionNumber].Queue.PlayerAirbase
-  end
+  return not _Coalitions[coalitionNumber].TransportGroup and nil or _Coalitions[coalitionNumber].Queue.PlayerAirbase 
 end
 
 ---END FUNCTIONS---
