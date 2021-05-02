@@ -135,10 +135,9 @@ function M.BIRTH_EVENTHANDLER:_AddEWRS(groupId, unit)
 end
 
 function M.BIRTH_EVENTHANDLER:_NonPlayerRouter(event)
-    local groupName = event.IniGroup:GetName()
-    
     --Make sure not static
-    if groupName then
+    if event.IniGroup then
+        local groupName = event.IniGroup:GetName()
         local coalitionNumber = event.IniCoalition
         if string.match(groupName, "Convoy Transport") then
             Convoy.ConvoyTransportGroupBorn(coalitionNumber)
