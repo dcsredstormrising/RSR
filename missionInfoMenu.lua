@@ -68,8 +68,8 @@ local function getCampaignStatus(playerGroup, restartHours)
   
   return  "Campaign Status:\n"..         
           "The server will restart in "..restartInfo.getSecondsAsString(secondsUntilRestart).."\n"..
-          "Campaign started on: " ..utils.getDataFromCampaign("CampaignStartDateTime").."\n"..
-          "There is "..playerCount.." players online\n\n"
+          "Campaign started on: " ..utils.getDataFromCampaign("CampaignStartDateTime").."\n\n"
+          --"There is "..playerCount.." players online\n\n"
 end
 
 local function getPlayerStatus(playerGroup,playerName,coalitionName)
