@@ -1108,14 +1108,10 @@ function ctld.IsGroupLimitReached(_args, _crateType, _coalition)
 end
 
 -- gets total group slung count based on the limit logic by coalition
-function ctld.getLimitedGroupCount(coalition)  
-    local coalitionName = "red"    
-    if coalition == 2 then
-      coalitionName = "blue"
-    end    
+function ctld.getLimitedGroupCount(coalitionName)  
     -- gets all player slung groups
-    env.info("coalitionName: "..inspect(coalitionName))
-    local playerSlungGroups = SET_GROUP:New():FilterCategoryGround():FilterCoalitions(coalitionName):FilterPrefixes("CTLD"):FilterActive():FilterOnce()
+    env.info("coalitionName: "..inspect(coalitionName:lower()))
+    local playerSlungGroups = SET_GROUP:New():FilterCategoryGround():FilterCoalitions(coalitionName:lower()):FilterPrefixes("CTLD"):FilterActive():FilterOnce()
     local playerGroupCount = playerSlungGroups:Count()
     env.info("playerGroupCount: "..playerGroupCount)
     env.info("playerSlungGroups: "..inspect(playerSlungGroups))    
@@ -7418,14 +7414,14 @@ end
 -- Here we update the AA System in CTLD upon each session start.
 function ctld.LoadAllExistingSystemsIntoCTLD(_spawnedGroup)
     
-    env.info("***=AW=33COM LoadAllExistingSystemsIntoCTLD")
+    --env.info("***=AW=33COM LoadAllExistingSystemsIntoCTLD")
         
     if _spawnedGroup ~= nil and _spawnedGroup:getUnits() ~= nil and _spawnedGroup:getUnits()[1] ~= nil then
     
       local _units = _spawnedGroup:getUnits()  
       local _firstUnitType = _units[1]:getTypeName()      
     
-      env.info("***=AW=33COM _spawnedGroup Name: " .. inspect(_spawnedGroup:getName()))            
+      --env.info("***=AW=33COM _spawnedGroup Name: " .. inspect(_spawnedGroup:getName()))            
       local _aaSystemDetails = ctld.getAASystemDetails(_spawnedGroup, ctld.getAATemplate(_firstUnitType))      
       ctld.completeAASystems[_spawnedGroup:getName()] = _aaSystemDetails
       
