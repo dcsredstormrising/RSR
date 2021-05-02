@@ -3063,30 +3063,30 @@ function ctld.findNearestAASystem(_heli, _aaSystem)
     local _closestHawkGroup = nil
     local _shortestDistance = -1
     
-      env.info("******=AW=33COM ctld.findNearestAASystem: _aaSystem ******")
-      env.info(inspect(_aaSystem))      
-      env.info("***=AW=33COM End:")
+      --env.info("******=AW=33COM ctld.findNearestAASystem: _aaSystem ******")
+      --env.info(inspect(_aaSystem))      
+      --env.info("***=AW=33COM End:")
       
-      env.info("******=AW=33COM ctld.findNearestAASystem: ctld.completeAASystems ******")
-      env.info(inspect(ctld.completeAASystems))
-      env.info("***=AW=33COM End:")
+      --env.info("******=AW=33COM ctld.findNearestAASystem: ctld.completeAASystems ******")
+      --env.info(inspect(ctld.completeAASystems))
+      --env.info("***=AW=33COM End:")
     
     for _groupName, _hawkDetails in pairs(ctld.completeAASystems) do
           
-      env.info("******=AW=33COM ctld.findNearestAASystem: _groupName:" .. inspect(_groupName))
+      --env.info("******=AW=33COM ctld.findNearestAASystem: _groupName:" .. inspect(_groupName))
     
         local _hawkGroup = Group.getByName(_groupName)
         
-        env.info("******=AW=33COM ctld.findNearestAASystem: _hawkGroup:" .. inspect(_groupName))
+        --env.info("******=AW=33COM ctld.findNearestAASystem: _hawkGroup:" .. inspect(_groupName))
 
         if _hawkGroup ~= nil and _hawkGroup:getCoalition() == _heli:getCoalition() and _hawkDetails[1].system.name == _aaSystem.name then
         
-          env.info("******=AW=33COM ctld.findNearestAASystem: _aaSystem.name:" .. inspect(_aaSystem.name))        
-          env.info("******=AW=33COM ctld.findNearestAASystem: _hawkDetails[1].system.name:" .. inspect(_hawkDetails[1].system.name))
+          --env.info("******=AW=33COM ctld.findNearestAASystem: _aaSystem.name:" .. inspect(_aaSystem.name))        
+          --env.info("******=AW=33COM ctld.findNearestAASystem: _hawkDetails[1].system.name:" .. inspect(_hawkDetails[1].system.name))
 
             local _units = _hawkGroup:getUnits()
             
-            env.info("******=AW=33COM ctld.findNearestAASystem: _units: " .. inspect(_units))
+            --env.info("******=AW=33COM ctld.findNearestAASystem: _units: " .. inspect(_units))
 
             for _, _leader in pairs(_units) do
 
@@ -4527,7 +4527,7 @@ function ctld.countGroupsByPlayer(playerName, coalitionName)
         function(grp)
           if grp ~= nil then
             local groupName = grp:GetName():lower()
-            if string.find(groupName, name) then
+            if string.find(groupName, playerName) then
               count = count + 1
             end
           end        
@@ -4542,23 +4542,33 @@ function ctld.countJTACsByPlayer(playerName, coalitionName)
   if playerName ~= nil then    
     local groups = SET_GROUP:New():FilterCategoryGround():FilterPrefixes({"CTLD"}):FilterCoalitions(coalitionName):FilterActive():FilterOnce()    
     if groups ~= nil then
+      env.info("countJTACsByPlayer|groups exist:")
       local JTAC = "Tigr_233036"
       if coalitionName == coalition.side.BLUE then
         JTAC = "Hummer"
+        env.info("countJTACsByPlayer|Hummer:")
       end
-      groups:ForEachGroup(
+      groups:ForEachGroup(        
         function(grp)
+          env.info("countJTACsByPlayer|groups:ForEachGroup:")
           if grp ~= nil then
-            local groupName = grp:GetName():lower()            
-            local dcsGroup = Group.getByName(grp:GetName())          
-            if dcsGroup ~= nil then
-              local units = dcsGroup:getUnits()
-              if units ~= nil then
-                local unitTypeName = units[1]:getTypeName()
-                if string.find(unitTypeName, JTAC) then
-                  count = count + 1
-                end
-              end  
+            local groupName = grp:GetName():lower()
+            env.info("countJTACsByPlayer|groupName:"..groupName)            
+            if string.find(groupName, playerName:lower()) then            
+              local dcsGroup = Group.getByName(grp:GetName())   
+              env.info("countJTACsByPlayer|grp:GetName():"..grp:GetName())       
+              if dcsGroup ~= nil then
+                env.info("countJTACsByPlayer|dcsGroup")
+                local units = dcsGroup:getUnits()
+                if units ~= nil then
+                  env.info("countJTACsByPlayer|units exist")
+                  local unitTypeName = units[1]:getTypeName()
+                  env.info("countJTACsByPlayer|unitTypeName"..unitTypeName)
+                  if unitTypeName == JTAC then                  
+                      count = count + 1
+                  end
+                end  
+              end
             end
           end        
       end)    
