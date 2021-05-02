@@ -154,7 +154,7 @@ function Convoy.GetUpTransports( coalitionNumber )
 end
 
 function Convoy.GetUpTransportBaseName( coalitionNumber )
-  return not _Coalitions[coalitionNumber].TransportGroup and nil or _Coalitions[coalitionNumber].Queue.PlayerAirbase 
+  return not _Coalitions[coalitionNumber].TransportGroup and '' or _Coalitions[coalitionNumber].Queue.PlayerAirbase 
 end
 
 ---END FUNCTIONS---
