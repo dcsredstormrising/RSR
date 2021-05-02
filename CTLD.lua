@@ -4544,7 +4544,7 @@ function ctld.countJTACsByPlayer(playerName, coalitionName)
     if groups ~= nil then
       env.info("countJTACsByPlayer|groups exist:")
       local JTAC = "Tigr_233036"
-      if coalitionName == coalition.side.BLUE then
+      if coalitionName:lower() == "blue" then
         JTAC = "Hummer"
         env.info("countJTACsByPlayer|Hummer:")
       end
