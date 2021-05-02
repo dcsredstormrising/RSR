@@ -4520,7 +4520,7 @@ function ctld.countGroupsByPlayer(playerName, coalitionName)
   local count = 0
   env.info("countGroupsByPlayer:"..coalitionName.." "..playerName)
   if playerName ~= nil then  
-    local groups = SET_GROUP:New():FilterCategoryGround():FilterCoalitions(coalitionName):FilterPrefixes({"CTLD"}):FilterActive():FilterOnce()
+    local groups = SET_GROUP:New():FilterCategoryGround():FilterCoalitions(coalitionName:lower()):FilterPrefixes({"CTLD"}):FilterActive():FilterOnce()
     if groups ~= nil then
       env.info("countGroupsByPlayer groups exist")
       groups:ForEachGroup(
@@ -4542,7 +4542,7 @@ end
 function ctld.countJTACsByPlayer(playerName, coalitionName)
   local count = 0
   if playerName ~= nil then    
-    local groups = SET_GROUP:New():FilterCategoryGround():FilterPrefixes({"CTLD"}):FilterCoalitions(coalitionName):FilterActive():FilterOnce()    
+    local groups = SET_GROUP:New():FilterCategoryGround():FilterPrefixes({"CTLD"}):FilterCoalitions(coalitionName:lower()):FilterActive():FilterOnce()    
     if groups ~= nil then
       env.info("countJTACsByPlayer|groups exist:")
       local JTAC = "Tigr_233036"
