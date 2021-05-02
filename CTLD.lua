@@ -1114,10 +1114,15 @@ function ctld.getLimitedGroupCount(coalition)
       coalitionName = "blue"
     end    
     -- gets all player slung groups
-    local playerSlungGroups = SET_GROUP:New():FilterCategoryGround():FilterCoalitions(coalitionName):FilterPrefixes("CTLD"):FilterActive():FilterOnce()    
+    env.info("coalitionName: "..inspect(coalitionName))
+    local playerSlungGroups = SET_GROUP:New():FilterCategoryGround():FilterCoalitions(coalitionName):FilterPrefixes("CTLD"):FilterActive():FilterOnce()
+    local playerGroupCount = playerSlungGroups:Count()
+    env.info("playerGroupCount: "..playerGroupCount)
+    env.info("playerSlungGroups: "..inspect(playerSlungGroups))    
     -- here we must deduct all ctld.UnitTypesOutsideOfGroupLimit from total        
-    local groupsOfUnitsNotPartOfLimitCount = ctld.getGroupCountByUnitType(playerSlungGroups, ctld.UnitTypesOutsideOfGroupLimit)        
-    return playerSlungGroups:Count() - groupsOfUnitsNotPartOfLimitCount
+    local groupsOfUnitsNotPartOfLimitCount = ctld.getGroupCountByUnitType(playerSlungGroups, ctld.UnitTypesOutsideOfGroupLimit)    
+    env.info("groupsOfUnitsNotPartOfLimitCount: "..groupsOfUnitsNotPartOfLimitCount)            
+    return playerGroupCount - groupsOfUnitsNotPartOfLimitCount
 end
 
 
@@ -4518,17 +4523,13 @@ end
 
 function ctld.countGroupsByPlayer(playerName, coalitionName)
   local count = 0
-  env.info("countGroupsByPlayer:"..coalitionName.." "..playerName)
   if playerName ~= nil then  
     local groups = SET_GROUP:New():FilterCategoryGround():FilterCoalitions(coalitionName:lower()):FilterPrefixes({"CTLD"}):FilterActive():FilterOnce()
-    if groups ~= nil then
-      env.info("countGroupsByPlayer groups exist")
+    if groups ~= nil then      
       groups:ForEachGroup(
         function(grp)
           if grp ~= nil then
-            env.info("countGroupsByPlayer inside 1")
-            local groupName = grp:GetName():lower()            
-            env.info("countGroupsByPlayer groupName: "..groupName)            
+            local groupName = grp:GetName():lower()      
             if string.find(groupName, playerName:lower()) then
               count = count + 1
             end
@@ -4543,29 +4544,21 @@ function ctld.countJTACsByPlayer(playerName, coalitionName)
   local count = 0
   if playerName ~= nil then    
     local groups = SET_GROUP:New():FilterCategoryGround():FilterPrefixes({"CTLD"}):FilterCoalitions(coalitionName:lower()):FilterActive():FilterOnce()    
-    if groups ~= nil then
-      env.info("countJTACsByPlayer|groups exist:")
+    if groups ~= nil then      
       local JTAC = "Tigr_233036"
       if coalitionName:lower() == "blue" then
-        JTAC = "Hummer"
-        env.info("countJTACsByPlayer|Hummer:")
+        JTAC = "Hummer"        
       end
       groups:ForEachGroup(        
-        function(grp)
-          env.info("countJTACsByPlayer|groups:ForEachGroup:")
+        function(grp)          
           if grp ~= nil then
-            local groupName = grp:GetName():lower()
-            env.info("countJTACsByPlayer|groupName:"..groupName)            
+            local groupName = grp:GetName():lower()                        
             if string.find(groupName, playerName:lower()) then            
-              local dcsGroup = Group.getByName(grp:GetName())   
-              env.info("countJTACsByPlayer|grp:GetName():"..grp:GetName())       
-              if dcsGroup ~= nil then
-                env.info("countJTACsByPlayer|dcsGroup")
+              local dcsGroup = Group.getByName(grp:GetName())
+              if dcsGroup ~= nil then                
                 local units = dcsGroup:getUnits()
                 if units ~= nil then
-                  env.info("countJTACsByPlayer|units exist")
                   local unitTypeName = units[1]:getTypeName()
-                  env.info("countJTACsByPlayer|unitTypeName"..unitTypeName)
                   if unitTypeName == JTAC then                  
                       count = count + 1
                   end
