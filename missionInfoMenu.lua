@@ -59,17 +59,15 @@ end
 
 local function getCampaignStatus(playerGroup, restartHours)
   local secondsUntilRestart = restartInfo.getSecondsUntilRestart(os.date("*t"), restartHours)
-  local playerCount = 0
-  if CLIENT.Players ~= nil then
-    for _,player in pairs (CLIENT.Players) do
-      playerCount = playerCount + 1
-    end
-  end
+  local playerCount = 0  
+  local bluePlayers = coalition.getPlayers(2)
+  local redPlayers = coalition.getPlayers(1)
+  playerCount = #bluePlayers +  #redPlayers
   
   return  "Campaign Status:\n"..         
           "The server will restart in "..restartInfo.getSecondsAsString(secondsUntilRestart).."\n"..
-          "Campaign started on: " ..utils.getDataFromCampaign("CampaignStartDateTime").."\n\n"
-          --"There is "..playerCount.." players online\n\n"
+          "Campaign started on: " ..utils.getDataFromCampaign("CampaignStartDateTime").."\n"..
+          "There is "..playerCount.." players online\n\n"
 end
 
 local function getPlayerStatus(playerGroup,playerName,coalitionName)
@@ -198,8 +196,7 @@ local function getCoalitionStatus(playerGroup,coalitionNum,coalitionName)
           coalitionName.." Team\'s SAM sling limit is: "..samSlingLimit.."\n"..
           coalitionName.." Team has "..ctld.countAASystemsByCoalition(coalitionNum).." SAMs installed\n".. 
           coalitionName.." Team GROUP sling limit is "..ctld.GroupLimitCount.."\n".. 
-          --coalitionName.." Team has "..ctld.getLimitedGroupCount(coalitionName).." Groups deployed\n"..
-          coalitionName.." Team has 0 Groups deployed\n".. 
+          coalitionName.." Team has "..ctld.getLimitedGroupCount(coalitionName).." Groups deployed\n"..          
           coalitionName.." Team can still deliver "..JTACLimit.." JTACs to the field\n"..
           airResupplyText.."\n"..
           uavText.."\n"..
@@ -216,8 +213,7 @@ local function getIntelStatus(enemyCoalitionNum, enemyCoalitionName)
   return  "Coalition Intel:\n"..
           "Enemy Navy has: "..shipCount.." Ships sailing\n"..         
           "Enemy TEAM has "..ctld.countAASystemsByCoalition(enemyCoalitionNum).." SAMs\n"..
-          --"Enemy TEAM was able to sling "..ctld.getLimitedGroupCount(enemyCoalitionName).." units\n"..
-          "Enemy TEAM was able to sling 0 units\n"..
+          "Enemy TEAM was able to sling "..ctld.getLimitedGroupCount(enemyCoalitionName).." group of units\n"..          
           " \n\n"    
 end
 

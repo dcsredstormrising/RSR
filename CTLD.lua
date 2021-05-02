@@ -1111,38 +1111,30 @@ end
 -- this method is super slow, need to debug this
 function ctld.getLimitedGroupCount(coalitionName)  
     -- gets all player slung groups    
-    local playerSlungGroups = SET_GROUP:New():FilterCategoryGround():FilterCoalitions(coalitionName:lower()):FilterPrefixes("CTLD"):FilterActive():FilterOnce()
+    local playerSlungGroups = SET_GROUP:New():FilterCategoryGround():FilterCoalitions(coalitionName:lower()):FilterPrefixes({"CTLD"}):FilterActive():FilterOnce()
     local playerGroupCount = playerSlungGroups:Count()        
     -- here we must deduct all ctld.UnitTypesOutsideOfGroupLimit from total        
-    local groupsOfUnitsNotPartOfLimitCount = ctld.getGroupCountByUnitType(playerSlungGroups, ctld.UnitTypesOutsideOfGroupLimit)
+    local groupsOfUnitsNotPartOfLimitCount = ctld.getGroupCountByUnitType(playerSlungGroups)
     return playerGroupCount - groupsOfUnitsNotPartOfLimitCount
 end
 
 
 -- Fetches count of groups based on unit type.  
 -- @_playerSlungUnits groups of units
--- @_unitTypes Unit types that interest you
--- you can pass an array of unit types
-function ctld.getGroupCountByUnitType(_playerSlungGroups, _unitTypes)
+function ctld.getGroupCountByUnitType(_playerSlungGroups)
 
   local _counter = 0
-
-  if (_playerSlungGroups ~= nil) then
       _playerSlungGroups:ForEachGroup(
       function(grp)
-        local _units = grp:GetUnits()
-        if _units ~= nil then          
+        local _units = grp:GetUnits()                
           for _, _unit in pairs (_units) do            
             local _unitTypeName = _unit:GetTypeName()                        
             if ctld.UnitTypesOutsideOfGroupLimit[_unitTypeName] then    -- get groups that have units we don't count towards the limit                            
               _counter = _counter + 1
               break
             end
-          end
-        end
+         end
       end)
-  end
-  
   return _counter  
 end
 
@@ -4516,19 +4508,17 @@ end
 
 function ctld.countGroupsByPlayer(playerName, coalitionName)
   local count = 0
-  if playerName ~= nil then  
-    local groups = SET_GROUP:New():FilterCategoryGround():FilterCoalitions(coalitionName:lower()):FilterPrefixes({"CTLD"}):FilterActive():FilterOnce()
-    if groups ~= nil then      
-      groups:ForEachGroup(
-        function(grp)
-          if grp ~= nil then
-            local groupName = grp:GetName():lower()      
-            if string.find(groupName, playerName:lower()) then
-              count = count + 1
-            end
-          end        
-      end)    
-    end
+  if playerName ~= nil then
+    local groups = SET_GROUP:New():FilterCategoryGround():FilterCoalitions(coalitionName:lower()):FilterPrefixes({"CTLD"}):FilterActive():FilterOnce()    
+    groups:ForEachGroup(        
+      function(grp)          
+        if grp ~= nil then
+          local groupName = grp:GetName():lower()             
+          if string.find(groupName, playerName:lower()) then
+            count = count + 1
+          end
+        end        
+     end)         
   end
   return count
 end
