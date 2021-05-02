@@ -191,7 +191,8 @@ local function getCoalitionStatus(playerGroup,coalitionNum,coalitionName)
           coalitionName.." Team\'s SAM sling limit is: "..samSlingLimit.."\n"..
           coalitionName.." Team has "..ctld.countAASystemsByCoalition(coalitionNum).." SAMs installed\n".. 
           coalitionName.." Team GROUP sling limit is "..ctld.GroupLimitCount.."\n".. 
-          coalitionName.." Team has "..ctld.getLimitedGroupCount(coalitionName).." Groups deployed\n".. 
+          --coalitionName.." Team has "..ctld.getLimitedGroupCount(coalitionName).." Groups deployed\n"..
+          coalitionName.." Team has 0 Groups deployed\n".. 
           coalitionName.." Team can still deliver "..JTACLimit.." JTACs to the field\n"..
           airResupplyText.."\n"..
           uavText.."\n"..
@@ -208,7 +209,8 @@ local function getIntelStatus(enemyCoalitionNum, enemyCoalitionName)
   return  "Coalition Intel:\n"..
           "Enemy Navy has: "..shipCount.." Ships sailing\n"..         
           "Enemy TEAM has "..ctld.countAASystemsByCoalition(enemyCoalitionNum).." SAMs\n"..
-          "Enemy TEAM was able to sling "..ctld.getLimitedGroupCount(enemyCoalitionName).." units\n"..
+          --"Enemy TEAM was able to sling "..ctld.getLimitedGroupCount(enemyCoalitionName).." units\n"..
+          "Enemy TEAM was able to sling 0 units\n"..
           " \n\n"    
 end
 

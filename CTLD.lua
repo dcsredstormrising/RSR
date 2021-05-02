@@ -1108,16 +1108,13 @@ function ctld.IsGroupLimitReached(_args, _crateType, _coalition)
 end
 
 -- gets total group slung count based on the limit logic by coalition
+-- this method is super slow, need to debug this
 function ctld.getLimitedGroupCount(coalitionName)  
-    -- gets all player slung groups
-    env.info("coalitionName: "..inspect(coalitionName:lower()))
+    -- gets all player slung groups    
     local playerSlungGroups = SET_GROUP:New():FilterCategoryGround():FilterCoalitions(coalitionName:lower()):FilterPrefixes("CTLD"):FilterActive():FilterOnce()
-    local playerGroupCount = playerSlungGroups:Count()
-    env.info("playerGroupCount: "..playerGroupCount)
-    env.info("playerSlungGroups: "..inspect(playerSlungGroups))    
+    local playerGroupCount = playerSlungGroups:Count()        
     -- here we must deduct all ctld.UnitTypesOutsideOfGroupLimit from total        
-    local groupsOfUnitsNotPartOfLimitCount = ctld.getGroupCountByUnitType(playerSlungGroups, ctld.UnitTypesOutsideOfGroupLimit)    
-    env.info("groupsOfUnitsNotPartOfLimitCount: "..groupsOfUnitsNotPartOfLimitCount)            
+    local groupsOfUnitsNotPartOfLimitCount = ctld.getGroupCountByUnitType(playerSlungGroups, ctld.UnitTypesOutsideOfGroupLimit)
     return playerGroupCount - groupsOfUnitsNotPartOfLimitCount
 end
 
