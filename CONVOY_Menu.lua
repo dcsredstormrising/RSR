@@ -88,7 +88,7 @@ local function SpawnTransport(playerGroup, coalitionNumber)
   local heading = playerGroup:GetHeading()
   local location = playerGroup:GetPointVec2()
   local playerName = playerGroup:GetPlayerName()
-  local playerAirbase = utils.getNearestAirbase(location, coalitionNumber, Airbase.Category.AIRDROME)
+  local playerAirbase = utils.getNearestAirbase(playerGroup:GetVec2(), coalitionNumber, Airbase.Category.AIRDROME)
 
   if not _Coalitions[coalitionNumber].Queue and playerAirbase then
     env.info("CONVOY: Queue for team: " .. _Coalitions[coalitionNumber].String .. " is empty. Inserting " .. playerName .. "'s location and heading.")
