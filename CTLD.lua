@@ -4526,8 +4526,10 @@ function ctld.countGroupsByPlayer(playerName, coalitionName)
       groups:ForEachGroup(
         function(grp)
           if grp ~= nil then
-            local groupName = grp:GetName():lower()
-            if string.find(groupName, playerName) then
+            env.info("countGroupsByPlayer inside 1")
+            local groupName = grp:GetName():lower()            
+            env.info("countGroupsByPlayer groupName: "..groupName)            
+            if string.find(groupName, playerName:lower()) then
               count = count + 1
             end
           end        
