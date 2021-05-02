@@ -136,12 +136,15 @@ end
 
 function M.BIRTH_EVENTHANDLER:_NonPlayerRouter(event)
     local groupName = event.IniGroup:GetName()
-    local coalitionNumber = event.IniCoalition
     
-    if string.match(groupName, "Convoy Transport") then
-        Convoy.ConvoyTransportGroupBorn(coalitionNumber)
-    elseif string.match(groupName, "Convoy Group 1") then
-        Convoy.ConvoyGroupBorn(coalitionNumber)
+    --Make sure not static
+    if groupName then
+        local coalitionNumber = event.IniCoalition
+        if string.match(groupName, "Convoy Transport") then
+            Convoy.ConvoyTransportGroupBorn(coalitionNumber)
+        elseif string.match(groupName, "Convoy Group 1") then
+            Convoy.ConvoyGroupBorn(coalitionNumber)
+        end  
     end
 end
 -- luacheck: pop
