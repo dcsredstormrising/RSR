@@ -59,10 +59,17 @@ end
 
 local function getCampaignStatus(playerGroup, restartHours)
   local secondsUntilRestart = restartInfo.getSecondsUntilRestart(os.date("*t"), restartHours)
+  local playerCount = 0
+  if CLIENT.Players ~= nil then
+    for _,player in pairs (CLIENT.Players) do
+      playerCount = playerCount + 1
+    end
+  end
+  
   return  "Campaign Status:\n"..         
           "The server will restart in "..restartInfo.getSecondsAsString(secondsUntilRestart).."\n"..
           "Campaign started on: " ..utils.getDataFromCampaign("CampaignStartDateTime").."\n"..
-          "There is "..playerGroup:GetPlayerCount().." players online\n\n"
+          "There is "..playerCount.." players online\n\n"
 end
 
 local function getPlayerStatus(playerGroup,playerName,coalitionName)
