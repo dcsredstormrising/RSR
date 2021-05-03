@@ -20,27 +20,23 @@ local _redTypes = {"Roland", "Tor"}
   -- this must run after State is reconstructed in order to load correct AASystem.  Otherwise you will load old miz level systems from default position and with different names.
   -- when we repair a static AASystem, it's name changes to a player name.     
  local _aaSystemGroups = SET_GROUP:New():FilterCategoryGround():FilterPrefixes({"AASystem"}):FilterActive(true):FilterOnce()
-
+ 
+ -- we find all jtacs by type and rebuild the count for CTLD on session start
+ local JTACsRED = SET_GROUP:New():FilterCategoryGround():FilterPrefixes({ctld.JTAC_TYPE_RED}):FilterActive(true):FilterOnce()
+ local JTACsBLUE = SET_GROUP:New():FilterCategoryGround():FilterPrefixes({ctld.JTAC_TYPE_BLUE}):FilterActive(true):FilterOnce()
+ 
 SCHEDULER:New( nil, function()
 
   env.info("**=AW=33COM GroupsSetToRed Scheduler")
    GroupsSetToRed:ForEachGroup(
    function( grp )    
-    if grp ~= nil then    
-    
-        if _redTypes ~= nil and #_redTypes > 0 then -- for groups with specific type
-          env.info("**=AW=33COM OptionAlarmStateRed For specific unit types")
-               
-          local _dcsGroup = Group.getByName(grp:GetName())
-          
+    if grp ~= nil then        
+        if _redTypes ~= nil and #_redTypes > 0 then -- for groups with specific type     
+          local _dcsGroup = Group.getByName(grp:GetName())          
           if _dcsGroup ~= nil then
-          
             local _units = _dcsGroup:getUnits()
-            
             if _units ~= nil then
-            
               local _unitTypeName = _units[1]:getTypeName()
-              
               for _, redType in ipairs (_redTypes) do
                 if string.find(_unitTypeName, redType) then                  
                   grp:OptionAlarmStateRed()
@@ -91,9 +87,26 @@ SCHEDULER:New( nil, function()
    end)
    ]]--
   
+  -- rebuild all AA system in CTLD on session start
   _aaSystemGroups:ForEachGroup(function (grp)  
     local _spawnedGroup = Group.getByName(grp:GetName())
     ctld.LoadAllExistingSystemsIntoCTLD(_spawnedGroup)    
   end)   
+  
+  local redJTACCount = 0
+  JTACsRED:ForEachGroup(
+    function(grp)
+      redJTACCount=redJTACCount+1  
+    end)
+ 
+  local blueJTACCount = 0
+  JTACsBLUE:ForEachGroup(
+    function(grp)
+      blueJTACCount=blueJTACCount+1
+    end)
+    
+  -- rebuild JTAC count in CTLD on session start
+  ctld.RebuildJTACCountsOnSessionStart(redJTACCount, blueJTACCount)  
+  
 end, {}, 30)
   

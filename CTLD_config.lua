@@ -132,6 +132,10 @@ ctld.UnitTypesOutsideOfGroupLimit = {['Kub Repair']=true,['HQ-7 Repair']=true,['
 ctld.JTAC_LIMIT_RED = 20 -- max number of JTAC Crates for the RED Side
 ctld.JTAC_LIMIT_BLUE = 20 -- max number of JTAC Crates for the BLUE Side
 
+-- we need to update our code to use this as oppose to hardcoding them
+ctld.JTAC_TYPE_RED = "Tigr_233036"
+ctld.JTAC_TYPE_BLUE = "Hummer"
+
 ctld.JTAC_LIMIT_perPLAYER_perSIDE = 2 -- max number of JTACs per player
 ctld.JTACsPerUCIDPerSide = {} -- list of players and their JTACs per side
 

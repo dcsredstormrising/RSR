@@ -1240,13 +1240,13 @@ function ctld.spawnCrate(_arguments)
 
                 if _heliCoalition == 1 then
 
-                    if ctld.JTAC_LIMIT_RED == 0 then
+                    if ctld.JTAC_LIMIT_RED <= 0 then
                         _limitHit = true
                     else
                         ctld.JTAC_LIMIT_RED = ctld.JTAC_LIMIT_RED - 1
                     end
                 else
-                    if ctld.JTAC_LIMIT_BLUE == 0 then
+                    if ctld.JTAC_LIMIT_BLUE <= 0 then
                         _limitHit = true
                     else
                         ctld.JTAC_LIMIT_BLUE = ctld.JTAC_LIMIT_BLUE - 1
@@ -1991,13 +1991,13 @@ function ctld.loadUnloadJTACcrate(_args)
     local _JTAClimitHit = false
     if _aircraftSide == 1 then
 
-        if ctld.JTAC_LIMIT_RED == 0 then
+        if ctld.JTAC_LIMIT_RED <= 0 then
             _JTAClimitHit = true
         else
             ctld.JTAC_LIMIT_RED = ctld.JTAC_LIMIT_RED - 1
         end
     else
-        if ctld.JTAC_LIMIT_BLUE == 0 then
+        if ctld.JTAC_LIMIT_BLUE <= 0 then
             _JTAClimitHit = true
         else
             ctld.JTAC_LIMIT_BLUE = ctld.JTAC_LIMIT_BLUE - 1
@@ -7399,29 +7399,27 @@ function ctld.getPositionString(_unit)
 end
 
 -- Here we update the AA System in CTLD upon each session start.
-function ctld.LoadAllExistingSystemsIntoCTLD(_spawnedGroup)
-    
-    --env.info("***=AW=33COM LoadAllExistingSystemsIntoCTLD")
-        
+function ctld.LoadAllExistingSystemsIntoCTLD(_spawnedGroup)    
+    --env.info("***=AW=33COM LoadAllExistingSystemsIntoCTLD")        
     if _spawnedGroup ~= nil and _spawnedGroup:getUnits() ~= nil and _spawnedGroup:getUnits()[1] ~= nil then
-    
       local _units = _spawnedGroup:getUnits()  
-      local _firstUnitType = _units[1]:getTypeName()      
-    
+      local _firstUnitType = _units[1]:getTypeName()
       --env.info("***=AW=33COM _spawnedGroup Name: " .. inspect(_spawnedGroup:getName()))            
       local _aaSystemDetails = ctld.getAASystemDetails(_spawnedGroup, ctld.getAATemplate(_firstUnitType))      
-      ctld.completeAASystems[_spawnedGroup:getName()] = _aaSystemDetails
-      
+      ctld.completeAASystems[_spawnedGroup:getName()] = _aaSystemDetails      
       --env.info("******=AW=33COM sgs_rsr.LoadAllExistingSystemsIntoCTLD: ctld.completeAASystems ******")
       --env.info(inspect(ctld.completeAASystems))      
       --env.info("***=AW=33COM End:")
-
     else
       env.info("***=AW=33COM _spawnedGroup is empty")
     end
  end 
-
-
+ 
+ -- We update JTAC counts on session start, we actually subtract from the limit (20)
+ function ctld.RebuildJTACCountsOnSessionStart(redJTACsCount, blueJTACsCount)
+    ctld.JTAC_LIMIT_RED = ctld.JTAC_LIMIT_RED - redJTACsCount
+    ctld.JTAC_LIMIT_BLUE = ctld.JTAC_LIMIT_BLUE - blueJTACsCount
+ end
 
 -- ***************** SETUP SCRIPT ****************
 
