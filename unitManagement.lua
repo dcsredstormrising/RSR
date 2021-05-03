@@ -88,6 +88,7 @@ SCHEDULER:New( nil, function()
    ]]--
   
   -- rebuild all AA system in CTLD on session start
+  env.info("**=AW=33COM Loaded Existing AASystems into CTLD Scheduler")
   _aaSystemGroups:ForEachGroup(function (grp)  
     local _spawnedGroup = Group.getByName(grp:GetName())
     ctld.LoadAllExistingSystemsIntoCTLD(_spawnedGroup)    
@@ -106,6 +107,7 @@ SCHEDULER:New( nil, function()
     end)
     
   -- rebuild JTAC count in CTLD on session start
+  env.info("**=AW=33COM Loaded JTAC count into CTLD Scheduler")
   ctld.RebuildJTACCountsOnSessionStart(redJTACCount, blueJTACCount)  
   
 end, {}, 30)
