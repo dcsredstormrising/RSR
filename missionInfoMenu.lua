@@ -213,7 +213,7 @@ local function getIntelStatus(enemyCoalitionNum, enemyCoalitionName)
   return  "Coalition Intel:\n"..
           "Enemy Navy has: "..shipCount.." Ships sailing\n"..         
           "Enemy TEAM has "..ctld.countAASystemsByCoalition(enemyCoalitionNum).." SAMs\n"..
-          "Enemy TEAM was able to sling "..ctld.getLimitedGroupCount(enemyCoalitionName).." group of units\n"..          
+          --"Enemy TEAM was able to sling "..ctld.getLimitedGroupCount(enemyCoalitionName).." group of units\n"..          
           " \n\n"    
 end
 
