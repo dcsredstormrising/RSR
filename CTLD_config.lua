@@ -508,6 +508,7 @@ ctld.spawnableCrates = {
         { weight = 875, desc = "MLRS Smerch", unit = "Smerch", side = 1, cratesRequired = 4, unitQuantity = 2, internal = 1 }, 
 
 		-- BLUE
+		    { weight = 889, desc = "T-155 Firtina", unit = "T155_Firtina", cratesRequired = 1, unitQuantity = 2, internal = 1 },
         { weight = 877, desc = "SpGH DANA", unit = "SpGH_Dana", side = 2, cratesRequired = 1, unitQuantity = 2, internal = 1 },
         { weight = 878, desc = "M-109", unit = "M-109", side = 2, cratesRequired = 1, unitQuantity = 2, internal = 1 },
         { weight = 900, desc = "MLRS Grad", unit = "Grad-URAL", side = 2, cratesRequired = 2, unitQuantity = 2, internal = 1 },
@@ -560,9 +561,10 @@ ctld.spawnableCrates = {
     ["Tanks"] = {
 	
 		-- RED
+		    { weight = 666, desc = "PT-76", unit = "PT_76", side = 1, cratesRequired = 1, unitQuantity = 1, internal = 1 },		    
         { weight = 814, desc = "T-55", unit = "T-55", side = 1, cratesRequired = 1, unitQuantity = 1, internal = 1 },
         { weight = 815, desc = "T-72", unit = "T-72B", side = 1, cratesRequired = 2, unitQuantity = 1, internal = 1 },
-		    { weight = 739, desc = "T-72B3", unit = "T-72B3", side = 1, cratesRequired = 5, unitQuantity = 1, internal = 1 },
+		    { weight = 739, desc = "T-72B3", unit = "T-72B3", side = 1, cratesRequired = 3, unitQuantity = 1, internal = 1 },
         { weight = 816, desc = "T-80UD", unit = "T-80UD", side = 1, cratesRequired = 3, unitQuantity = 1, internal = 1 },
         { weight = 817, desc = "T-90", unit = "T-90", side = 1, cratesRequired = 3, unitQuantity = 1, internal = 1 },
         { weight = 818, desc = "ZTZ-96B", unit = "ZTZ96B", side = 1, cratesRequired = 3, unitQuantity = 1, internal = 1 },
@@ -570,10 +572,13 @@ ctld.spawnableCrates = {
 
 		-- BLUE
         { weight = 820, desc = "Leopard 1A3", unit = "Leopard1A3", side = 2, cratesRequired = 1, unitQuantity = 1, internal = 1 },
+        { weight = 713, desc = "Chieftain", unit = "Chieftain_mk3", side = 2, cratesRequired = 1, unitQuantity = 1, internal = 1 },
         { weight = 821, desc = "Merkava", unit = "Merkava_Mk4", side = 2, cratesRequired = 2, unitQuantity = 1, internal = 1 },
-        { weight = 822, desc = "Leopard 2", unit = "Leopard-2", side = 2, cratesRequired = 3, unitQuantity = 1, internal = 1 },
-        { weight = 823, desc = "Challenger II", unit = "Challenger2", side = 2, cratesRequired = 3, unitQuantity = 1, internal = 1 },
-        { weight = 824, desc = "M1A2 Abrams", unit = "M-1 Abrams", side = 2, cratesRequired = 4, unitQuantity = 1, internal = 1 },
+        { weight = 822, desc = "Leopard 2A4", unit = "leopard-2A4", side = 2, cratesRequired = 3, unitQuantity = 1, internal = 1 },
+        { weight = 823, desc = "Leopard 2A5", unit = "Leopard-2A5", side = 2, cratesRequired = 3, unitQuantity = 1, internal = 1 },
+        { weight = 824, desc = "Leopard 2A6M", unit = "Leopard-2", side = 2, cratesRequired = 3, unitQuantity = 1, internal = 1 },
+        { weight = 885, desc = "Challenger II", unit = "Challenger2", side = 2, cratesRequired = 3, unitQuantity = 1, internal = 1 },
+        { weight = 712, desc = "M1A2 Abrams", unit = "M-1 Abrams", side = 2, cratesRequired = 4, unitQuantity = 1, internal = 1 },        
     },
 
     ["Short Range SAMs"] = {
