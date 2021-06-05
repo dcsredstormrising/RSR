@@ -17,6 +17,13 @@ end
 
 function M.BIRTH_EVENTHANDLER:_OnBirth(event)
     self:_AddMenus(event)
+	if event.IniPlayerName then
+		local playerGroup = event.IniGroup
+        if playerGroup then			
+			local playerSlotName = playerGroup:GetName()			
+			trigger.action.setUserFlag(playerSlotName.."_IN AIR", 0);
+        end
+    end
 end
 
 
