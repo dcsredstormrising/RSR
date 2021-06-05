@@ -29,9 +29,10 @@ function TakeOffEventHandler:OnEventTakeoff(EventData)
     end	
 end
 
-function CrashEventHandler:OnEventCrash(EventData)
-	RemovePlayerInAirFlag(EventData)
-	if EventData.IniPlayerName == false then
+function CrashEventHandler:OnEventCrash(EventData)	
+	if EventData.IniPlayerName then
+		RemovePlayerInAirFlag(EventData)
+	else
 		local groupName = EventData.IniGroup:GetName()
 		local coalitionNumber = EventData.IniCoalition
 		if string.match(groupName, "Convoy Transport") then
@@ -48,9 +49,10 @@ function PilotDeadEventHandler:OnEventPilotDead(EventData)
 	RemovePlayerInAirFlag(EventData)
 end
 
-function LandEventHandler:OnEventLand(EventData)
-	RemovePlayerInAirFlag(EventData)	
-	if EventData.IniPlayerName == false then
+function LandEventHandler:OnEventLand(EventData)	
+	if EventData.IniPlayerName then
+		RemovePlayerInAirFlag(EventData)
+	else
 		local groupName = EventData.IniGroup:GetName()
 		local coalitionNumber = EventData.IniCoalition
 		if string.match(groupName, "Convoy Transport") then
