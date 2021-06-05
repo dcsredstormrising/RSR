@@ -4,9 +4,7 @@
 -- note default path does not end with ; but the cpath does
 package.path = package.path .. ";" .. lfs.writedir() .. [[Scripts\RSR\?.lua;.\LuaSocket\?.lua]]
 package.cpath = package.cpath .. [[C:\dev\luarocks\lib\lua\5.1\?.dll]]
-
 env.info("RSR STARTUP: RSR.LUA INIT")
-
 require("mist_4_4_90")
 require("Moose")
 require("CTLD")
@@ -24,14 +22,12 @@ if rsrConfig.devMode then
 end
 
 --log:info("Setting csar.maxLives to $1", rsrConfig.maxLives)
-
 local persistence = require("persistence")
 local slotBlocker = require("slotBlocker")
 local baseCapturedHandler = require("baseCapturedHandler")
 local hitEventHandler = require("hitEventHandler")
 local birthEventHandler = require("birthEventHandler")
-local takeOffEventHandler = require("takeOffEventHandler")
-local landEventHandler = require("landEventHandler")
+local genericEventHandler = require("genericEventHandler")
 local deadEventHandler = require("deadEventHandler")
 local crashEventHandler = require("crashEventHandler")
 local restartInfo = require("restartInfo")
@@ -52,7 +48,6 @@ baseCapturedHandler.register()
 persistence.onMissionStart(rsrConfig)
 hitEventHandler.onMissionStart(rsrConfig.hitMessageDelay)
 birthEventHandler.onMissionStart(rsrConfig.restartHours)
-landEventHandler.onMissionStart()
 deadEventHandler.onMissionStart()
 crashEventHandler.onMissionStart()
 restartInfo.onMissionStart(rsrConfig.restartHours, rsrConfig.restartWarningMinutes)
