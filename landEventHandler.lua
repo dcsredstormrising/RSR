@@ -1,3 +1,5 @@
+local inspect = require("inspect")
+
 local M = {}
 
 M.eventHandler = nil  -- constructed in onMissionStart
@@ -16,7 +18,10 @@ function M.LAND_EVENTHANDLER:_OnLand( event )
     if event.IniPlayerName then
         local playerGroup = event.IniGroup
         if playerGroup then
-            -- Does Nothing right now
+			local playerSlotName = playerGroup:GetName()
+			env.info("AW33COM Landing with a big cock in: "..playerSlotName)
+			trigger.action.setUserFlag(playerSlotName.."_IN AIR", 0);
+			env.info("AW33COM Landing with a big cock in: "..playerGroup:GetName())
         end
     else
         self:_NonPlayerRouter( event )
