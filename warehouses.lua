@@ -117,10 +117,8 @@ Warehouse_Dead = EVENTHANDLER:New()
 Warehouse_Dead:HandleEvent(EVENTS.Dead)
 
 local function getGroupName(warehouseName, asset)
-  if asset ~= nil then
-	env.info("***=AW=33COM Warehouses getGroupName.")
-	local sideName = warehouses[warehouseName].sideName
-	env.info("***=AW=33COM Warehouses getGroupName sideNam: "..sideName)
+  if asset ~= nil then	
+	local sideName = warehouses[warehouseName].sideName	
     return warehouseGroupTag..' '..sideName..'_'..warehouseName..'_'..asset.name -- Resupply_BNorthW_Leopard-2
   end  
 end
