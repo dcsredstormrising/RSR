@@ -21,7 +21,6 @@ if rsrConfig.devMode then
     ctld.crateWaitTime = 1
 end
 
---log:info("Setting csar.maxLives to $1", rsrConfig.maxLives)
 local persistence = require("persistence")
 local slotBlocker = require("slotBlocker")
 local baseCapturedHandler = require("baseCapturedHandler")
@@ -49,9 +48,6 @@ hitEventHandler.onMissionStart(rsrConfig.hitMessageDelay)
 birthEventHandler.onMissionStart(rsrConfig.restartHours)
 deadEventHandler.onMissionStart()
 restartInfo.onMissionStart(rsrConfig.restartHours, rsrConfig.restartWarningMinutes)
---disables MOOSE player setting radio menu item that allows player to set own coordinate and measurement system (not yet integrated)
--- _SETTINGS:SetPlayerMenuOff() not SETTINGS:SetPlayerMenuOff()
 _SETTINGS:SetPlayerMenuOff()
-
 trigger.action.outText("RSR.LUA LOADED", 10)
 env.info("RSR STARTUP: RSR.LUA LOADED")

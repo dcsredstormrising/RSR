@@ -9,29 +9,12 @@ PilotDeadEventHandler:HandleEvent(EVENTS.PilotDead)
 LandEventHandler = EVENTHANDLER:New()
 LandEventHandler:HandleEvent(EVENTS.Land)
 
-local function RemovePlayerInAirFlag(EventData)
-	if EventData.IniPlayerName then
-		local playerGroup = EventData.IniGroup
-        if playerGroup then			
-			local playerSlotName = playerGroup:GetName()			
-			trigger.action.setUserFlag(playerSlotName.."_IN AIR", 0);
-        end
-    end
-end
-
 function TakeOffEventHandler:OnEventTakeoff(EventData)	
-	if EventData.IniPlayerName then
-		local playerGroup = EventData.IniGroup
-        if playerGroup then
-			local playerSlotName = playerGroup:GetName()
-			trigger.action.setUserFlag(playerSlotName.."_IN AIR", 1);
-        end
-    end	
 end
 
 function CrashEventHandler:OnEventCrash(EventData)	
 	if EventData.IniPlayerName then
-		RemovePlayerInAirFlag(EventData)
+		--
 	else
 		local groupName = EventData.IniGroup:GetName()
 		local coalitionNumber = EventData.IniCoalition
@@ -42,16 +25,14 @@ function CrashEventHandler:OnEventCrash(EventData)
 end
 
 function EjectionEventHandler:OnEventEjection(EventData)
-	RemovePlayerInAirFlag(EventData)
 end
 
 function PilotDeadEventHandler:OnEventPilotDead(EventData)
-	RemovePlayerInAirFlag(EventData)
 end
 
 function LandEventHandler:OnEventLand(EventData)	
 	if EventData.IniPlayerName then
-		RemovePlayerInAirFlag(EventData)
+		--
 	else
 		local groupName = EventData.IniGroup:GetName()
 		local coalitionNumber = EventData.IniCoalition
