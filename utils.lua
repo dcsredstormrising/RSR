@@ -15,6 +15,57 @@ function M.getFilePath(filename)
     end
 end
 
+function M.file_exists(name) --check if the file already exists for writing
+    if lfs.attributes(name) then
+      return true
+    else
+      return false 
+    end 
+end
+
+-- This function is an easy fix for our warehouse/slinging problem. The Warehouse resupply was written in such a way, that once you used a specific unit in the warehouse
+-- you were not able to sling that type of unit, becuase the warehouse resupply was checking at unit type.  That eliminated tanks from slinging.
+-- Here we determine if the unit is player slung, or if it comes from the miz file, or the initial warehouse spit.
+-- AW=33COM
+function M.isUnitPlayerSlung(iniUnitName)
+  local retVal = false  
+  if iniUnitName ~= nil then
+    if string.find(iniUnitName, "Unpacked") then
+      retVal = true
+    end
+  end  
+  return retVal
+end
+
+-- gets opposite coalition name
+function M.GetOppositeCoalitionName(side)
+  if side == coalition.side.RED then
+    return coalition.side.BLUE
+  elseif side == coalition.side.BLUE then
+    return coalition.side.RED
+  else
+    return coalition.side.NEUTRAL
+  end  
+end
+
+-- This is the function that allows us to distinquish between units of the same type, but different location: MIZ ship, Warehouse ship, slung tanks, miz tanks, etc  
+-- everything works on the word: Resupply.  Once that word changes nothing will work.  This is similiar to the Player Slung unit check.
+-- =AW=33COM  I added this, becuase our entrie warehouse logic had no way of figuring out where the unit came from and limits were introduced.  This fixes it.
+function M.isUnitFromWarehouse(iniUnitName)
+
+  local retVal = false
+  
+  if iniUnitName ~= nil then
+    if string.find(iniUnitName, "Resupply") then
+      retVal = true
+    end
+  end
+  
+  return retVal
+
+end
+
+
 local sideLookupTable
 
 local function populateSideLookupTable()
@@ -59,6 +110,14 @@ local function split(string, sep)
         fields[#fields + 1] = c
     end)
     return fields
+end
+
+function M.getFirstKey(Table)  
+  if Table ~= nil then    
+      for _ in pairs(Table) do
+        return _
+      end
+  end
 end
 
 -- Matches a base name against a prefix
@@ -788,6 +847,14 @@ function M.fileExists(name) --check if the file already exists for writing
     if lfs.attributes(name) then
       return true 
     end 
+end
+
+function M.defaultX()
+  return 122428.57142857
+end
+
+function M.defaultY()
+  return 420857.14285714
 end
 
 return M
