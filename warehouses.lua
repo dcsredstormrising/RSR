@@ -49,7 +49,7 @@ local warehouses =
         {name="M-2 Bradley", groupCat=Group.Category.GROUND, catName=Unit.Category.GROUND_UNIT, iniSpawnCount=3, spawnCount=1, count=10, spawnDelay=10, respawnDelay=10, country=country.id.UK, skill=AI.Skill.EXCELLENT, EPLRS=false, hiddenOnMFD=false, enableEmission=false},
         {name="Challenger2", groupCat=Group.Category.GROUND, catName=Unit.Category.GROUND_UNIT, iniSpawnCount=3, spawnCount=1, count=10, spawnDelay=10, respawnDelay=10, country=country.id.GERMANY, skill=AI.Skill.EXCELLENT, EPLRS=false, hiddenOnMFD=false, enableEmission=false},        
       }},            
-    ["BEW"] = {displayName="Blue Western Warehouse", isActive=true, type=ArmedForce.ARMY, spawnBy=SpawnType.DYNAMIC, country=country.id.USA, side=coalition.side.BLUE, sideName="BLUE", respawnDelay=10, zoneSize=300, coverageZone="BlueEastZone", spawnZone="BlueEastWarehouseSpawn", 
+    ["BWW"] = {displayName="Blue Western Warehouse", isActive=true, type=ArmedForce.ARMY, spawnBy=SpawnType.DYNAMIC, country=country.id.USA, side=coalition.side.BLUE, sideName="BLUE", respawnDelay=10, zoneSize=300, coverageZone="BlueEastZone", spawnZone="BlueEastWarehouseSpawn", 
       assets = {
         {name="M1097 Avenger", groupCat=Group.Category.GROUND, catName=Unit.Category.GROUND_UNIT, iniSpawnCount=2, spawnCount=1, count=8, spawnDelay=10, respawnDelay=10, country=country.id.USA, skill=AI.Skill.EXCELLENT, EPLRS=false, hiddenOnMFD=false, enableEmission=false}, 
         {name="HQ-7_LN_SP", groupCat=Group.Category.GROUND, catName=Unit.Category.GROUND_UNIT, iniSpawnCount=2, spawnCount=1, count=8, spawnDelay=10, respawnDelay=10, country=country.id.USA, skill=AI.Skill.EXCELLENT, EPLRS=false, hiddenOnMFD=false, enableEmission=false},
