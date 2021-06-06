@@ -32,7 +32,7 @@ local restartInfo = require("restartInfo")
 local SGS_RSR = require("SGS_RSR") --Group Saves
 local SCUD_EventHandler = require("SCUD_EventHandler")
 local UAV_Designate = require("UAV_Designate")
-local warehouseResupply = require("warehouseResupply")
+local warehouses = require("warehouses")
 local UAV_Recon = require("UAV_Recon")
 local botBases = require("botBases")
 require("EWRS_OPM")
