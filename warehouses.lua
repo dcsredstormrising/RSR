@@ -37,26 +37,26 @@ local CategoryNames={[Unit.Category.AIRPLANE]="Airplane",[Unit.Category.HELICOPT
  
 local warehouses = 
 {
-    ["BNW"] = {displayName="Blue Northern Warehouse", isActive=true, type=ArmedForce.ARMY, spawnBy=SpawnType.DYNAMIC, country=country.id.USA, side=coalition.side.BLUE, sideName="BLUE", respawnDelay=10, zoneSize=300, coverageZone="BlueNorthZone", spawnZone="BlueNorthWarehouseSpawn", 
+    ["BNW"] = {displayName="Blue Northern Warehouse", isActive=true, type=ArmedForce.ARMY, spawnBy=SpawnType.DYNAMIC, country=country.id.USA, side=coalition.side.BLUE, sideName="Blue", respawnDelay=10, zoneSize=300, coverageZone="BlueNorthZone", spawnZone="BlueNorthWarehouseSpawn", 
       assets = {
         {name="M1045 HMMWV TOW", groupCat=Group.Category.GROUND, catName=Unit.Category.GROUND_UNIT, iniSpawnCount=3, spawnCount=1, count=10, spawnDelay=10, respawnDelay=10, country=country.id.UK, skill=AI.Skill.EXCELLENT, EPLRS=false, hiddenOnMFD=false, enableEmission=false},
         {name="M1134 Stryker ATGM", groupCat=Group.Category.GROUND, catName=Unit.Category.GROUND_UNIT, iniSpawnCount=3, spawnCount=1, count=10, spawnDelay=10, respawnDelay=10, country=country.id.UK, skill=AI.Skill.EXCELLENT, EPLRS=false, hiddenOnMFD=false, enableEmission=false},
         {name="Leopard-2A5", groupCat=Group.Category.GROUND, catName=Unit.Category.GROUND_UNIT, iniSpawnCount=3, spawnCount=1, count=10, spawnDelay=10, respawnDelay=10, country=country.id.GERMANY, skill=AI.Skill.EXCELLENT, EPLRS=false, hiddenOnMFD=false, enableEmission=false},
       }},
-    ["BSW"] = {displayName="Blue Southern Warehouse", isActive=true, type=ArmedForce.ARMY, spawnBy=SpawnType.DYNAMIC, country=country.id.USA, side=coalition.side.BLUE, sideName="BLUE", respawnDelay=10, zoneSize=300, coverageZone="BlueSouthZone", spawnZone="BlueSouthWarehouseSpawn",
+    ["BSW"] = {displayName="Blue Southern Warehouse", isActive=true, type=ArmedForce.ARMY, spawnBy=SpawnType.DYNAMIC, country=country.id.USA, side=coalition.side.BLUE, sideName="Blue", respawnDelay=10, zoneSize=300, coverageZone="BlueSouthZone", spawnZone="BlueSouthWarehouseSpawn",
       assets = {
         {name="VAB_Mephisto", groupCat=Group.Category.GROUND, catName=Unit.Category.GROUND_UNIT, iniSpawnCount=3, spawnCount=1, count=10, spawnDelay=10, respawnDelay=10, country=country.id.UK, skill=AI.Skill.EXCELLENT, EPLRS=false, hiddenOnMFD=false, enableEmission=false}, 
         {name="M-2 Bradley", groupCat=Group.Category.GROUND, catName=Unit.Category.GROUND_UNIT, iniSpawnCount=3, spawnCount=1, count=10, spawnDelay=10, respawnDelay=10, country=country.id.UK, skill=AI.Skill.EXCELLENT, EPLRS=false, hiddenOnMFD=false, enableEmission=false},
         {name="Challenger2", groupCat=Group.Category.GROUND, catName=Unit.Category.GROUND_UNIT, iniSpawnCount=3, spawnCount=1, count=10, spawnDelay=10, respawnDelay=10, country=country.id.GERMANY, skill=AI.Skill.EXCELLENT, EPLRS=false, hiddenOnMFD=false, enableEmission=false},        
       }},            
-    ["BWW"] = {displayName="Blue Western Warehouse", isActive=true, type=ArmedForce.ARMY, spawnBy=SpawnType.DYNAMIC, country=country.id.USA, side=coalition.side.BLUE, sideName="BLUE", respawnDelay=10, zoneSize=300, coverageZone="BlueEastZone", spawnZone="BlueEastWarehouseSpawn", 
+    ["BWW"] = {displayName="Blue Western Warehouse", isActive=true, type=ArmedForce.ARMY, spawnBy=SpawnType.DYNAMIC, country=country.id.USA, side=coalition.side.BLUE, sideName="Blue", respawnDelay=10, zoneSize=300, coverageZone="BlueEastZone", spawnZone="BlueEastWarehouseSpawn", 
       assets = {
         {name="M1097 Avenger", groupCat=Group.Category.GROUND, catName=Unit.Category.GROUND_UNIT, iniSpawnCount=2, spawnCount=1, count=8, spawnDelay=10, respawnDelay=10, country=country.id.USA, skill=AI.Skill.EXCELLENT, EPLRS=false, hiddenOnMFD=false, enableEmission=false}, 
         {name="HQ-7_LN_SP", groupCat=Group.Category.GROUND, catName=Unit.Category.GROUND_UNIT, iniSpawnCount=2, spawnCount=1, count=8, spawnDelay=10, respawnDelay=10, country=country.id.USA, skill=AI.Skill.EXCELLENT, EPLRS=false, hiddenOnMFD=false, enableEmission=false},
         {name="M6 Linebacker", groupCat=Group.Category.GROUND, catName=Unit.Category.GROUND_UNIT, iniSpawnCount=2, spawnCount=1, count=8, spawnDelay=10, respawnDelay=10, country=country.id.USA, skill=AI.Skill.EXCELLENT, EPLRS=false, hiddenOnMFD=false, enableEmission=false},
         {name="Roland ADS", groupCat=Group.Category.GROUND, catName=Unit.Category.GROUND_UNIT, iniSpawnCount=2, spawnCount=1, count=6, spawnDelay=10, respawnDelay=10, country=country.id.USA, skill=AI.Skill.EXCELLENT, EPLRS=false, hiddenOnMFD=false, enableEmission=true},
       }},
-    ["BNavalW"] = {displayName="Blue Naval Warehouse", isActive=true, type=ArmedForce.NAVY, spawnBy=SpawnType.DYNAMIC, country=country.id.USA, side=coalition.side.BLUE, sideName="BLUE", respawnDelay=7200, zoneSize=300, spawnZone="BlueNavalSpawn",
+    ["BNavalW"] = {displayName="Blue Naval Warehouse", isActive=true, type=ArmedForce.NAVY, spawnBy=SpawnType.DYNAMIC, country=country.id.USA, side=coalition.side.BLUE, sideName="Blue", respawnDelay=7200, zoneSize=300, spawnZone="BlueNavalSpawn",
       assets = {
         {name="CVN_73", groupCat=Group.Category.SHIP, catName=Unit.Category.SHIP, iniSpawnCount=1, spawnCount=1, count=6, spawnDelay=10, respawnDelay=10, country=country.id.USA, skill=AI.Skill.EXCELLENT, EPLRS=false, hiddenOnMFD=false, enableEmission=true},
         {name="Type_052C", groupCat=Group.Category.SHIP, catName=Unit.Category.SHIP, iniSpawnCount=1, spawnCount=1, count=3, spawnDelay=1800, respawnDelay=10, country=country.id.USA, skill=AI.Skill.EXCELLENT, EPLRS=false, hiddenOnMFD=false, enableEmission=true},
@@ -74,26 +74,26 @@ local warehouses =
         {name="La_Combattante_II", groupCat=Group.Category.SHIP, catName=Unit.Category.SHIP, iniSpawnCount=1, spawnCount=1, count=2, spawnDelay=10, respawnDelay=10, country=country.id.USA, skill=AI.Skill.EXCELLENT, EPLRS=false, hiddenOnMFD=false, enableEmission=true},
         {name="USS_Arleigh_Burke_IIa", groupCat=Group.Category.SHIP, catName=Unit.Category.SHIP, iniSpawnCount=1, spawnCount=1, count=2, spawnDelay=10, respawnDelay=10, country=country.id.USA, skill=AI.Skill.EXCELLENT, EPLRS=false, hiddenOnMFD=false, enableEmission=true},
       }},   
-    ["RNW"] = {displayName="Red Northern Warehouse", isActive=true, type=ArmedForce.ARMY, spawnBy=SpawnType.DYNAMIC, country=country.id.RUSSIA, side=coalition.side.RED, sideName="RED", respawnDelay=10, zoneSize=300, coverageZone="RedNorthZone", spawnZone="RedNorthWarehouseSpawn", 
+    ["RNW"] = {displayName="Red Northern Warehouse", isActive=true, type=ArmedForce.ARMY, spawnBy=SpawnType.DYNAMIC, country=country.id.RUSSIA, side=coalition.side.RED, sideName="Red", respawnDelay=10, zoneSize=300, coverageZone="RedNorthZone", spawnZone="RedNorthWarehouseSpawn", 
       assets = {
         {name="BMP-2", groupCat=Group.Category.GROUND, catName=Unit.Category.GROUND_UNIT, iniSpawnCount=3, spawnCount=1, count=10, spawnDelay=10, respawnDelay=10, country=country.id.RUSSIA, skill=AI.Skill.EXCELLENT, EPLRS=false, hiddenOnMFD=false, enableEmission=false},
         {name="BMP-3", groupCat=Group.Category.GROUND, catName=Unit.Category.GROUND_UNIT, iniSpawnCount=3, spawnCount=1, count=10, spawnDelay=10, respawnDelay=10, country=country.id.RUSSIA, skill=AI.Skill.EXCELLENT, EPLRS=false, hiddenOnMFD=false, enableEmission=false},
         {name="ZTZ96B", groupCat=Group.Category.GROUND, catName=Unit.Category.GROUND_UNIT, iniSpawnCount=3, spawnCount=1, count=10, spawnDelay=10, respawnDelay=10, country=country.id.RUSSIA, skill=AI.Skill.EXCELLENT, EPLRS=false, hiddenOnMFD=false, enableEmission=false},
       }},
-    ["RSW"] = {displayName="Red Southern Warehouse", isActive=true, type=ArmedForce.ARMY, spawnBy=SpawnType.DYNAMIC, country=country.id.RUSSIA, side=coalition.side.RED, sideName="RED", respawnDelay=10, zoneSize=300, coverageZone="RedSouthZone", spawnZone="RedSouthWarehouseSpawn", 
+    ["RSW"] = {displayName="Red Southern Warehouse", isActive=true, type=ArmedForce.ARMY, spawnBy=SpawnType.DYNAMIC, country=country.id.RUSSIA, side=coalition.side.RED, sideName="Red", respawnDelay=10, zoneSize=300, coverageZone="RedSouthZone", spawnZone="RedSouthWarehouseSpawn", 
       assets = {
         {name="ZBD04A", groupCat=Group.Category.GROUND, catName=Unit.Category.GROUND_UNIT, iniSpawnCount=3, spawnCount=1, count=10, spawnDelay=10, respawnDelay=10, country=country.id.RUSSIA, skill=AI.Skill.EXCELLENT, EPLRS=false, hiddenOnMFD=false, enableEmission=false},
         {name="BMD-1", groupCat=Group.Category.GROUND, catName=Unit.Category.GROUND_UNIT, iniSpawnCount=3, spawnCount=1, count=10, spawnDelay=10, respawnDelay=10, country=country.id.RUSSIA, skill=AI.Skill.EXCELLENT, EPLRS=false, hiddenOnMFD=false, enableEmission=false},
         {name="Leclerc", groupCat=Group.Category.GROUND, catName=Unit.Category.GROUND_UNIT, iniSpawnCount=3, spawnCount=1, count=10, spawnDelay=10, respawnDelay=10, country=country.id.RUSSIA, skill=AI.Skill.EXCELLENT, EPLRS=false, hiddenOnMFD=false, enableEmission=false},
       }},
-    ["REW"] = {displayName="Red Eastern Warehouse", isActive=true, type=ArmedForce.ARMY, spawnBy=SpawnType.DYNAMIC, country=country.id.RUSSIA, side=coalition.side.RED, sideName="RED", respawnDelay=10, zoneSize=300, coverageZone="RedEastZone", spawnZone="RedEastWarehouseSpawn", 
+    ["REW"] = {displayName="Red Eastern Warehouse", isActive=true, type=ArmedForce.ARMY, spawnBy=SpawnType.DYNAMIC, country=country.id.RUSSIA, side=coalition.side.RED, sideName="Red", respawnDelay=10, zoneSize=300, coverageZone="RedEastZone", spawnZone="RedEastWarehouseSpawn", 
       assets = {
         {name="Strela-10M3", groupCat=Group.Category.GROUND, catName=Unit.Category.GROUND_UNIT, iniSpawnCount=2, spawnCount=1, count=8, spawnDelay=10, respawnDelay=10, country=country.id.RUSSIA, skill=AI.Skill.EXCELLENT, EPLRS=false, hiddenOnMFD=false, enableEmission=false},
         {name="2S6 Tunguska", groupCat=Group.Category.GROUND, catName=Unit.Category.GROUND_UNIT, iniSpawnCount=2, spawnCount=1, count=8, spawnDelay=10, respawnDelay=10, country=country.id.RUSSIA, skill=AI.Skill.EXCELLENT, EPLRS=false, hiddenOnMFD=false, enableEmission=false},
         {name="HQ-7_LN_SP", groupCat=Group.Category.GROUND, catName=Unit.Category.GROUND_UNIT, iniSpawnCount=2, spawnCount=1, count=8, spawnDelay=10, respawnDelay=10, country=country.id.RUSSIA, skill=AI.Skill.EXCELLENT, EPLRS=false, hiddenOnMFD=false, enableEmission=false},
         {name="Tor 9A331", groupCat=Group.Category.GROUND, catName=Unit.Category.GROUND_UNIT, iniSpawnCount=2, spawnCount=1, count=6, spawnDelay=10, respawnDelay=10, country=country.id.RUSSIA, skill=AI.Skill.EXCELLENT, EPLRS=false, hiddenOnMFD=false, enableEmission=true},
       }},     
-    ["RNavalW"] = {displayName="Red Naval Warehouse", isActive=true, type=ArmedForce.NAVY, spawnBy=SpawnType.DYNAMIC, country=country.id.RUSSIA, side=coalition.side.RED, sideName="RED", respawnDelay=7200, zoneSize=300, spawnZone="RedNavalSpawn", 
+    ["RNavalW"] = {displayName="Red Naval Warehouse", isActive=true, type=ArmedForce.NAVY, spawnBy=SpawnType.DYNAMIC, country=country.id.RUSSIA, side=coalition.side.RED, sideName="Red", respawnDelay=7200, zoneSize=300, spawnZone="RedNavalSpawn", 
       assets = {
         {name="CV_1143_5", groupCat=Group.Category.SHIP, catName=Unit.Category.SHIP, iniSpawnCount=1, spawnCount=1, count=6, spawnDelay=10, respawnDelay=10, country=country.id.RUSSIA, skill=AI.Skill.EXCELLENT, EPLRS=false, hiddenOnMFD=false, enableEmission=true},
         {name="Type_052C", groupCat=Group.Category.SHIP, catName=Unit.Category.SHIP, iniSpawnCount=1, spawnCount=1, count=3, spawnDelay=1800, respawnDelay=10, country=country.id.RUSSIA, skill=AI.Skill.EXCELLENT, EPLRS=false, hiddenOnMFD=false, enableEmission=true},
@@ -118,7 +118,10 @@ Warehouse_Dead:HandleEvent(EVENTS.Dead)
 
 local function getGroupName(warehouseName, asset)
   if asset ~= nil then
-    return warehouseGroupTag..'_'..warehouseName..'_'..asset.name -- Resupply_BNorthW_Leopard-2
+	env.info("***=AW=33COM Warehouses getGroupName.")
+	local sideName = warehouses[warehouseName].sideName
+	env.info("***=AW=33COM Warehouses getGroupName sideNam: "..sideName)
+    return warehouseGroupTag..' '..sideName..'_'..warehouseName..'_'..asset.name -- Resupply_BNorthW_Leopard-2
   end  
 end
 
