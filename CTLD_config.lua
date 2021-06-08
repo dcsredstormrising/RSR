@@ -471,7 +471,7 @@ ctld.logisticCentreObjects = { red = {}, blue = {} }
 ctld.logisticCentreMarkerID = { red = {}, blue = {} }
 
 -- airbases/FARPs that if within, do not require a logisitics centre to be present e.g. Gas Platforms
-ctld.logisticCentreNotReqInBase = { "RedStagingPoint", "BlueStagingPoint" }
+ctld.logisticCentreNotReqInBase = {"RedStagingPoint", "BlueStagingPoint", "Carrier Dock", "Carrier Tarawa"}
 
 -- ************** SPAWNABLE CRATES ******************
 -- Weights must be unique as we use the weight to change the cargo to the correct unit

@@ -1138,6 +1138,39 @@ function ctld.getGroupCountByUnitType(_playerSlungGroups)
   return _counter  
 end
 
+function ctld.isHeliOnCCCarrier(_heli)	
+	local retVal = false
+	local clientSlotName = _heli:getName()
+	local coalition = _heli:getCoalition()
+	local ccCarrierName = rsrConfig.redCCCarrier
+	local ccCarrierZoneName = rsrConfig.redCCCarrierZone
+	
+	if coalition == 2 then
+		ccCarrierName = rsrConfig.blueCCCarrier
+		ccCarrierZoneName = rsrConfig.blueCCCarrierZone
+	end			
+	
+	if string.find(clientSlotName, ccCarrierName) then
+		env.info("CTLD:spawnCrate Heli is on: "..ccCarrierName)
+		local carrierUnit = UNIT:FindByName(ccCarrierName)				
+		if carrierUnit then
+			local chopperUnit = UNIT:FindByName(clientSlotName)					
+			local chopperCoord = chopperUnit:GetCoordinate()
+			local carrierZone = ZONE:FindByName(ccCarrierZoneName)
+			local carrierZoneCoord = carrierZone:GetCoordinate()
+			local coordDistanceCheck = carrierZoneCoord:Get2DDistance(chopperCoord) --This function will return the 2D distance between the two coordinates.
+			local chopperZoneCheck = chopperUnit:IsInZone(carrierZone)
+			env.info("CTLD:spawnCrate Heli chopperZoneCheck: "..inspect(chopperZoneCheck))
+			env.info("CTLD:spawnCrate Heli coordDistanceCheck: "..inspect(coordDistanceCheck))
+			if chopperZoneCheck and coordDistanceCheck < 220 then						
+				env.info("CTLD:spawnCrate: "..clientSlotName.." has landed on "..ccCarrierName.." and can pickup crates.")
+				retVal = true
+			end
+		end
+	end	
+	return retVal
+end
+
 --only helos should be able to spawn crates (check ctld.unitActions in CTLD_config.lua)
 function ctld.spawnCrate(_arguments)
      
@@ -1180,6 +1213,14 @@ function ctld.spawnCrate(_arguments)
                     end
                 end
             end
+			
+			-- we check if the heli requesting crates is from CC Carrier
+			-- this is super simple and may not even work
+			-- basically: If heli is on a Carrier that is a CC Carrier, then you get a crate 
+			if ctld.isHeliOnCCCarrier(_heli) then
+				_inBaseZoneAndRSRrepairRadius = true
+				_logisticsCentreReq = false
+			end
 
             --log:info ("spawnCrate: _nearestLogisticsCentreDist: $1, ctld.maximumDistanceLogistic: $2, ctld.debug: $3",_nearestLogisticsCentreDist,ctld.maximumDistanceLogistic,ctld.debug)
             if _logisticsCentreReq then

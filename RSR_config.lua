@@ -41,6 +41,15 @@ rsrConfig.restartWarningMinutes = { 60, 45, 30, 20, 15, 10, 5, 3, 1 } -- times i
 rsrConfig.hitMessageDelay = 30
 
 -- staging bases that never change side, never have logisitics centres and cannot be distinguished from FARP helipads
-rsrConfig.stagingBases = { "RedStagingPoint", "BlueStagingPoint" }
+rsrConfig.stagingBases = {"RedStagingPoint", "BlueStagingPoint", "Carrier Dock", "Carrier Tarawa"}
 
+-- configure DOCK and Tarawa to be like CCs and be able to pickup crates from moving zones
+rsrConfig.redCCCarrier = "Carrier Dock"
+rsrConfig.blueCCCarrier = "Carrier Tarawa"
+rsrConfig.redCCCarrierZone = "Carrier Dock PickUp"
+rsrConfig.blueCCCarrierZone = "Carrier Tarawa PickUp"
+local carrierUnitRED = UNIT:FindByName(rsrConfig.redCCCarrier)
+local carrierZoneRED = ZONE_UNIT:New(rsrConfig.redCCCarrierZone, carrierUnitRED, 410)
+local carrierUnitBLUE = UNIT:FindByName(rsrConfig.blueCCCarrier)
+local carrierZoneBLUE = ZONE_UNIT:New(rsrConfig.blueCCCarrierZone, carrierUnitBLUE, 410)
 return rsrConfig
