@@ -229,7 +229,7 @@ RedDetectionSetGroup = SET_GROUP:New()
 RedDetectionSetGroup:FilterCoalitions("red")
 RedDetectionSetGroup:FilterPrefixes( { "EWR", "Overlord " } )
 RedDetectionSetGroup:FilterStart()
-RedDetection = DETECTION_AREAS:New( RedDetectionSetGroup, 5000 )
+RedDetection = DETECTION_AREAS:New( RedDetectionSetGroup, 15000 )
 
 RedA2ADispatcher = AI_A2A_DISPATCHER:New( RedDetection )
 RedA2ADispatcher:SetSquadron( "24th Fighter Aviation Regiment", AIRBASE.Caucasus.Maykop_Khanskaya, { "24th Fighter Aviation Regiment" }, RedGraveyard["MiG-31"] ) --MiG-31 Squadron
@@ -244,7 +244,7 @@ BlueDetectionSetGroup = SET_GROUP:New()
 BlueDetectionSetGroup:FilterCoalitions("blue")
 BlueDetectionSetGroup:FilterPrefixes( { "EWR", "Magic " } )
 BlueDetectionSetGroup:FilterStart()
-BlueDetection = DETECTION_AREAS:New( BlueDetectionSetGroup, 5000 )
+BlueDetection = DETECTION_AREAS:New( BlueDetectionSetGroup, 15000 )
 BlueA2ADispatcher = AI_A2A_DISPATCHER:New( BlueDetection )
 
 BlueA2ADispatcher:SetSquadron( "313th Tactical Fighter Squadron", AIRBASE.Caucasus.Kutaisi, { "313th Tactical Fighter Squadron" }, BlueGraveyard["F-14B"] ) --F14A Squadron
@@ -255,16 +255,14 @@ BlueA2ADispatcher:SetDefaultLandingAtEngineShutdown()
 
 SCHEDULER:New( nil,function()
 table.save( RedGraveyard, "RedGraveyard.lua" )
---env.info("Airbases: Updated.")
 
 if RedGraveyard["MiG-31"] < 17 then RedA2ADispatcher:SetSquadronGrouping( "24th Fighter Aviation Regiment", 1) end
-if RedGraveyard["MiG-31"]<3 then RedA2ADispatcher:SetSquadronCapInterval( "24th Fighter Aviation Regiment", 0, 9999, 99999, 1 ) end
+if RedGraveyard["MiG-31"]<3 then RedA2ADispatcher:SetSquadronCapInterval( "24th Fighter Aviation Regiment", 0, 180, 600, 1 ) end
 end, {}, 10, 300)
 
 SCHEDULER:New( nil,function()
 table.save( BlueGraveyard, "BlueGraveyard.lua" )
---env.info("Airbases: Updated.")
 
 if BlueGraveyard["F-14B"] < 17 then BlueA2ADispatcher:SetSquadronGrouping( "313th Tactical Fighter Squadron", 1) end
-if BlueGraveyard["F-14B"]<3 then BlueA2ADispatcher:SetSquadronCapInterval( "313th Tactical Fighter Squadron", 0, 9999, 99999, 1 ) end
+if BlueGraveyard["F-14B"]<3 then BlueA2ADispatcher:SetSquadronCapInterval( "313th Tactical Fighter Squadron", 0, 180, 600, 1 ) end
 end, {}, 10, 300)
