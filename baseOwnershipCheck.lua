@@ -72,7 +72,7 @@ function M.getAllBaseOwnership(_passedBaseName, _playerORunit, _campaignStartSet
 
             --getName/getCoalition = DCS function, GetName/GetCoalition = MOOSE function
             local _baseName = base:getName()
-            log:info("_baseName: $1", _baseName)
+            --log:info("_baseName: $1", _baseName)
 
             local _DCScoalition = base:getCoalition()
             local _DCSsideName = utils.getSideName(_DCScoalition)  -- EVENTUALLY REPLACE WITH OUTCOME OF GROUD UNIT ENUMERATION
@@ -101,7 +101,7 @@ function M.getAllBaseOwnership(_passedBaseName, _playerORunit, _campaignStartSet
                 _logisticsCentreSide = string.match(_logisticsCentreName, ("%w+$")) --"Sochi Logistics Centre #001 red" = "red"
                 _logisticsCentreCoalition = utils.getSide(_logisticsCentreSide)
             end
-            log:info("_baseName: $1 _logisticsCentreName: $2, _logisticsCentreSide: $3, _logisticsCentreCoalition: $4, _conqueringUnit: $5", _baseName, _logisticsCentreName, _logisticsCentreSide, _logisticsCentreCoalition, _conqueringUnit)
+            --log:info("_baseName: $1 _logisticsCentreName: $2, _logisticsCentreSide: $3, _logisticsCentreCoalition: $4, _conqueringUnit: $5", _baseName, _logisticsCentreName, _logisticsCentreSide, _logisticsCentreCoalition, _conqueringUnit)
 
 
             --[[
@@ -124,7 +124,7 @@ function M.getAllBaseOwnership(_passedBaseName, _playerORunit, _campaignStartSet
                 _RSRcoalition = utils.getSide(_RSRowner)
 
                 local _baseCaptureZoneName = _baseName .. " RSRbaseCaptureZone Airbase"
-                log:info("_baseCaptureZoneName: $1", _baseCaptureZoneName)
+                --log:info("_baseCaptureZoneName: $1", _baseCaptureZoneName)
                 local _baseCaptureZone = missionUtils.getSpecificZone(env.mission, string.lower(_baseCaptureZoneName))
                 local _revBaseNameSideType = utils.baseCaptureZoneToNameSideType(_baseCaptureZone)
                 local _zoneSideFromColor = _revBaseNameSideType[2] --zone color translated to side
