@@ -432,10 +432,10 @@ function M.getAllBaseOwnership(_passedBaseName, _playerORunit, _campaignStartSet
             _logisticsCentreSide = string.match(_logisticsCentreName, ("%w+$")) --"Sochi Logistics Centre #001 red" = "red"
             _logisticsCentreCoalition = utils.getSide(_logisticsCentreSide)
         end
-        log:info("_baseName: $1 _logisticsCentreName: $2, _logisticsCentreSide: $3", _baseName, _logisticsCentreName, _logisticsCentreSide)
+        --log:info("_baseName: $1 _logisticsCentreName: $2, _logisticsCentreSide: $3", _baseName, _logisticsCentreName, _logisticsCentreSide)
 
     end
-    log:info("baseOwnership (_passedBaseName: $1) = $2", _passedBaseName, baseOwnership)
+    --log:info("baseOwnership (_passedBaseName: $1) = $2", _passedBaseName, baseOwnership)
     return baseOwnership
 end
 env.info("RSR STARTUP: baseOwnershipCheck.LUA LOADED")

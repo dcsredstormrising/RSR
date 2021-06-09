@@ -1052,7 +1052,7 @@ function ctld.spawnLogisticsCentre(_point, _name, _sideName, _baseORfob, _baseOR
     end
     --(_passedBaseName,_playerORunit,_campaignStartSetup)
     baseOwnershipCheck.baseOwnership = baseOwnershipCheck.getAllBaseOwnership(_checkWhichBasesAndFARPs, _playerName, false)
-    log:info("_isMissionInit: $1, _checkWhichBasesAndFARPs: $2,  _playerName: $3, _name: $4_spawnedLogiCentreObject: $5,", _isMissionInit, _playerName, _name, _checkWhichBasesAndFARPs, _spawnedLogiCentreObject)
+    --log:info("_isMissionInit: $1, _checkWhichBasesAndFARPs: $2,  _playerName: $3, _name: $4_spawnedLogiCentreObject: $5,", _isMissionInit, _playerName, _name, _checkWhichBasesAndFARPs, _spawnedLogiCentreObject)
 
     return _spawnedLogiCentreObject
 end

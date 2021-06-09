@@ -82,9 +82,9 @@ local warehouses =
       }},
     ["RSW"] = {displayName="Red Southern Warehouse", isActive=true, type=ArmedForce.ARMY, spawnBy=SpawnType.DYNAMIC, country=country.id.RUSSIA, side=coalition.side.RED, sideName="Red", respawnDelay=10, zoneSize=300, coverageZone="RedSouthZone", spawnZone="RedSouthWarehouseSpawn", 
       assets = {
-        --{name="ZBD04A", groupCat=Group.Category.GROUND, catName=Unit.Category.GROUND_UNIT, iniSpawnCount=3, spawnCount=1, count=10, spawnDelay=10, respawnDelay=10, country=country.id.RUSSIA, skill=AI.Skill.EXCELLENT, EPLRS=false, hiddenOnMFD=false, enableEmission=false},
-        {name="BMD-1", groupCat=Group.Category.GROUND, catName=Unit.Category.GROUND_UNIT, iniSpawnCount=0, spawnCount=1, count=10, spawnDelay=10, respawnDelay=10, country=country.id.RUSSIA, skill=AI.Skill.EXCELLENT, EPLRS=false, hiddenOnMFD=false, enableEmission=false},
-        --{name="Leclerc", groupCat=Group.Category.GROUND, catName=Unit.Category.GROUND_UNIT, iniSpawnCount=3, spawnCount=1, count=10, spawnDelay=10, respawnDelay=10, country=country.id.RUSSIA, skill=AI.Skill.EXCELLENT, EPLRS=false, hiddenOnMFD=false, enableEmission=false},
+        {name="ZBD04A", groupCat=Group.Category.GROUND, catName=Unit.Category.GROUND_UNIT, iniSpawnCount=3, spawnCount=1, count=10, spawnDelay=10, respawnDelay=10, country=country.id.RUSSIA, skill=AI.Skill.EXCELLENT, EPLRS=false, hiddenOnMFD=false, enableEmission=false},
+        {name="BMD-1", groupCat=Group.Category.GROUND, catName=Unit.Category.GROUND_UNIT, iniSpawnCount=3, spawnCount=1, count=10, spawnDelay=10, respawnDelay=10, country=country.id.RUSSIA, skill=AI.Skill.EXCELLENT, EPLRS=false, hiddenOnMFD=false, enableEmission=false},
+        {name="Leclerc", groupCat=Group.Category.GROUND, catName=Unit.Category.GROUND_UNIT, iniSpawnCount=3, spawnCount=1, count=10, spawnDelay=10, respawnDelay=10, country=country.id.RUSSIA, skill=AI.Skill.EXCELLENT, EPLRS=false, hiddenOnMFD=false, enableEmission=false},
       }},
     ["REW"] = {displayName="Red Eastern Warehouse", isActive=true, type=ArmedForce.ARMY, spawnBy=SpawnType.DYNAMIC, country=country.id.RUSSIA, side=coalition.side.RED, sideName="Red", respawnDelay=10, zoneSize=300, coverageZone="RedEastZone", spawnZone="RedEastWarehouseSpawn", 
       assets = {
@@ -94,7 +94,7 @@ local warehouses =
         {name="Tor 9A331", groupCat=Group.Category.GROUND, catName=Unit.Category.GROUND_UNIT, iniSpawnCount=2, spawnCount=1, count=6, spawnDelay=10, respawnDelay=10, country=country.id.RUSSIA, skill=AI.Skill.EXCELLENT, EPLRS=false, hiddenOnMFD=false, enableEmission=true},
       }},     
     ["RNavalW"] = {displayName="Red Naval Warehouse", isActive=true, type=ArmedForce.NAVY, spawnBy=SpawnType.DYNAMIC, country=country.id.RUSSIA, side=coalition.side.RED, sideName="Red", respawnDelay=7200, zoneSize=300, spawnZone="RedNavalSpawn", 
-      assets = {
+      assets = {	  
         {name="CV_1143_5", groupCat=Group.Category.SHIP, catName=Unit.Category.SHIP, iniSpawnCount=1, spawnCount=1, count=6, spawnDelay=10, respawnDelay=10, country=country.id.RUSSIA, skill=AI.Skill.EXCELLENT, EPLRS=false, hiddenOnMFD=false, enableEmission=true},
         {name="Type_052C", groupCat=Group.Category.SHIP, catName=Unit.Category.SHIP, iniSpawnCount=1, spawnCount=1, count=3, spawnDelay=1800, respawnDelay=10, country=country.id.RUSSIA, skill=AI.Skill.EXCELLENT, EPLRS=false, hiddenOnMFD=false, enableEmission=true},
         {name="Type_052B", groupCat=Group.Category.SHIP, catName=Unit.Category.SHIP, iniSpawnCount=1, spawnCount=1, count=3, spawnDelay=10, respawnDelay=10, country=country.id.RUSSIA, skill=AI.Skill.EXCELLENT, EPLRS=false, hiddenOnMFD=false, enableEmission=true},        
@@ -109,7 +109,7 @@ local warehouses =
         {name="MOLNIYA", groupCat=Group.Category.SHIP, catName=Unit.Category.SHIP, iniSpawnCount=1, spawnCount=1, count=3, spawnDelay=1800, respawnDelay=10, country=country.id.RUSSIA, skill=AI.Skill.EXCELLENT, EPLRS=false, hiddenOnMFD=false, enableEmission=true},
         {name="Type_093", groupCat=Group.Category.SHIP, catName=Unit.Category.SHIP, iniSpawnCount=1, spawnCount=1, count=2, spawnDelay=10, respawnDelay=10, country=country.id.RUSSIA, skill=AI.Skill.EXCELLENT, EPLRS=false, hiddenOnMFD=false, enableEmission=true},
         {name="La_Combattante_II", groupCat=Group.Category.SHIP, catName=Unit.Category.SHIP, iniSpawnCount=1, spawnCount=1, count=2, spawnDelay=10, respawnDelay=10, country=country.id.RUSSIA, skill=AI.Skill.EXCELLENT, EPLRS=false, hiddenOnMFD=false, enableEmission=true},
-        {name="USS_Arleigh_Burke_IIa", groupCat=Group.Category.SHIP, catName=Unit.Category.SHIP, iniSpawnCount=1, spawnCount=1, count=2, spawnDelay=10, respawnDelay=10, country=country.id.RUSSIA, skill=AI.Skill.EXCELLENT, EPLRS=false, hiddenOnMFD=false, enableEmission=true},
+        {name="USS_Arleigh_Burke_IIa", groupCat=Group.Category.SHIP, catName=Unit.Category.SHIP, iniSpawnCount=1, spawnCount=1, count=2, spawnDelay=10, respawnDelay=10, country=country.id.RUSSIA, skill=AI.Skill.EXCELLENT, EPLRS=false, hiddenOnMFD=false, enableEmission=true},		
       }},
 }
 
@@ -334,16 +334,13 @@ if warehousesExistOnMap then
     if warehouseTable.isActive then
       local warehouse = warehouseTable[1] -- yup this is it, I never knew you could do this in LUA, function name is a variable and we need that to compile, 
       --this: warehouses["BlueNorthernWarehouse"][1] as a function name would not compile, but it does now lol 
-      function warehouse:OnAfterCaptured(From, Event, To, Coalition, Country)
-		env.info("***=AW=33COM warehouse:OnAfterCaptured 1")
-        if Coalition==warehouses[warehouseName].side then -- captured or recaptured by the same team      
-			env.info("***=AW=33COM warehouse:OnAfterCaptured 2")
+      function warehouse:OnAfterCaptured(From, Event, To, Coalition, Country)		
+        if Coalition==warehouses[warehouseName].side then -- captured or recaptured by the same team			
           if (Coalition == coalition.side.BLUE) then
             MESSAGE:New("The " .. warehouses[warehouseName].displayName .. " is running at full capacity.",25,"[TEAM]:"):ToBlue()
           elseif (Coalition == coalition.side.RED) then
             MESSAGE:New("The " .. warehouses[warehouseName].displayName .. " is running at full capacity.",25,"[TEAM]:"):ToRed()
-          end
-		  env.info("***=AW=33COM warehouse:OnAfterCaptured 3")
+          end		  
           warehouse:Start()
           warehouse:SetReportOff()
           warehouse:__Save(saveDelay,nil,warehouseName)		  
@@ -356,21 +353,17 @@ if warehousesExistOnMap then
           else
             env.info("***=AW=33COM warehouse:OnAfterCaptured warehouseName.assets are NOT THERE for warehouseName: " .. warehouseName)
           end      
-        elseif Coalition==utils.GetOppositeCoalitionName(warehouses[warehouseName].side) then -- captured by the opposite team      
-			env.info("***=AW=33COM warehouse:OnAfterCaptured 1111")
-          if (Coalition == coalition.side.BLUE) then  
-			env.info("***=AW=33COM warehouse:OnAfterCaptured 2222")
+        elseif Coalition==utils.GetOppositeCoalitionName(warehouses[warehouseName].side) then -- captured by the opposite team			
+          if (Coalition == coalition.side.BLUE) then			
             MESSAGE:New("We have captured ".. warehouses[warehouseName].sideName .." Team's "..warehouses[warehouseName].displayName..", they will no longer receive re-enforcements.",25,"[TEAM]:"):ToBlue()
             MESSAGE:New("We have lost the ".. warehouses[warehouseName].displayName .." and no longer able to re-enforce the front.",25,"[TEAM]:"):ToRed()  
           elseif (Coalition == coalition.side.RED) then
-			env.info("***=AW=33COM warehouse:OnAfterCaptured 3333")
             MESSAGE:New("We have captured ".. warehouses[warehouseName].sideName .." Team's "..warehouses[warehouseName].displayName..", they will no longer receive re-enforcements.",25,"[TEAM]:"):ToRed()
             MESSAGE:New("We have lost the ".. warehouses[warehouseName].displayName .." and no longer able to re-enforce the front.",25,"[TEAM]:"):ToBlue()      
           end
           warehouse:Stop()
           warehouse:SetReportOff()
-          warehouse:__Save(saveDelay,nil,warehouseName)
-		  env.info("***=AW=33COM warehouse:OnAfterCaptured 4444")
+          warehouse:__Save(saveDelay,nil,warehouseName)		  
         else
           env.info("***=AW=33COM warehouse:OnAfterCaptured Coalition problem for warehouse: " .. warehouseName)  
         end
