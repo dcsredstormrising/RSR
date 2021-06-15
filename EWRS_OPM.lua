@@ -16,8 +16,6 @@
 
 	Built and Tested in DCS 1.5 - See https://github.com/Bob7heBuilder/EWRS for the latest version
 
-	This script uses MIST 4.0.57 or later - https://github.com/mrSkortch/MissionScriptingTools
-
 	At the moment, because of limitations within DCS to not show messages to individual units, the reference, measurements, and messages
 	are done per group. So a group of 4 fighters will each receive 4 BRA messages. Each message however, will have the player's name
 	in it, that its refering to. Its unfortunate, but nothing I can do about it.
@@ -192,12 +190,12 @@ function ewrs.buildThreatTable(activePlayer)
 
         if ewrs.groupSettings[tostring(activePlayer.groupID)].measurements == "metric" then
             range = range / 1000 --change to KM
-            speed = mist.utils.mpsToKmph(speed)
+            speed = utils.mpsToKmph(speed)
             --altitude already in meters
         else
-            range = mist.utils.metersToNM(range)
-            speed = mist.utils.mpsToKnots(speed)
-            altitude = mist.utils.metersToFeet(altitude)
+            range = utils.metersToNM(range)
+            speed = utils.mpsToKnots(speed)
+            altitude = utils.metersToFeet(altitude)
         end
 
         if ewrs.useImprovedDetectionLogic then

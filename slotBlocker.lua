@@ -35,13 +35,13 @@ local function blockAllSlots()
     for _, groupName in pairs(M.clientGroupNames) do
         local _disableSlot = true
         if utils.startswith(groupName, "Carrier") then
-            --log:info("Not blocking carrier group '$1'", groupName)
+            log:info("Not blocking carrier group '$1'", groupName)
             _disableSlot = false
         else
             for _k, stagingBase in ipairs(rsrConfig.stagingBases) do
                 if utils.startswith(groupName, stagingBase) then
                     _disableSlot = false
-                    --log:info("Not blocking staging base group '$1'", groupName)
+                    log:info("Not blocking staging base group '$1'", groupName)
                 end
             end
         end

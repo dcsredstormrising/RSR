@@ -12,8 +12,7 @@
  --USAGE
  --Ensure LFS and IO are not santitised in missionScripting.lua. This enables writing of files. If you don't know what this does, don't attempt to use this script.
  --Requires versions of MOOSE.lua supporting "SET:ForEachGroupAlive()". Should be good for 6 months or more from date of writing. 
- --MIST not required, but should work OK with it regardless.
- --Edit 'SaveScheduleUnits' below, (line 34) to the number of seconds between saves. Low impact. 10 seconds is a fast schedule.
+  --Edit 'SaveScheduleUnits' below, (line 34) to the number of seconds between saves. Low impact. 10 seconds is a fast schedule.
  --Place Ground Groups wherever you want on the map as normal.
  --Run this script at Mission start
  --The script will create a small file with the list of Groups and Units.

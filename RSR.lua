@@ -1,11 +1,10 @@
 --- Red Storm Rising DCS mission LUA code
-
 -- Add this dir and external paths (socket for calling n0xy's bot, luarocks systree for other dependencies)
 -- note default path does not end with ; but the cpath does
 package.path = package.path .. ";" .. lfs.writedir() .. [[Scripts\RSR\?.lua;.\LuaSocket\?.lua]]
 package.cpath = package.cpath .. [[C:\dev\luarocks\lib\lua\5.1\?.dll]]
+
 env.info("RSR STARTUP: RSR.LUA INIT")
-require("mist_4_4_90")
 require("Moose")
 require("CTLD")
 require("CSAR")
@@ -29,12 +28,11 @@ local birthEventHandler = require("birthEventHandler")
 local genericEventHandler = require("genericEventHandler")
 local deadEventHandler = require("deadEventHandler")
 local restartInfo = require("restartInfo")
-local SGS_RSR = require("SGS_RSR") --Group Saves
+local SGS_RSR = require("SGS_RSR")
 local SCUD_EventHandler = require("SCUD_EventHandler")
-local UAV_Designate = require("UAV_Designate")
 local warehouses = require("warehouses")
 local UAV_Recon = require("UAV_Recon")
-local botBases = require("botBases")
+local UAV_Designate = require("UAV_Designate")
 require("EWRS_OPM")
 local AWACS_Tankers = require("AWACS_Tankers")
 local AI_CAP = require("AI_CAP")

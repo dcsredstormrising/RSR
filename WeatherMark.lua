@@ -14,7 +14,7 @@
 -- 
 -- Prerequisite:
 -- ------------
--- * This script requires DCS 2.5.1 or higher. Note that the script uses only the pure DCS API, i.e. NO other framework like MIST, MOOSE, etc required.
+-- * This script requires DCS 2.5.1 or higher. Note that the script uses only the pure DCS API, i.e. NO other framework is required.
 -- 
 -- Load the script:
 -- ----------------

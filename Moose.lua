@@ -6979,7 +6979,7 @@ end
 function DATABASE:_RegisterZones()
 for ZoneID,ZoneData in pairs(env.mission.triggers.zones)do
 local ZoneName=ZoneData.name
-self:I({"Register ZONE:",Name=ZoneName})
+--self:I({"Register ZONE:",Name=ZoneName})
 local Zone=ZONE:New(ZoneName)
 self.ZONENAMES[ZoneName]=ZoneName
 self:AddZone(ZoneName,Zone)
@@ -6989,7 +6989,7 @@ if ZoneGroupName:match("#ZONE_POLYGON")then
 local ZoneName1=ZoneGroupName:match("(.*)#ZONE_POLYGON")
 local ZoneName2=ZoneGroupName:match(".*#ZONE_POLYGON(.*)")
 local ZoneName=ZoneName1..(ZoneName2 or"")
-self:I({"Register ZONE_POLYGON:",Name=ZoneName})
+--self:I({"Register ZONE_POLYGON:",Name=ZoneName})
 local Zone_Polygon=ZONE_POLYGON:New(ZoneName,ZoneGroup)
 self.ZONENAMES[ZoneName]=ZoneName
 self:AddZone(ZoneName,Zone_Polygon)
@@ -7283,7 +7283,7 @@ if UnitData and UnitData:isExist()then
 local UnitName=UnitData:getName()
 local PlayerName=UnitData:getPlayerName()
 if not self.PLAYERS[PlayerName]then
-self:I({"Add player for unit:",UnitName,PlayerName})
+--self:I({"Add player for unit:",UnitName,PlayerName})
 self:AddPlayer(UnitName,PlayerName)
 end
 end
@@ -7297,11 +7297,11 @@ for CoalitionId,CoalitionData in pairs(CoalitionsData)do
 for DCSGroupId,DCSGroup in pairs(CoalitionData)do
 if DCSGroup:isExist()then
 local DCSGroupName=DCSGroup:getName()
-self:I(string.format("Register Group: %s",tostring(DCSGroupName)))
+--self:I(string.format("Register Group: %s",tostring(DCSGroupName)))
 self:AddGroup(DCSGroupName)
 for DCSUnitId,DCSUnit in pairs(DCSGroup:getUnits())do
 local DCSUnitName=DCSUnit:getName()
-self:I(string.format("Register Unit: %s",tostring(DCSUnitName)))
+--self:I(string.format("Register Unit: %s",tostring(DCSUnitName)))
 self:AddUnit(DCSUnitName)
 end
 else
@@ -7313,7 +7313,7 @@ return self
 end
 function DATABASE:_RegisterClients()
 for ClientName,ClientTemplate in pairs(self.Templates.ClientsByName)do
-self:I(string.format("Register Client: %s",tostring(ClientName)))
+--self:I(string.format("Register Client: %s",tostring(ClientName)))
 self:AddClient(ClientName)
 end
 return self
@@ -7324,7 +7324,7 @@ for CoalitionId,CoalitionData in pairs(CoalitionsData)do
 for DCSStaticId,DCSStatic in pairs(CoalitionData)do
 if DCSStatic:isExist()then
 local DCSStaticName=DCSStatic:getName()
-self:I(string.format("Register Static: %s",tostring(DCSStaticName)))
+--self:I(string.format("Register Static: %s",tostring(DCSStaticName)))
 self:AddStatic(DCSStaticName)
 else
 self:E({"Static does not exist: ",DCSStatic})
@@ -7346,7 +7346,7 @@ text=text..string.format("%d=%d ",terminalType,airbase.NparkingTerminal[terminal
 end
 end
 text=text.."]"
-self:I(text)
+--self:I(text)
 if airbaseID~=airbase:GetID()then
 end
 end
@@ -39461,8 +39461,8 @@ if request then
 self:Request(request)
 end
 end
-self:_PrintQueue(self.queue,"Queue waiting")
-self:_PrintQueue(self.pending,"Queue pending")
+--self:_PrintQueue(self.queue,"Queue waiting")
+--self:_PrintQueue(self.pending,"Queue pending")
 self:_CheckFuel()
 self:_UpdateWarehouseMarkText()
 if self.Debug then
@@ -39781,7 +39781,7 @@ text=text..string.format("Cargo bay max  = %5.2f kg\n",asset.cargobaymax)
 text=text..string.format("Load radius    = %s m\n",tostring(asset.loadradius))
 text=text..string.format("Skill          = %s\n",tostring(asset.skill))
 text=text..string.format("Livery         = %s",tostring(asset.livery))
-self:I(self.lid..text)
+--self:I(self.lid..text)
 self:T({DCSdesc=asset.DCSdesc})
 self:T3({Template=asset.template})
 end
@@ -40383,7 +40383,7 @@ name=string.format("%s=%s;",key,value)
 end
 assetstring=assetstring..name
 end
-self:I(string.format("Loaded asset: %s",assetstring))
+--self:I(string.format("Loaded asset: %s",assetstring))
 end
 warehouseassets=warehouseassets..assetstring.."\n"
 end
@@ -41998,10 +41998,10 @@ text=text..string.format(
 i,uid,prio,clock,assignment,requestor,airbasename,requestorAirbaseCat,assetdesc,assetdescval,nasset,ncargogroupset,ndelivered,transporttype,ntransport,ntransportalive,ntransporthome)
 end
 if#queue==0 then
-self:T(self.lid..text)
+--self:T(self.lid.."")
 else
 if total~="Empty"then
-self:I(self.lid..text)
+--self:I(self.lid.."")
 end
 end
 end

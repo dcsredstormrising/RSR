@@ -23,7 +23,7 @@ function M.spawnLogisticsBuildingForBase(baseName, sideName, logisticsCentreName
     end
 
     -- logistics centre built at mission start are not numbered e.g. "MM34 Logistics Centre red"
-    -- logistics centre built during mission are numbered e.g. "MM75 Logistics Centre #001 red".  Number set by ctld.getNextUnitId() in CTLD.lua.
+    -- logistics centre built during mission are numbered e.g. "MM75 Logistics Centre #001 red".  Number set by utils.getNextUnitId() in CTLD.lua.
     local _staticObjectName = baseName .. " Logistics Centre #000 " .. string.lower(sideName)
     if logisticsCentreName ~= "none" then
         _staticObjectName = logisticsCentreName

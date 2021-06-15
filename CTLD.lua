@@ -1,29 +1,5 @@
---[[
-    Combat Troop and Logistics Drop
-
-    Allows Huey, Mi-8 and C130 to transport troops internally and Helicopters to transport Logistic / Vehicle units to the field via sling-loads
-    without requiring external mods.
-
-    Supports all of the original CTTS functionality such as AI auto troop load and unload as well as group spawning and preloading of troops into units.
-
-    Supports deployment of Auto Lasing JTAC to the field
-
-    See https://github.com/ciribob/DCS-CTLD for a user manual and the latest version
-
-	Contributors:
-	    - Steggles - https://github.com/Bob7heBuilder
-	    - mvee - https://github.com/mvee
-	    - jmontleon - https://github.com/jmontleon
-	    - emilianomolina - https://github.com/emilianomolina
-
-    Version: 1.73 - 15/04/2018
-      - Allow minimum distance from friendly logistics to be set
- ]]
--- luacheck: no max line length
 env.info("RSR STARTUP: CTLD.LUA INIT")
-require("mist_4_4_90")
 require("CTLD_config")
-require("Moose")
 local inspect = require("inspect")
 local logging = require("logging")
 local utils = require("utils")
@@ -31,21 +7,6 @@ local rsrConfig = require("RSR_config")
 local baseOwnershipCheck = require("baseOwnershipCheck")
 local logisticsManager = require("logisticsManager")
 local log = logging.Logger:new("CTLD")
-
---ctld.minimumDeployDistance = 600 -- minimum distance from a friendly pickup zone where you can deploy a crate
-
-ctld.nextUnitId = 1;
-ctld.getNextUnitId = function()
-    ctld.nextUnitId = ctld.nextUnitId + 1
-
-    return ctld.nextUnitId
-end
-
-ctld.nextGroupId = 1;
-ctld.getNextGroupId = function()
-    ctld.nextGroupId = ctld.nextGroupId + 1
-    return ctld.nextGroupId
-end
 
 ctld.nextLogisiticsCentreId = 1;
 ctld.getNextLogisiticsCentreId = function()
@@ -199,7 +160,7 @@ function ctld.cratesInZone(_zone, _flagNumber)
         return
     end
 
-    local _zonePos = mist.utils.zoneToVec3(_zone)
+    local _zonePos = utils.zoneToVec3(_zone)
 
     --ignore side, if crate has been used its discounted from the count
     --mr: what about: ctld.droppedLogisticsCentreCratesRED and ctld.droppedLogisticsCentreCratesBLUE?!
@@ -341,7 +302,7 @@ function ctld.countDroppedGroupsInZone(_zone, _blueFlag, _redFlag)
             local _groupUnits = ctld.getGroup(_groupName)
 
             if #_groupUnits > 0 then
-                local _zonePos = mist.utils.zoneToVec3(_zone)
+                local _zonePos = utils.zoneToVec3(_zone)
                 local _dist = ctld.getDistance(_groupUnits[1]:getPoint(), _zonePos)
 
                 if _dist <= _triggerZone.radius then
@@ -387,7 +348,7 @@ function ctld.countDroppedUnitsInZone(_zone, _blueFlag, _redFlag)
 
             if #_groupUnits > 0 then
 
-                local _zonePos = mist.utils.zoneToVec3(_zone)
+                local _zonePos = utils.zoneToVec3(_zone)
                 for _, _unit in pairs(_groupUnits) do
                     local _dist = ctld.getDistance(_unit:getPoint(), _zonePos)
 
@@ -427,7 +388,7 @@ function ctld.createRadioBeaconAtZone(_zone, _coalition, _batteryLife, _name)
         return
     end
 
-    local _zonePos = mist.utils.zoneToVec3(_zone)
+    local _zonePos = utils.zoneToVec3(_zone)
 
     ctld.beaconCount = ctld.beaconCount + 1
 
@@ -712,10 +673,8 @@ function ctld.loadTransport(_unitName)
 end
 
 -- adds a callback that will be called for many actions ingame
-function ctld.addCallback(_callback)
-
+function ctld.addCallback(_callback)	
     table.insert(ctld.callbacks, _callback)
-
 end
 
 -- Spawns a sling loadable crate at a Trigger Zone
@@ -753,7 +712,7 @@ function ctld.spawnCrateAtZone(_side, _weight, _zone)
     local _alt = land.getHeight(_pos2)
     local _point = { x = _pos2.x, y = _alt, z = _pos2.y }
 
-    local _unitId = ctld.getNextUnitId()
+    local _unitId = utils.getNextUnitId()
 
     local _name = string.format("%s #%i", _crateType.desc, _unitId)
 
@@ -787,7 +746,7 @@ function ctld.spawnCrateAtPoint(_side, _weight, _point)
         _country = 2
     end
 
-    local _unitId = ctld.getNextUnitId()
+    local _unitId = utils.getNextUnitId()
 
     local _name = string.format("%s #%i", _crateType.desc, _unitId)
 
@@ -819,10 +778,7 @@ function ctld.getTransportUnit(_unitName)
 end
 
 function ctld.spawnCrateStatic(_country, _unitId, _point, _name, _weight, _side, _internal)
-    --Ironwulf2000 added _internal for internal crate carriage support
-    
-    env.info("**=AW=33COM ctld.spawnCrateStatic")
-	
+    	
     local _crate
     local _spawnedCrate
 
@@ -830,9 +786,9 @@ function ctld.spawnCrateStatic(_country, _unitId, _point, _name, _weight, _side,
     local _baseOfOriginFromName = string.match(_name, "%((.+)%)$")
     log:info("_name: $1, _baseOfOriginFromName: $2", _name, _baseOfOriginFromName)
 
-    if ctld.staticBugWorkaround and ctld.slingLoad == false then
+    if ctld.slingLoad == false then
         --NOT USED FOR RSR
-        local _groupId = ctld.getNextGroupId()
+        local _groupId = utils.getNextGroupId()
         local _groupName = "Crate Group #" .. _groupId
 
         local _group = {
@@ -847,17 +803,11 @@ function ctld.spawnCrateStatic(_country, _unitId, _point, _name, _weight, _side,
         }
         local _baseOfOriginRemovedFromName = string.gsub(_name, "%((.+)%)$", "") -- remove base from name to hide base of origin from unit name
         -- HUMVEE FOR BLUE IF TO USE FOR RSR
-        _group.units[1] = ctld.createUnit(_point.x, _point.z, 0, { type = "Tigr_233036", name = _baseOfOriginRemovedFromName, unitId = _unitId })
-
-        --switch to MIST
+        _group.units[1] = ctld.createUnit(_point.x, _point.z, 0, { type = ctld.JTAC_TYPE_RED, name = _baseOfOriginRemovedFromName, unitId = _unitId })
         _group.category = Group.Category.GROUND;
         _group.country = _country;
-
-        local _spawnedGroup = Group.getByName(mist.dynAdd(_group).name)
-
-        -- Turn off AI
-        trigger.action.setGroupAIOff(_spawnedGroup)
-
+        local _spawnedGroup = Group.getByName(utils.dynAdd(_group).name)        
+        trigger.action.setGroupAIOff(_spawnedGroup)	-- Turn off AI
         _spawnedCrate = Unit.getByName(_baseOfOriginRemovedFromName)
     else
         --[[ Placeholder for different type of cargo containers. Let's say pipes and trunks, fuel for FOB building
@@ -918,12 +868,12 @@ function ctld.spawnCrateStatic(_country, _unitId, _point, _name, _weight, _side,
                 ["name"] = _name,
                 ["canCargo"] = true,
                 ["heading"] = 0,
-                ["mass"] = _weight,
+                ["mass"] = _weight,				
             }
         end
 
         _crate["country"] = _country
-        mist.dynAddStatic(_crate)
+        utils.dynAddStatic(_crate)
         _spawnedCrate = StaticObject.getByName(_crate["name"])
     end
 
@@ -1002,18 +952,16 @@ function ctld.spawnLogisticsCentre(_point, _name, _sideName, _baseORfob, _baseOR
         --["rate"] = --mr: number value for the "score" of the object when it is killed. use to allow assigning points for logistic centre kills?
     }
 
-    --[[
-        mist.dynAddStatic => addStaticObject
-                    unitID required?  If not set, new static object of same name will overwrite (= delete? = advantageous for repair) old object
-                    > https://wiki.hoggitworld.com/view/DCS_func_addStaticObject
-                    >> Static Objects name cannot be shared with an existing object, if it is the existing object will be destroyed on the spawning of the new object.
-                    >> If unitId is not specified or matches an existing object, a new Id will be generated.
-                    >> Coalition of the object is defined based on the country the object is spawning to.
-    --]]
+	--[[        
+	unitID required?  If not set, new static object of same name will overwrite (= delete? = advantageous for repair) old object
+	> https://wiki.hoggitworld.com/view/DCS_func_addStaticObject
+	>> Static Objects name cannot be shared with an existing object, if it is the existing object will be destroyed on the spawning of the new object.
+	>> If unitId is not specified or matches an existing object, a new Id will be generated.
+	>> Coalition of the object is defined based on the country the object is spawning to.
+	--]]
 
-    mist.dynAddStatic(_logiCentre)
+    utils.dynAddStatic(_logiCentre)
     local _spawnedLogiCentreObject = StaticObject.getByName(_logiCentre["name"])
-
 
     --[[
         ctld.logisticCentreObjects populated upon spawning logistics centre static object with:
@@ -1229,7 +1177,7 @@ function ctld.spawnCrate(_arguments)
                     ctld.displayMessageToGroup(_heli, "Your team can no longer be supplied!", 10)
                     return
                 elseif (_nearestLogisticsCentreDist > ctld.maximumDistanceLogistic) == true and ctld.debug == false then
-                    ctld.displayMessageToGroup(_heli, "You are not close enough to a friendly Logistics Centre to get a crate! \nNearest Logistics Centre at " .. _nearestLogisticsCentreBaseNameOrFOBgrid .. " (" .. mist.utils.round((_nearestLogisticsCentreDist / 1000), 1) .. "km)", 10)
+                    ctld.displayMessageToGroup(_heli, "You are not close enough to a friendly Logistics Centre to get a crate! \nNearest Logistics Centre at " .. _nearestLogisticsCentreBaseNameOrFOBgrid .. " (" .. utils.oldRound((_nearestLogisticsCentreDist / 1000), 1) .. "km)", 10)
                     return
                 end
             end
@@ -1329,7 +1277,7 @@ function ctld.spawnCrate(_arguments)
             --   trigger.action.outText("Spawn Crate".._args[1].." ".._args[2],10)
 
             local _side = _heli:getCoalition()
-            local _unitId = ctld.getNextUnitId()
+            local _unitId = utils.getNextUnitId()
             -- add _nearestLogisticsCentreBaseNameOrFOBgrid to crate name for later origin checks
             -- _nameBaseHidden = string.gsub(_name, "%((.+)%)$", "")
             local _name = string.format("%s #%i (%s)", _crateType.desc, _unitId, _nearestLogisticsCentreBaseNameOrFOBgrid)
@@ -1479,16 +1427,14 @@ function ctld.safeToFastRope(_heli)
     end
 
     --landed or speed is less than 8 km/h and height is less than fast rope height
-    if (ctld.inAir(_heli) == false or (ctld.heightDiff(_heli) <= ctld.fastRopeMaximumHeight + 3.0 and mist.vec.mag(_heli:getVelocity()) < 2.2)) then
+    if (ctld.inAir(_heli) == false or (ctld.heightDiff(_heli) <= ctld.fastRopeMaximumHeight + 3.0 and utils.vec.mag(_heli:getVelocity()) < 2.2)) then
         return true
     end
 end
 
 function ctld.metersToFeet(_meters)
-
     local _feet = _meters * 3.2808399
-
-    return mist.utils.round(_feet)
+    return utils.oldRound(_feet)
 end
 
 function ctld.inAir(_heli)
@@ -1499,7 +1445,7 @@ function ctld.inAir(_heli)
 
     -- less than 5 cm/s a second so landed
     -- BUT AI can hold a perfect hover so ignore AI
-    if mist.vec.mag(_heli:getVelocity()) < 0.05 and _heli:getPlayerName() ~= nil then
+    if utils.vec.mag(_heli:getVelocity()) < 0.05 and _heli:getPlayerName() ~= nil then
         return false
     end
     return true
@@ -1589,7 +1535,7 @@ end
 function ctld.insertIntoTroopsArray(_troopType, _count, _troopArray)
 
     for _ = 1, _count do
-        local _unitId = ctld.getNextUnitId()
+        local _unitId = utils.getNextUnitId()
         table.insert(_troopArray, { type = _troopType, unitId = _unitId, name = string.format("Dropped %s #%i", _troopType, _unitId) })
     end
 
@@ -1662,13 +1608,13 @@ function ctld.generateTroopTypes(_side, _countOrTemplate, _country)
                 end
             end
 
-            local _unitId = ctld.getNextUnitId()
+            local _unitId = utils.getNextUnitId()
 
             _troops[_i] = { type = _unitType, unitId = _unitId, name = string.format("Dropped %s #%i", _unitType, _unitId) }
         end
     end
 
-    local _groupId = ctld.getNextGroupId()
+    local _groupId = utils.getNextGroupId()
     local _details = { units = _troops, groupId = _groupId, groupName = string.format("Dropped Group %i", _groupId), side = _side, country = _country }
 
     return _details
@@ -1761,12 +1707,12 @@ function ctld.generateVehiclesForTransport(_side, _country)
 
     for _i, _type in ipairs(_list) do
 
-        local _unitId = ctld.getNextUnitId()
+        local _unitId = utils.getNextUnitId()
 
         _vehicles[_i] = { type = _type, unitId = _unitId, name = string.format("Dropped %s #%i", _type, _unitId) }
     end
 
-    local _groupId = ctld.getNextGroupId()
+    local _groupId = utils.getNextGroupId()
     local _details = { units = _vehicles, groupId = _groupId, groupName = string.format("Dropped Group %i", _groupId), side = _side, country = _country }
 
     return _details
@@ -1922,7 +1868,7 @@ function ctld.loadUnloadLogisticsCrate(_args)
         if _inFOBexclusionZone == true and _inBaseZoneAndRSRrepairRadius == false then
             local _aircraftDistRSR = _closestBaseDist - _RSRradius
             local _exclusionZoneDist = ctld.exclusionZoneFromBasesForFOBs
-            ctld.displayMessageToGroup(_aircraft, "ABORTING: You are too far from " .. _closestBaseName .. " (" .. mist.utils.round((_aircraftDistRSR / 1000), 1)
+            ctld.displayMessageToGroup(_aircraft, "ABORTING: You are too far from " .. _closestBaseName .. " (" .. utils.oldRound((_aircraftDistRSR / 1000), 1)
                     .. "km) " .. "for a repair, and too close (<" .. (_exclusionZoneDist / 1000) .. "km) to deploy a FOB!", 20)
             return
         end
@@ -1937,12 +1883,12 @@ function ctld.loadUnloadLogisticsCrate(_args)
         local _friendlyLogisticsCentreSpacing = ctld.friendlyLogisiticsCentreSpacing
         if _inFOBexclusionZone == false and _nearestLogisticsCentreDist < _friendlyLogisticsCentreSpacing then
             ctld.displayMessageToGroup(_aircraft, "ABORTING: An existing friendly logisitics centre at " .. _nearestLogisticsCentreBaseNameOrFOBgrid ..
-                    " (" .. mist.utils.round((_nearestLogisticsCentreDist / 1000), 1) .. "km)"
+                    " (" .. utils.oldRound((_nearestLogisticsCentreDist / 1000), 1) .. "km)"
                     .. " is too close (<" .. (_friendlyLogisticsCentreSpacing / 1000) .. "km) to allow deployment of a new FOB!", 20)
             return
         end
         ------------------------------------------------------------------------------------
-        local _unitId = ctld.getNextUnitId()
+        local _unitId = utils.getNextUnitId()
 
         local _crateInTransitDetails = ctld.inTransitLogisticsCentreCrates[_aircraft:getName()]
         --ctld.spawnCrate: local _name = string.format("%s #%i (%s)", _crateType.desc, _unitId, _nearestLogisticsCentreName)
@@ -2201,7 +2147,7 @@ function ctld.loadUnloadJTACcrate(_args)
             local _point = _aircraft:getPoint()
             local _6oclockPos = { x = _point.x + _xOffset, z = _point.z + _yOffset }
 
-            local _unitId = ctld.getNextUnitId()
+            local _unitId = utils.getNextUnitId()
 
             -- add _crateBaseOfOrigin to crate name for later origin checks
             -- local _crateName = string.format("%s #%i (%s)", _currentCrate.desc, _unitId, _crateBaseOfOrigin)
@@ -2236,7 +2182,7 @@ function ctld.loadUnloadJTACcrate(_args)
             local _point = _aircraft:getPoint()
             local _6oclockPos = { x = _point.x + _xOffset, z = _point.z + _yOffset }
 
-            local _unitId = ctld.getNextUnitId()
+            local _unitId = utils.getNextUnitId()
 
             -- add _crateBaseOfOrigin to crate name for later origin checks
             local _newJTACcrateName = string.format("JTAC crate #%i (%s)", _unitId, _crateBaseOfOrigin)
@@ -2328,9 +2274,9 @@ function ctld.loadTroopsFromZone(_args)
 
     else
         if _allowExtract then
-            ctld.displayMessageToGroup(_heli, "There are no friendly troops nearby to extract, and you cannot load troops from this area. Closest loading area: " .. _PickUpZoneDetails.pickupName .. " (" .. _PickUpZoneDetails.pickupArea .. "," .. mist.utils.round((_PickUpZoneDetails.dist / 1000), 1) .. ")", 10)
+            ctld.displayMessageToGroup(_heli, "There are no friendly troops nearby to extract, and you cannot load troops from this area. Closest loading area: " .. _PickUpZoneDetails.pickupName .. " (" .. _PickUpZoneDetails.pickupArea .. "," .. utils.oldRound((_PickUpZoneDetails.dist / 1000), 1) .. ")", 10)
         else
-            ctld.displayMessageToGroup(_heli, "You cannot load troops from this area.  Closest loading area: " .. _PickUpZoneDetails.pickupName .. " (" .. _PickUpZoneDetails.pickupArea .. "," .. mist.utils.round((_PickUpZoneDetails.dist / 1000), 1) .. "km)", 10)
+            ctld.displayMessageToGroup(_heli, "You cannot load troops from this area.  Closest loading area: " .. _PickUpZoneDetails.pickupName .. " (" .. _PickUpZoneDetails.pickupArea .. "," .. utils.oldRound((_PickUpZoneDetails.dist / 1000), 1) .. "km)", 10)
         end
 
         return false
@@ -2727,7 +2673,7 @@ function ctld.loadNearbyCrate(_aircraftName)
                     _crate.crateUnit:destroy()
 
                     -- { desc = "Logistics Centre crate", internal = 1, unit = "LogisticsCentre", weight = 503, baseOfOrigin = "MM75" }
-                    local _copiedCrateDetails = mist.utils.deepCopy(_crate.details)
+                    local _copiedCrateDetails = utils.deepCopy(_crate.details)
                     log:info("ctld.loadNearbyCrate: _copiedCrateDetails: $1", _copiedCrateDetails)
 					
 					local _isLogisticsCentreCrate = _crate.details.unit == "LogisticsCentre"
@@ -2745,7 +2691,7 @@ function ctld.loadNearbyCrate(_aircraftName)
         else
             -- crate onboard
 
-            local _currentCrate = mist.utils.deepCopy(ctld.inTransitSlingLoadCrates[_aircraftName])
+            local _currentCrate = utils.deepCopy(ctld.inTransitSlingLoadCrates[_aircraftName])
 
             ctld.displayMessageToGroup(_aircraft, "You already have a " .. _currentCrate.desc .. " crate onboard!", 10, true)
         end
@@ -2838,17 +2784,17 @@ function ctld.getClockDirection(_heli, _crate)
 
     local _position = _crate:getPosition().p -- get position of crate
     local _playerPosition = _heli:getPosition().p -- get position of helicopter
-    local _relativePosition = mist.vec.sub(_position, _playerPosition)
+    local _relativePosition = utils.vec.sub(_position, _playerPosition)
 
-    local _playerHeading = mist.getHeading(_heli) -- the rest of the code determines the 'o'clock' bearing of the missile relative to the helicopter
+    local _playerHeading = utils.getHeading(_heli) -- the rest of the code determines the 'o'clock' bearing of the missile relative to the helicopter
 
     local _headingVector = { x = math.cos(_playerHeading), y = 0, z = math.sin(_playerHeading) }
 
     local _headingVectorPerpendicular = { x = math.cos(_playerHeading + math.pi / 2), y = 0, z = math.sin(_playerHeading + math.pi / 2) }
 
-    local _forwardDistance = mist.vec.dp(_relativePosition, _headingVector)
+    local _forwardDistance = utils.vec.dp(_relativePosition, _headingVector)
 
-    local _rightDistance = mist.vec.dp(_relativePosition, _headingVectorPerpendicular)
+    local _rightDistance = utils.vec.dp(_relativePosition, _headingVectorPerpendicular)
 
     local _angle = math.atan2(_rightDistance, _forwardDistance) * 180 / math.pi
 
@@ -2865,14 +2811,14 @@ end
 
 function ctld.getCompassBearing(_ref, _unitPos)
 
-    _ref = mist.utils.makeVec3(_ref, 0) -- turn it into Vec3 if it is not already.
-    _unitPos = mist.utils.makeVec3(_unitPos, 0) -- turn it into Vec3 if it is not already.
+    _ref = utils.makeVec3(_ref, 0) -- turn it into Vec3 if it is not already.
+    _unitPos = utils.makeVec3(_unitPos, 0) -- turn it into Vec3 if it is not already.
 
     local _vec = { x = _unitPos.x - _ref.x, y = _unitPos.y - _ref.y, z = _unitPos.z - _ref.z }
 
-    local _dir = mist.utils.getDir(_vec, _ref)
+    local _dir = utils.getDir(_vec, _ref)
 
-    local _bearing = mist.utils.round(mist.utils.toDegree(_dir), 0)
+    local _bearing = utils.oldRound(utils.toDegree(_dir), 0)
 
     return _bearing
 end
@@ -2972,9 +2918,7 @@ function ctld.getFOBposStringAndBeacons(_fob)
 
     local _lat, _lon = coord.LOtoLL(_fob:getPosition().p)
 
-    local _latLngStr = mist.tostringLL(_lat, _lon, 3, ctld.location_DMS)
-
-    --   local _mgrsString = mist.tostringMGRS(coord.LLtoMGRS(coord.LOtoLL(_fob:getPosition().p)), 5)
+    local _latLngStr = utils.tostringLL(_lat, _lon, 3, ctld.location_DMS)
 
     local _message = _latLngStr
 
@@ -3294,33 +3238,32 @@ function ctld.unpackCrates(_arguments)
                     -- multicrate
                     
                     ctld.unpackMultiCrate(_aircraft, _crate, _crates)
-
                     return
 
-                else
-                
-                    -- single crate
+                else           
+					-- single
                     local _cratePoint = _crate.crateUnit:getPoint()
                     local _crateName = _crate.crateUnit:getName()
-
-                    -- ctld.spawnCrateStatic( _aircraft:getCoalition(),ctld.getNextUnitId(),{x=100,z=100},_crateName,100)
-
-                    --remove crate
-                    --  if ctld.slingLoad == false then
-                    _crate.crateUnit:destroy()
-                    -- end
-
-                    local _spawnedGroups = ctld.spawnCrateGroup(_aircraft, { _cratePoint }, { _crate.details.unit }, _crate.details.unitQuantity)
-
+                    _crate.crateUnit:destroy()                    					
+					local _spawnedGroups = ctld.spawnCrateGroup(_aircraft, { _cratePoint }, { _crate.details.unit }, _crate.details.unitQuantity)
+					
                     if _heliCoalition == 1 then
                         ctld.spawnedCratesRED[_crateName] = nil
                     else
                         ctld.spawnedCratesBLUE[_crateName] = nil
                     end
-
+										
                     --"unpack" callback from persistence.lua: adds new group to side ownership and table for state saving (rsrState.json)
-                    ctld.processCallback({ unit = _aircraft, crate = _crate, spawnedGroup = _spawnedGroups, action = "unpack" })
-
+					ctld.processCallback({ unit = _aircraft, crate = _crate, spawnedGroup = _spawnedGroups, action = "unpack"})
+					
+					-- callback to AiHeliPatrol when AiMobileATC was spawn in order to repair the Ai
+					if _crate.details.unit == "SKP-11" or _crate.details.unit == "Predator TrojanSpirit" then
+						env.info("ctld.unpackCrates Ai Mobile ATC Support spawn")						
+						local base = ctld.baseProximity(_aircraft)						
+						local baseName = base[3][1]
+						ctld.processCallback({ unit = _aircraft, crate = _crate, spawnedGroup = _spawnedGroups, action = "AiMobileATCSpawn", airbase=baseName})
+					end
+					
                     if _crate.details.unit == "1L13 EWR" then
                         ctld.addEWRTask(_spawnedGroups)                        
                     end
@@ -3342,35 +3285,9 @@ function ctld.unpackCrates(_arguments)
                     if ctld.isJTACUnitType(_crate.details.unit) and ctld.JTAC_dropEnabled then
                         local _code = ctld.getLaserCode(_heliCoalition)
                         ctld.JTACAutoLase(_spawnedGroups:getName(), _code)
-                        --[[
-                        local _playerJTACsForSide = ctld.JTACsPerPlayerPerSide[_playerUCID][_heliCoalition]
-                        local _playerJTACsForSideCount = 0
-                        if _playerJTACsForSide ~= nil then
-                            for _k, _JTACgroup in ipairs (_playerJTACsForSide) do
-
-                                if _JTACgroup == nil then
-                                    table.remove(ctld.JTACsPerUCIDPerSide[_playerUCID][_heliCoalition],_k)
-                                else
-                                    _playerJTACsForSideCount = _playerJTACsForSideCount + 1
-                                end
-                            end
-                        end
-
-                        if ctld.JTAC_LIMIT_perPLAYER_perSIDE > _playerJTACsForSideCount then
-                            ctld.displayMessageToGroup(_aircraft, "JTACs per player per side limit (" .. ctld.JTAC_LIMIT_perPLAYER_perSIDE .. ") reached.  Deleting oldest JTAC.", 20)
-                            -- newest JTAC always appended to end of table, therefore pos 1 JTAC = oldest
-                            table.remove(ctld.JTACsPerUCIDPerSide[_playerUCID][_heliCoalition],1)
-                        end
-                        -- newest JTAC always appended to end of table, therefore pos 2 JTAC = newest
-                        -- no position for insert given, therefore should append to end
-                        table.insert(ctld.JTACsPerUCIDPerSide[_playerUCID][_heliCoalition],_spawnedGroups:getName())
-                        --]]
                     end
-
                 end
-
             else
-
                 ctld.displayMessageToGroup(_aircraft, "No friendly crates close enough to unpack", 20)
             end
         end
@@ -3442,7 +3359,7 @@ function ctld.unpackLogisticsCentreCrates(_crates, _aircraft)
             local _exclusionZoneDist = ctld.exclusionZoneFromBasesForFOBs
 
             -- log:info("$1 too close to $2 for FOB  but not close enough for repair",_baseNameORplayerName, _closestBase)
-            ctld.displayMessageToGroup(_aircraft, "ABORTING: You are too far from " .. _closestBaseName .. " (" .. mist.utils.round((_aircraftDistRSR / 1000), 1)
+            ctld.displayMessageToGroup(_aircraft, "ABORTING: You are too far from " .. _closestBaseName .. " (" .. utils.oldRound((_aircraftDistRSR / 1000), 1)
                     .. "km) " .. "for a repair, and too close (<" .. (_exclusionZoneDist / 1000) .. "km) to deploy a FOB!", 20)
 
             _abortUnpack = true
@@ -3457,7 +3374,7 @@ function ctld.unpackLogisticsCentreCrates(_crates, _aircraft)
         local _friendlyLogisticsCentreSpacing = ctld.friendlyLogisiticsCentreSpacing
         if _inFOBexclusionZone == false and _nearestLogisticsCentreDist < _friendlyLogisticsCentreSpacing then
             ctld.displayMessageToGroup(_aircraft, "ABORTING: An existing friendly logisitics centre at " .. _nearestLogisticsCentreBaseNameOrFOBgrid ..
-                    " (" .. mist.utils.round((_nearestLogisticsCentreDist / 1000), 1) .. "km)"
+                    " (" .. utils.oldRound((_nearestLogisticsCentreDist / 1000), 1) .. "km)"
                     .. " is too close (<" .. (_friendlyLogisticsCentreSpacing / 1000) .. "km) to allow deployment of a new FOB!", 20)
             _abortUnpack = true
         end
@@ -3487,7 +3404,7 @@ function ctld.unpackLogisticsCentreCrates(_crates, _aircraft)
             -- if logisitics centre crate base of origin same as base to be repaired, warn player that unpack will be prevented
             if _crateBaseOfOrigin == _closestBaseName and _inBaseZoneAndRSRradius then
                 local _azToCrate = ctld.getCompassBearing(_aircraft:getPoint(), _nearbyCrate.crateUnit:getPoint())
-                ctld.displayMessageToGroup(_aircraft, "ABORTING: Logistics centre crate (" .. _azToCrate .. " : " .. mist.utils.round(_nearbyCrate.dist, 1) .. "m)" .. " from " .. _crateBaseOfOrigin .. ", cannot be unpacked at base of origin (nearest base: " .. _closestBaseName .. ")", 20)
+                ctld.displayMessageToGroup(_aircraft, "ABORTING: Logistics centre crate (" .. _azToCrate .. " : " .. utils.oldRound(_nearbyCrate.dist, 1) .. "m)" .. " from " .. _crateBaseOfOrigin .. ", cannot be unpacked at base of origin (nearest base: " .. _closestBaseName .. ")", 20)
                 return
             else
                 if _nearbyCrate.details.unit == "LogisticsCentre" then
@@ -3649,7 +3566,7 @@ function ctld.unloadInternalCrate (_args)
     else
 
         local _point = ctld.getCargoUnloadPoint(_heli, 30)
-        local _unitId = ctld.getNextUnitId()
+        local _unitId = utils.getNextUnitId()
         local _heliSide = _heli:getCoalition()
         local _heliSideName = utils.getSideName(_heliSide)
 
@@ -3734,7 +3651,7 @@ function ctld.unloadInternalCrate (_args)
                 if _inFOBexclusionZone == true and _inBaseZoneAndRSRrepairRadius == false then
                     local _aircraftDistRSR = _closestBaseDist - _RSRradius
                     local _exclusionZoneDist = ctld.exclusionZoneFromBasesForFOBs
-                    ctld.displayMessageToGroup(_heli, "WARNING: You are too far from " .. _closestBaseName .. " (" .. mist.utils.round((_aircraftDistRSR / 1000), 1)
+                    ctld.displayMessageToGroup(_heli, "WARNING: You are too far from " .. _closestBaseName .. " (" .. utils.oldRound((_aircraftDistRSR / 1000), 1)
                             .. "km) " .. "for a repair, and too close (<" .. (_exclusionZoneDist / 1000) .. "km) to deploy a FOB!", 20)
                 end
 
@@ -3754,7 +3671,7 @@ function ctld.unloadInternalCrate (_args)
                 local _friendlyLogisticsCentreSpacing = ctld.friendlyLogisiticsCentreSpacing
                 if _inFOBexclusionZone == false and _nearestLogisticsCentreDist < _friendlyLogisticsCentreSpacing then
                     ctld.displayMessageToGroup(_heli, "WARNING: An existing friendly logisitics centre at " .. _nearestLogisticsCentreBaseNameOrFOBgrid ..
-                            " (" .. mist.utils.round((_nearestLogisticsCentreDist / 1000), 1) .. "km)"
+                            " (" .. utils.oldRound((_nearestLogisticsCentreDist / 1000), 1) .. "km)"
                             .. " is too close (<" .. (_friendlyLogisticsCentreSpacing / 1000) .. "km) to allow deployment of a new FOB!", 20)
                 end
                 ------------------------------------------------------------------------------------
@@ -3816,7 +3733,7 @@ function ctld.dropSlingCrate(_args)
 
         -- local _point = _heli:getPoint()
         local _point = ctld.getCargoUnloadPoint(_heli, 30)
-        local _unitId = ctld.getNextUnitId()
+        local _unitId = utils.getNextUnitId()
 
         local _side = _heli:getCoalition()
 
@@ -3908,9 +3825,7 @@ function ctld.createRadioBeacon(_point, _coalition, _country, _name, _batteryTim
 
     local _lat, _lon = coord.LOtoLL(_point)
 
-    local _latLngStr = mist.tostringLL(_lat, _lon, 3, ctld.location_DMS)
-
-    --local _mgrsString = mist.tostringMGRS(coord.LLtoMGRS(coord.LOtoLL(_point)), 5)
+    local _latLngStr = utils.tostringLL(_lat, _lon, 3, ctld.location_DMS)
 
     --create timeout
     local _battery
@@ -3994,10 +3909,10 @@ end
 
 function ctld.spawnRadioBeaconObjectInOutpost(_outpost)
 
-    local _azimuth = mist.getHeading(_outpost)
+    local _azimuth = utils.getHeading(_outpost)
     -- outpost spawns 20m east from registered if facing north
     local _offsetPos = ctld.getPointAtXOclockStaticObject(_outpost, 3, 20, _azimuth)
-    local _unitId = ctld.getNextUnitId()
+    local _unitId = utils.getNextUnitId()
 
     --local _radioGroup = {
     local _radioStaticObjDetails = {
@@ -4016,7 +3931,7 @@ function ctld.spawnRadioBeaconObjectInOutpost(_outpost)
         ["country"] = ctld.neutralCountry --need to ensure country is part of neutral coalition e.g. Greece = neutral static obj
     }
 
-    mist.dynAddStatic(_radioStaticObjDetails)
+    utils.dynAddStatic(_radioStaticObjDetails)
     local _radioStaticObj = StaticObject.getByName(_radioStaticObjDetails["name"])
 
     return _radioStaticObj
@@ -4041,7 +3956,7 @@ function ctld.spawnRadioBeaconObject(_point, _name)
         ["country"] = ctld.neutralCountry --need to ensure country is part of neutral coalition e.g. Greece = neutral static obj
     }
 
-    mist.dynAddStatic(_radioStaticObjDetails)
+    utils.dynAddStatic(_radioStaticObjDetails)
     local _radioStaticObj = StaticObject.getByName(_radioStaticObjDetails["name"])
 
     return _radioStaticObj
@@ -4073,7 +3988,7 @@ function ctld.updateRadioBeacon(_beaconDetails)
     local _batLife = _beaconDetails.battery - timer.getTime()
     --[[
     if _battery ~= -1 then
-        _text = _text.." "..mist.utils.round(_batLife).." seconds of battery"
+        _text = _text.." "..utils.oldRound(_batLife).." seconds of battery"
     end
     --]]
 
@@ -4500,24 +4415,12 @@ function ctld.unpackAASystem(_heli, _nearestCrate, _nearbyCrates, _aaSystemTempl
         -- HAWK / BUK READY!
         local _spawnedGroup = ctld.spawnCrateGroup(_heli, _posArray, _typeArray, 1, true)
         
-        env.info("******=AW=33COM _spawnedGroup ******")
-        env.info(inspect(_spawnedGroup))
-        env.info("******=AW=33COM ******")
-        
-        env.info("******=AW=33COM _aaSystemTemplate ******")
-        env.info(inspect(_aaSystemTemplate))
-        env.info("******=AW=33COM ******")
-        
         ctld.completeAASystems[_spawnedGroup:getName()] = ctld.getAASystemDetails(_spawnedGroup, _aaSystemTemplate)
 		    log:info("ctld.completeAASystems: $1", inspect(ctld.completeAASystems, { newline = " ", indent = "" }))
         ctld.processCallback({ unit = _heli, crate = _nearestCrate, spawnedGroup = _spawnedGroup, action = "unpack" })
 
         trigger.action.outTextForCoalition(_heli:getCoalition(), "[TEAM] " .. ctld.getPlayerNameOrType(_heli) .. " successfully deployed a full " .. _aaSystemTemplate.name .. " to the field. \n\nAA Active System limit is: " .. _allowed .. "\nActive: " .. (_activeLaunchers + 1), 10)
-        log:info("$1 unpacked a $2", ctld.getPlayerNameOrType(_heli), _aaSystemTemplate.name)
-        
-        env.info("******=AW=33COM ctld.completeAASystems ******")
-        env.info(inspect(ctld.completeAASystems))
-        env.info("******=AW=33COM ******")
+        log:info("$1 unpacked a $2", ctld.getPlayerNameOrType(_heli), _aaSystemTemplate.name)        
     end
 end
 
@@ -4616,8 +4519,6 @@ function ctld.countCompleteAASystems(_heli)
     for _groupName, _hawkDetails in pairs(ctld.completeAASystems) do
 
         local _hawkGroup = Group.getByName(_groupName)
-
-        --  env.info(_groupName..": "..mist.utils.tableShow(_hawkDetails))
         if _hawkGroup ~= nil and _hawkGroup:getCoalition() == _heli:getCoalition() then
 
             local _units = _hawkGroup:getUnits()
@@ -4820,10 +4721,91 @@ function ctld.unpackMultiCrate(_heli, _nearestCrate, _nearbyCrates)
     end
 end
 
-function ctld.spawnCrateGroup(_heli, _positions, _types, _unitQuantity, _isAASystem)
-	   
+-- AW33COM, I had to add this hack as the whole concept of static units is kind of missing and I did not want to rewrite now, but CTLD needs a rewrite to clean it all up
+-- we have like 30 ways to create groups, units, and etc, but we need 1
+-- sadly my method repeats the code that is in spawnCrateGroup but I need this for my Ai choopers and I'm not rewriting CTLD now.
+function ctld.spawnStaticCrateGroup(_heli, _positions, _types, _unitQuantity)	
     _unitQuantity = _unitQuantity or 1
-    local _id = ctld.getNextGroupId()
+    local _id = utils.getNextGroupId()
+    local _playerName = ctld.getPlayerNameOrType(_heli)
+    local _groupName = 'CTLD_' .. _types[1] .. '_' .. _id .. ' (' .. _playerName .. ')' -- encountered some issues with using "type #number" on some servers   
+        
+	-- this is what fortification actually needs not the idiotic tasks, player can drive, and etc 
+	-- we need a centralized api to create groups, and units correctly
+    local _group = {
+		["heading"] = 0,
+		["dead"] = false,        
+        ["units"] = {},
+        ["name"] = _groupName,        
+    }	
+    if #_positions == 1 then
+        for _i = 1, _unitQuantity do
+            local _unitId = utils.getNextUnitId()
+            local _details = { type = _types[1], unitId = _unitId, name = string.format("Unpacked %s #%i", _types[1], _unitId) } -- we rely on that "Unpacked" name somewhere else in order to know if the unit is from CTLD
+--            local _offset = (_i - 1) * 40 + 10
+--            local _offset = (_i - 1) * 10 + 10
+            local _playerHeading = utils.getHeading(_heli)
+            local _point = _playerHeading * 180 / math.pi
+            if _point <= 90 then
+              _angle = 45
+            elseif _point >= 90 and _point <= 180 then
+              _angle = 90
+            elseif _point >= 180 and _point <= 270 then
+              _angle = 135
+            elseif _point >= 270 then
+              _angle = 225
+            end 
+            local _offset = (_i - 1) * 5 + 5
+			local _unit = {
+				["category"] = "Fortifications",
+				["x"] = _positions[1].x + _offset,
+				["y"] = _positions[1].z + _offset,
+				["type"] = _details.type,
+				["name"] = _details.name,
+				["heading"] = 0,    		
+				["rate"] = 100,        
+				["country"] = ctld.neutralCountry				
+			}
+			
+			log:info("AW33COM Static Unit Parameters _playerName: $1, _groupName: $2, _types[1]: $3, positions: $4, unitName: $5", _playerName, _groupName, _types[1], inspect(_positions), _details.name)
+            _group.units[_i] = _unit
+        end
+    else
+        for _i, _pos in ipairs(_positions) do
+            local _unitId = utils.getNextUnitId()
+            local _details = { type = _types[_i], unitId = _unitId, name = string.format("Unpacked %s #%i", _types[_i], _unitId) } -- we rely on that "Unpacked" name somewhere else in order to know if the unit is from CTLD
+            local _playerHeading = utils.getHeading(_heli)
+            local _point = _playerHeading * 180 / math.pi
+            if _point <= 90 then
+              _angle = 45
+            elseif _point >= 90 and _point <= 180 then
+              _angle = 90
+            elseif _point >= 180 and _point <= 270 then
+              _angle = 135
+            elseif _point >= 270 then
+              _angle = 225
+            end 
+			local _unit = {
+				["category"] = "Fortifications",
+				["x"] = _pos.x + 5,
+				["y"] = _pos.z + 5,
+				["type"] = _details.type,
+				["name"] = _details.name,
+				["heading"] = 0,    		
+				["rate"] = 100,        
+				["country"] = ctld.neutralCountry
+			}
+			log:info("AW33COM Static Unit Parameters Multi Positions: _playerName: $1, _groupName: $2, _types[1]: $3, positions: $4, unitName: $5", _playerName, _groupName, _types[1], inspect(_positions), _details.name)
+            _group.units[_i] = _unit
+        end
+    end
+    local _spawnedGroup = Group.getByName(utils.dynAddStatic(_group).name)
+    return _spawnedGroup
+end
+
+function ctld.spawnCrateGroup(_heli, _positions, _types, _unitQuantity, _isAASystem)		
+    _unitQuantity = _unitQuantity or 1
+    local _id = utils.getNextGroupId()
     local _playerName = ctld.getPlayerNameOrType(_heli)
     local _groupName = 'CTLD_' .. _types[1] .. '_' .. _id .. ' (' .. _playerName .. ')' -- encountered some issues with using "type #number" on some servers   
      
@@ -4834,8 +4816,8 @@ function ctld.spawnCrateGroup(_heli, _positions, _types, _unitQuantity, _isAASys
       _groupName = 'CTLD_' .. _types[1] .. '_' .. _id .. ' (' .. _playerName .. ')' .. ctld.completeAASystemsTag -- encountered some issues with using "type #number" on some servers
     end
        
-    env.info("**=AW=33COM " .. _groupName)    
-    log:info("_playerName: $1, _groupName: $2", _playerName, _groupName)
+    env.info("**=AW=33COM " .. _groupName)
+    log:info("_playerName: $1, _groupName: $2, _types[1]: $3", _playerName, _groupName, _types[1])
     
     local _group = {
         ["visible"] = false,
@@ -4850,11 +4832,11 @@ function ctld.spawnCrateGroup(_heli, _positions, _types, _unitQuantity, _isAASys
     }
     if #_positions == 1 then
         for _i = 1, _unitQuantity do
-            local _unitId = ctld.getNextUnitId()
+            local _unitId = utils.getNextUnitId()
             local _details = { type = _types[1], unitId = _unitId, name = string.format("Unpacked %s #%i", _types[1], _unitId) } -- we rely on that "Unpacked" name somewhere else in order to know if the unit is from CTLD
 --            local _offset = (_i - 1) * 40 + 10
 --            local _offset = (_i - 1) * 10 + 10
-            local _playerHeading = mist.getHeading(_heli)
+            local _playerHeading = utils.getHeading(_heli)
 --[[
 Heading is definately output in radians
 --]]
@@ -4875,13 +4857,13 @@ Heading is definately output in radians
             local _offset = (_i - 1) * 5 + 5
             --Local _offset offsets multiple spawns, so they don't spawn on top of each other
 --            _group.units[_i] = ctld.createUnit(_positions[1].x + _offset, _positions[1].z + _offset, 120, _details)
-            _group.units[_i] = ctld.createUnit(_positions[1].x + _offset, _positions[1].z + _offset, _angle, _details)
+            _group.units[_i] = ctld.createUnit(_positions[1].x + _offset, _positions[1].z + _offset, _angle, _details)			
         end
     else
         for _i, _pos in ipairs(_positions) do
-            local _unitId = ctld.getNextUnitId()
+            local _unitId = utils.getNextUnitId()
             local _details = { type = _types[_i], unitId = _unitId, name = string.format("Unpacked %s #%i", _types[_i], _unitId) } -- we rely on that "Unpacked" name somewhere else in order to know if the unit is from CTLD
-            local _playerHeading = mist.getHeading(_heli)
+            local _playerHeading = utils.getHeading(_heli)
 --[[
 Heading is definately output in radians
 --]]
@@ -4900,7 +4882,6 @@ Heading is definately output in radians
         end
     end
 
-    --mist function
     _group.category = Group.Category.GROUND
     if _heli:getCoalition() == coalition.side.BLUE and _types[1] == "1L13 EWR" then
         -- EWRs need to be from a country with numeric callsigns
@@ -4920,10 +4901,8 @@ Heading is definately output in radians
     else
         _group.country = _heli:getCountry()
     end
-
-    local _spawnedGroup = Group.getByName(mist.dynAdd(_group).name)
-
-    --local _spawnedGroup = coalition.addGroup(_heli:getCountry(), Group.Category.GROUND, _group)
+	
+    local _spawnedGroup = Group.getByName(utils.dynAdd(_group).name)
 
     --activate by moving and so we can set ROE and Alarm state
 
@@ -4988,12 +4967,9 @@ function ctld.spawnDroppedGroup(_point, _details, _spawnBehind, _maxSearch, _for
         end
 
     end
-
-    --switch to MIST
     _group.category = Group.Category.GROUND;
     _group.country = _details.country;
-
-    local _spawnedGroup = Group.getByName(mist.dynAdd(_group).name)
+    local _spawnedGroup = Group.getByName(utils.dynAdd(_group).name)
 
     --local _spawnedGroup = coalition.addGroup(_details.country, Group.Category.GROUND, _group)
 
@@ -5140,52 +5116,16 @@ function ctld.findNearestGroup(_heli, _groups)
     end
 end
 
-function ctld.createUnit(_x, _y, _angle, _details) 
---function ctld.createUnit(_x, _y, _angle, _details, _nearbyCrate) 
---    local _heli = ctld.getTransportUnit()
---
---      if _heli == nil then
---        return -- no heli!
---      end
-
---    local _currentCrate = ctld.inTransitSlingLoadCrates[_heli:getName()]
-    
---  local _heli = ctld.getTransportUnit()
---  local _angle = math.atan2(_position.x.z, _position.x.x)
---  local _azToCrate = ctld.getCompassBearing(_heli:getPoint(), _nearbyCrate.crateUnit:getPoint())
-         
---  ctld.getPointAt12Oclock(_heli, _offset)
---  local _point = ctld.getPointAt12Oclock(_heli, 1)
---  local _crate = ctld.getClosestCrate(_aircraft, _crates)
-
---    local _playerHeading = mist.getHeading(_heli) -- the rest of the code determines the 'o'clock' bearing of the missile relative to the helicopter
---    local _crates = ctld.getCratesAndDistance(_heli)
---    local _crate = ctld.getClosestCrate(_heli, _crates)
---    local _clockdirection = ctld.getClockDirection(_heli, _crate.crateUnit)  
---    local _point = _clockdirection()  
---  if _point <= 3 then
---    _angle = 45
---  elseif _point >= 3 and _point <= 6 then
---    _angle = 135
---  elseif _point >= 6 and _point <= 9 then
---    _angle = 225
---  elseif _point >= 9 and _point <= 12 then
---    _angle = 315
---  end 
-
+function ctld.createUnit(_x, _y, _angle, _details)
     local _newUnit = {
         ["y"] = _y,
         ["type"] = _details.type,
         ["name"] = _details.name,
---        ["unitId"] = _details.unitId,
         ["heading"] = _angle,
---        ["heading"] = _azToCrate,
---        ["heading"] = 90,
---        ["heading"] = _playerHeading + 1,
         ["playerCanDrive"] = true,
-        ["skill"] = "Excellent",
+        ["skill"] = "Excellent",		
         ["x"] = _x,
-    }
+    }	
     return _newUnit
 end
 
@@ -5240,12 +5180,12 @@ function ctld.orderGroupToMoveToPoint(_leader, _destination)
 
     if ctld.isInfantry(_leader) then
         -- If its infantry, put them in a wedge formation - Ironwulf2000 Modified
-        table.insert(_path, mist.ground.buildWP(_leader:getPoint(), 'cone', 50))
-        table.insert(_path, mist.ground.buildWP(_destination, 'cone', 50))
+        table.insert(_path, utils.groundBuildWP(_leader:getPoint(), 'cone', 50))
+        table.insert(_path, utils.groundBuildWP(_destination, 'cone', 50))
     else
         -- everything else set 'off road'
-        table.insert(_path, mist.ground.buildWP(_leader:getPoint(), 'off road', 50))
-        table.insert(_path, mist.ground.buildWP(_destination, 'off road', 50))
+        table.insert(_path, utils.groundBuildWP(_leader:getPoint(), 'off road', 50))
+        table.insert(_path, utils.groundBuildWP(_destination, 'off road', 50))
     end
 
     local _mission = {
@@ -6521,13 +6461,7 @@ function ctld.JTACAutoLase(_jtacGroupName, _laserCode, _smoke, _lock, _colour)
 
             local _unit = _tempUnit --mr: only exploitable if spammable JTAC STATUS menu and reporting distance
             --local _unit = _jtacUnit
-            local _mapGrid = utils.posToMapGrid(_unit:getPosition())
-            --Moose.lua: line 7723: playerMenu unit selection and accuracy
-            --[[
-                if MOOSE = x then
-                    _mapGrid = mist.tostringMGRS(coord.LLtoMGRS(coord.LOtoLL(_enemyUnit:getPosition().p)), 1)
-                end
-            --]]
+            local _mapGrid = utils.posToMapGrid(_unit:getPosition())            
             ctld.notifyCoalition("JTAC - enemy target lost: " .. _tempUnitInfo.unitType .. ", Grid: " .. _mapGrid .. ", JTAC: " .. _jtacOwner .. ". Rescanning area.", 10, _jtacUnit:getCoalition())
         else
             ctld.notifyCoalition("JTAC - enemy target destroyed: " .. _tempUnitInfo.unitType .. ", JTAC: " .. _jtacOwner .. ". Rescanning area.", 10, _jtacUnit:getCoalition())
@@ -6557,13 +6491,7 @@ function ctld.JTACAutoLase(_jtacGroupName, _laserCode, _smoke, _lock, _colour)
             local _unit = _enemyUnit --mr: only exploitable if spammable JTAC STATUS menu and reporting distance
             --local _unit = _jtacUnit
             local _mapGrid = utils.posToMapGrid(_unit:getPosition())
-            --Moose.lua: line 7723: playerMenu unit selection and accuracy
-            --[[
-                if Moose = x then
-                    _mapGrid = mist.tostringMGRS(coord.LLtoMGRS(coord.LOtoLL(_enemyUnit:getPosition().p)), 1)
-                end
-            --]]
-
+            
             ctld.notifyCoalition("JTAC - new enemy target: " .. _targetName .. ", Grid: " .. _mapGrid .. ", JTAC: " .. _jtacOwner .. ", Laser Code: " .. _laserCode, 10, _jtacUnit:getCoalition())
 
             -- create smoke
@@ -7051,7 +6979,7 @@ function ctld.getJTACStatus(_args)
                 -- report distance to JTAC not enemy unit to avoid exploit by spamming JTAC status whilst flying over area
                 _distToPlayer = ctld.getDistance(_playerUnit:getPoint(), _jtacUnit:getPoint()) --distance in metres assuming flat worl
                 _distToPlayerKm = _distToPlayer / 1000 --convert from metres to km -- line 1176: function ctld.metersToFeet(_meters)
-                _roundedDist = mist.utils.round(_distToPlayerKm, 1) -- function mist.utils.round(num, idp) -- +idp for after decimal, -idp for before decimal
+                _roundedDist = utils.oldRound(_distToPlayerKm, 1) -- function utils.oldRound(num, idp) -- +idp for after decimal, -idp for before decimal
                 _azFromPlayer = ctld.getCompassBearing(_playerUnit:getPoint(), _jtacUnit:getPoint()) --player first = azimuth from player to target/JTAC
                 local _azFromPlayerStr = tostring(_azFromPlayer)
                 if _azFromPlayer < 100 then
@@ -7076,7 +7004,7 @@ function ctld.getJTACStatus(_args)
 
                 _distToPlayer = ctld.getDistance(_playerUnit:getPoint(), _jtacUnit:getPoint())
                 _distToPlayerKm = _distToPlayer / 1000
-                _roundedDist = mist.utils.round(_distToPlayerKm, 1)
+                _roundedDist = utils.oldRound(_distToPlayerKm, 1)
                 _azFromPlayer = ctld.getCompassBearing(_playerUnit:getPoint(), _jtacUnit:getPoint())
                 local _azFromPlayerStr = tostring(_azFromPlayer)
                 if _azFromPlayer < 100 then
@@ -7089,29 +7017,6 @@ function ctld.getJTACStatus(_args)
 
                 _mapGrid = utils.posToMapGrid(_jtacUnit:getPosition())
                 _coordinates = _mapGrid
-
-                --[[
-                -- ":" = self, needed as settings client specific
-                -- dedicated server test: GetMGRS_Accuracy = 5 (default setting) even when client radio specifies 2.  Need to test further.
-
-                log:info("Moose playerMenu enabled: $1",SETTINGS.ShowPlayerMenu) --mrDEBUG011
-
-                --Moose.lua: line 7723: playerMenu unit selection and accuracy
-                log:info("Moose MenuMGRS_Accuracy:  $1",SETTINGS:GetMGRS_Accuracy())
-                log:info("Moose SETTINGS:IsMetric: $1",SETTINGS:IsMetric())
-                log:info("Moose SETTINGS:IsImperial: $1",SETTINGS:IsImperial())
-
-                log:info("mist.tostringMGRS (SETTINGS:GetMGRS_Accuracy()): $1", mist.tostringMGRS(coord.LLtoMGRS(coord.LOtoLL(_jtacUnit:getPosition().p)), SETTINGS:GetMGRS_Accuracy()))
-
-                if (SETTINGS.ShowPlayerMenu ~= nil and SETTINGS.ShowPlayerMenu == true) then
-                    if (SETTINGS:GetMGRS_Accuracy()) > 1 then
-                        _coordinates = mist.tostringMGRS(coord.LLtoMGRS(coord.LOtoLL(_jtacUnit:getPosition().p)), SETTINGS:GetMGRS_Accuracy())
-                    end
-                    if (SETTINGS:IsImperial()) then
-                        _coordinateTitle = "@"
-                    end
-                end
-                ]]--
 
                 --Searching JTAC Format: [180 : 55.3km] Grid: MN61, JTAC: mad rabbit
                 _searchingJTACsUnsorted[_searchingJTACsCount] = { _jtacUnit, _distToPlayer, _JTACref, "" .. "[" .. _azFromPlayerStr --[[.. utf8.char(730)]] .. " : " .. _roundedDist .. "km] " .. _coordinateTitle .. " " .. _coordinates .. ", JTAC: " .. _jtacOwner }
@@ -7163,7 +7068,7 @@ function ctld.getJTACStatus(_args)
         --Compile final message for display. Do this after distance ranking so that discovered JTACs are placed above searhcing JTACs in STATUS
         local _laserCodeTitle = UTILS.GetCoalitionName(_side) .. " Team Laser Code: "  --UTILS.GetCoalitionName from MOOSE
         local _sideLaserCode = ctld.getLaserCode(_playerUnit:getCoalition())
-        _message = _message .. _JTACsMSGtitle .. "Detection Range: " .. mist.utils.round((ctld.JTAC_maxDistance / 1000), 1) .. "km , " .. _laserCodeTitle .. _sideLaserCode .. "\n"
+        _message = _message .. _JTACsMSGtitle .. "Detection Range: " .. utils.oldRound((ctld.JTAC_maxDistance / 1000), 1) .. "km , " .. _laserCodeTitle .. _sideLaserCode .. "\n"
 
         if _discoveredJTACsCount > 0 then
 
@@ -7431,10 +7336,8 @@ function ctld.getPositionString(_unit)
     end
 
     local _lat, _lon = coord.LOtoLL(_unit:getPosition().p)
-
-    local _latLngStr = mist.tostringLL(_lat, _lon, 3, ctld.location_DMS)
-
-    local _mgrsString = mist.tostringMGRS(coord.LLtoMGRS(coord.LOtoLL(_unit:getPosition().p)), 5)
+    local _latLngStr = utils.tostringLL(_lat, _lon, 3, ctld.location_DMS)
+    local _mgrsString = utils.tostringMGRS(coord.LLtoMGRS(coord.LOtoLL(_unit:getPosition().p)), 5)
 
     return " @ " .. _latLngStr .. " - MGRS " .. _mgrsString
 end
@@ -7463,9 +7366,6 @@ function ctld.LoadAllExistingSystemsIntoCTLD(_spawnedGroup)
  end
 
 -- ***************** SETUP SCRIPT ****************
-
-assert(mist ~= nil, "\n\n** HEY MISSION-DESIGNER! **\n\nMiST has not been loaded!\n\nMake sure MiST 3.6 or higher is running\n*before* running this script!\n")
-
 ctld.addedTo = {}
 ctld.spawnedCratesRED = {} -- use to store crates that have been spawned
 ctld.spawnedCratesBLUE = {} -- use to store crates that have been spawned
@@ -7549,7 +7449,7 @@ for _, _crates in pairs(ctld.spawnableCrates) do
         end
 
         ctld.crateLookupTable[key] = _crate
-        local _heavyCrate = mist.utils.deepCopy(_crate)
+        local _heavyCrate = utils.deepCopy(_crate)
         _heavyCrate.weight = _heavyCrate.weight * ctld.heavyCrateWeightMultiplier
         ctld.crateLookupTable[heavyKey] = _heavyCrate
     end

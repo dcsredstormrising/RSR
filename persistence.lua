@@ -1,17 +1,13 @@
 --- Saving/loading/updating code for managing "live" units and persisting them across server restarts
 env.info("RSR STARTUP: persistence.LUA INIT")
-require("mist_4_4_90")
 require("CTLD")
-require("Moose")
 local inspect = require("inspect")
 local utils = require("utils")
 local bases = require("bases")
 local state = require("state")
 local updateSpawnQueue = require("updateSpawnQueue")
 local logging = require("logging")
-
 local log = logging.Logger:new("Persistence", "info")
-
 local M = {}
 
 M.campaignStartSetup = false
@@ -45,7 +41,7 @@ function M.updateGroupData(persistentGroupData)
                 local position = unit:getPosition().p
                 unitData.x = position.x
                 unitData.y = position.z
-                unitData.heading = mist.getHeading(unit, true)
+                unitData.heading = utils.getHeading(unit, true)
             end
         end
         if #groupData.units == 0 then
@@ -64,8 +60,9 @@ end
 local function persistState(rsrConfig)
     local status, err = pcall(function()
         M.updateGroupData(state.currentState.persistentGroupData)
-        state.handleSpawnQueue()
-        state.copyFromCtld()
+        state.handleSpawnQueue()		
+		env.info("state.currentState.rsrData.nextGroupId: "..inspect(state.currentState.rsrData.nextGroupId))
+        state.copyFromUtils()
         state.updateBaseOwnership()
     end)
     if status then
@@ -82,13 +79,19 @@ local function persistState(rsrConfig)
     end
 end
 
+-- =AW=33COM  I inherited this method and here we basically use CTLD to re-spawn our stored state objects on mission start
+-- This is not the worst thing ever as we need to somehow re-spawn those objects,  problem is this is sometimes not consistent with what we do in CTLD.
+-- this is also outdated and is missing static spawning, which we will need in the future
+-- this has to be moved to CTLD and managed there
 function M.spawnGroup(groupData)
+	env.info("=AW=33COM Is this even running")
     -- Currently this code replicates the actions from ctld.unpackCrates
     local sideName = getSideNameFromGroupData(groupData)
     local groupName = groupData.name
     log:info("Spawning $1 $2 from groupData", sideName, groupName)
 
-    -- Fix issue where mist group data doesn't contain playerCanDrive flag (it's always true for our persisted units)
+    -- Fix issue where Evil Framework group data doesn't contain playerCanDrive flag (it's always true for our persisted units)
+	-- =AW=33COM the above statement is wrong now.  We persist statics, ships, and etc.  You can't drive some of them and they don't have that property in DCS
     local _isJTAC = false
 	local _isAAsystem = false
 	local _AAsystem
@@ -107,16 +110,11 @@ function M.spawnGroup(groupData)
 		end
     end
 	
-	log:info("_isJTAC $1 groupName $2", _isJTAC, groupName)
-    log:info("_isAAsystem $1 groupName $2, _AAsystem: $3", _isAAsystem, groupName, _AAsystem)
-	
-	-------------------------------
-	
 	-- disabled overwriting of late activated base defences with persistence data until RESUPPLY SYSTEM developed
 	-- check if late activated group (e.g. pre-placed base defences, FARP trucks) already spawned
 	local spawnedGroup = Group.getByName(groupName)
 	if spawnedGroup == nil then
-		spawnedGroup = Group.getByName(mist.dynAdd(groupData).name)
+		spawnedGroup = Group.getByName(utils.dynAdd(groupData).name)
 	else
 		
 		log:info("$1 already exists.  Skipping spawning.", groupName)
@@ -132,18 +130,11 @@ function M.spawnGroup(groupData)
         log:info("Configuring group $1 as EWR", groupName)
         ctld.addEWRTask(spawnedGroup)
     end
-
-	-- CTLD_ = player slung only i.e. no repair allowed for (resupplied) base defences as it will make resupply pointless
-	if utils.startswith(groupName, "CTLD_") and _isAAsystem then
-        log:info("Adding $1 to ctld.completeAASystems to allow repair", groupName)
-		ctld.completeAASystems[groupName] = ctld.getAASystemDetails(spawnedGroup, _AAsystem)
-    end
 	
-	-- make base defence units uncontrollable
-	if not utils.startswith(groupName, "CTLD_") then
-        log:info("Setting $1 as uncontrollable", groupName)
-        groupData["uncontrollable"] = true
-	end
+	if string.match(groupName, "55G6 EWR") then
+        log:info("Configuring group $1 as EWR", groupName)
+        ctld.addEWRTask(spawnedGroup)
+    end	
 
     utils.setGroupControllerOptions(spawnedGroup)
 
@@ -180,28 +171,16 @@ function M.getOwnedGroupCount(groupOwnership, sideName, playerName)
     return groupOwnership[sideName][playerName] == nil and 0 or #groupOwnership[sideName][playerName]
 end
 
-function M.getOwnedJtacCount(groupOwnership, sideName, playerName)
-    if groupOwnership[sideName][playerName] == nil then
-        return 0
-    end
-    local count = 0
-    for _, groupName in ipairs(groupOwnership[sideName][playerName]) do
-        if ctld.isJTACUnitType(groupName) then
-            count = count + 1
-        end
-    end
-    return count
-end
-
 -- Base defences are defined as late-activated group groups in proximity to an airbase or helipad
-local function configureBasesAtStartup(rsrConfig, baseOwnership, missionInitSetup)
+local function configureBasesAtStartup(rsrConfig, baseOwnership, missionInitSetup)	
     for _, ownershipData in pairs(baseOwnership) do
         for sideName, baseNames in pairs(ownershipData) do
             for _, baseName in pairs(baseNames) do
                 if AIRBASE:FindByName(baseName) == nil then
                     log:error("Unable to find base $1 on map but was in state file; skipping setup", baseName)
                 else
-                    log:info("bases.onMissionStart;  M.campaignStartSetup: $1", M.campaignStartSetup)
+                    log:info("bases.onMissionStart;  M.campaignStartSetup: $1 for base named: $2", M.campaignStartSetup, baseName)					
+					bases.ActualBasesUsedOnMap[baseName] = true
                     bases.onMissionStart(baseName, sideName, rsrConfig, missionInitSetup, M.campaignStartSetup)
                 end
             end
@@ -212,12 +191,12 @@ end
 
 function M.restoreFromState(rsrConfig)
     log:info("Restoring mission state")
-    state.copyToCtld()
+    state.copyToUtils()
     log:info("state.missionInitSetup: $1", state.missionInitSetup)
     configureBasesAtStartup(rsrConfig, state.currentState.baseOwnership, state.missionInitSetup)
 
     -- We clear state.current.persistentGroupData here, as this is updated in handleSpawnQueue later
-    -- This ensures the data we get from MIST is always consistent between a CTLD spawn and a reload from disk
+    -- This ensures the data we get from Evil Framework is always consistent between a CTLD spawn and a reload from disk
     local persistentGroupData = state.currentState.persistentGroupData
     log:info("Number of persistent groups at restore is $1", #state.currentState.persistentGroupData)
     state.currentState.persistentGroupData = {}
@@ -236,13 +215,13 @@ function M.onMissionStart(rsrConfig)
 
     -- baseOwnership should now be established by state.lua, whether from MIZ + campaignStartSetup, or saved state rsrState.json
     M.restoreFromState(rsrConfig)
-
+	
     -- register unpack callback so we can update our state
-    ctld.addCallback(function(_args)
+    ctld.addCallback(function(_args)		
         if _args.action and _args.action == "unpack" then
             local sideName = utils.getSideName(_args.unit:getCoalition())
             local playerName = ctld.getPlayerNameOrType(_args.unit)
-            local groupName = _args.spawnedGroup:getName()
+			groupName = _args.spawnedGroup:getName()			
             log:info('Player $1 on $2 unpacked $3', playerName, sideName, groupName)
             updateSpawnQueue.pushSpawnQueue(groupName)
             M.addGroupOwnership(M.groupOwnership, sideName, playerName, groupName)
@@ -252,5 +231,7 @@ function M.onMissionStart(rsrConfig)
     SCHEDULER:New(nil, persistState, { rsrConfig },
             rsrConfig.writeDelay, rsrConfig.writeInterval)
 end
+
 env.info("RSR STARTUP: persistence.LUA LOADED")
+
 return M

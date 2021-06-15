@@ -5,7 +5,93 @@ local inspect = require("inspect")
 local campaignFileName = "CampaignData.json"
 
 local M = {}
+local utilsGpId = 7000
+local utilsUnitId = 7000
+local utilsDynAddIndex = {[' air '] = 0, [' hel '] = 0, [' gnd '] = 0, [' bld '] = 0, [' static '] = 0, [' shp '] = 0}
+M.nextGroupId = 1
+M.nextUnitId = 1
 
+-- this does not work like the old Evil Framework
+-- in the old framework the ids were across campaign, here they are kind of by session I think
+-- this may work for CSAR and CTLD, but it may not work for state/persistance as over there we drop ids and recreated them...  I need to test this
+-- the weird part is CTLD uses it's own ID counter, so that CSAR so does state/persistance.  We need to sync this
+function M.getNextUnitId()
+    M.nextUnitId = M.nextUnitId + 1
+    return M.nextUnitId
+end
+
+function M.getNextGroupId()
+    M.nextGroupId = M.nextGroupId + 1
+    return M.nextGroupId
+end
+
+--- 3D Vector functions
+M.vec = {}
+	
+--- Vector addition.
+-- @tparam Vec3 vec1 first vector
+-- @tparam Vec3 vec2 second vector
+-- @treturn Vec3 new vector, sum of vec1 and vec2.
+function M.vec.add(vec1, vec2)
+	return {x = vec1.x + vec2.x, y = vec1.y + vec2.y, z = vec1.z + vec2.z}
+end
+
+--- Vector substraction.
+-- @tparam Vec3 vec1 first vector
+-- @tparam Vec3 vec2 second vector
+-- @treturn Vec3 new vector, vec2 substracted from vec1.
+function M.vec.sub(vec1, vec2)
+	return {x = vec1.x - vec2.x, y = vec1.y - vec2.y, z = vec1.z - vec2.z}
+end
+
+--- Vector scalar multiplication.
+-- @tparam Vec3 vec vector to multiply
+-- @tparam number mult scalar multiplicator
+-- @treturn Vec3 new vector multiplied with the given scalar
+function M.vec.scalarMult(vec, mult)
+	return {x = vec.x*mult, y = vec.y*mult, z = vec.z*mult}
+end
+
+M.vec.scalar_mult = M.vec.scalarMult
+
+--- Vector dot product.
+-- @tparam Vec3 vec1 first vector
+-- @tparam Vec3 vec2 second vector
+-- @treturn number dot product of given vectors
+function M.vec.dp (vec1, vec2)
+	return vec1.x*vec2.x + vec1.y*vec2.y + vec1.z*vec2.z
+end
+
+--- Vector cross product.
+-- @tparam Vec3 vec1 first vector
+-- @tparam Vec3 vec2 second vector
+-- @treturn Vec3 new vector, cross product of vec1 and vec2.
+function M.vec.cp(vec1, vec2)
+	return { x = vec1.y*vec2.z - vec1.z*vec2.y, y = vec1.z*vec2.x - vec1.x*vec2.z, z = vec1.x*vec2.y - vec1.y*vec2.x}
+end
+
+--- Vector magnitude
+-- @tparam Vec3 vec vector
+-- @treturn number magnitude of vector vec
+function M.vec.mag(vec)
+	return (vec.x^2 + vec.y^2 + vec.z^2)^0.5
+end
+
+--- Unit vector
+-- @tparam Vec3 vec
+-- @treturn Vec3 unit vector of vec
+function M.vec.getUnitVec(vec)
+	local mag = M.vec.mag(vec)
+	return { x = vec.x/mag, y = vec.y/mag, z = vec.z/mag }
+end
+
+--- Rotate vector.
+-- @tparam Vec2 vec2 to rotoate
+-- @tparam number theta
+-- @return Vec2 rotated vector.
+function M.vec.rotateVec2(vec2, theta)
+	return { x = vec2.x*math.cos(theta) - vec2.y*math.sin(theta), y = vec2.x*math.sin(theta) + vec2.y*math.cos(theta)}
+end
 
 function M.getFilePath(filename)
     if env ~= nil then
@@ -217,7 +303,7 @@ function M.posToMapGrid(position)
         _northing10kmGrid = string.match(_MGRStable.Northing, "(%d)%d%d%d%d$")
     end
 
-    -- first digit of 5 digit MGRS Easting and Northing more accurate for 10km grid than MIST method of rounding-up MGRS coordinates
+    -- first digit of 5 digit MGRS Easting and Northing more accurate for 10km grid than Evil Framework method of rounding-up MGRS coordinates
     local _MapGrid = _MGRStable.MGRSDigraph .. _easting10kmGrid .. _northing10kmGrid
     --log:info("_MapGrid: $1",_MapGrid)
 
@@ -413,7 +499,7 @@ function M.baseCaptureZoneToNameSideType(_zone)
     --"MM75 RSRbaseCaptureZone FARP" = "MM75" i.e. from whitepace and RSR up
     local _RSRbaseCaptureZoneName = string.match(_zoneName, ("^(.+)%sRSR"))
 
-    log:info("_RSRbaseCaptureZoneName: $1",_RSRbaseCaptureZoneName)
+    --log:info("_RSRbaseCaptureZoneName: $1",_RSRbaseCaptureZoneName)
 
     --"MM75 RSRbaseCaptureZone FARP" = "FARP"
     local _baseType = string.match(_zoneName, ("%w+$"))
@@ -549,9 +635,10 @@ function M.getAliveLogisticsCentreforBase(_airbaseORfarpORfob)
 end
 
 -- functions below added by =AW=33COM
+-- this will not work anymore as Evil Framework was pulled out. need to fix this
 function M.findUnitsInCircle(center, radius)
     local result = {}
-    local units = mist.DBs.unitsByName -- local copy for faster execution
+    local units = nil --EF.DBs.unitsByName -- local copy for faster execution
     for name, _ in pairs(units) do
         local unit = Unit.getByName(name)
         if not unit then 
@@ -570,7 +657,7 @@ function M.findUnitsInCircle(center, radius)
     return result
 end
 
-function M.getAvgGroupPos(groupName) -- stolen from Mist and corrected
+function M.getAvgGroupPos(groupName) -- stolen from Evil Framework and corrected
   local group = groupName -- sometimes this parameter is actually a group
   if type(groupName) == 'string' and Group.getByName(groupName) and Group.getByName(groupName):isExist() == true then
     group = Group.getByName(groupName)
@@ -579,7 +666,7 @@ function M.getAvgGroupPos(groupName) -- stolen from Mist and corrected
   for i = 1, group:getSize() do
     table.insert(units, group:getUnit(i):getName())
   end
-  return mist.getAvgPos(units)
+  return M.getAvgPos(units)
 end
 
 -- Makes a group move to a specific waypoint at a specific speed
@@ -605,8 +692,38 @@ function M.moveGroupTo(groupName, pos, speed)
     ["y"] = pos.z,
   }
   -- order group to new waypoint
-  mist.goRoute(groupName, {newWaypoint})
+  M.goRoute(groupName, {newWaypoint})
   return true
+end
+
+--- Tasks group to follow a route.
+-- This sets the mission task for the given group.
+-- Any wrapped actions inside the path (like enroute
+-- tasks) will be executed.
+-- @tparam Group group group to task.
+-- @tparam table path containing
+-- points defining a route.
+function M.goRoute(group, path)
+	local misTask = {
+		id = 'Mission',
+		params = {
+			route = {
+				points = M.deepCopy(path),
+			},
+		},
+	}
+	if type(group) == 'string' then
+		group = Group.getByName(group)
+	end
+	if group then
+		local groupCon = group:getController()
+		if groupCon then
+			log:warn(misTask)
+			groupCon:setTask(misTask)
+			return true
+		end
+	end
+	return false
 end
 
 -- Add a unit to the <group> on a suitable point in a <dispersion>-sized circle around a spot
@@ -635,7 +752,7 @@ function M.findPointInZone(spawnSpot, dispersion, isShip)
     local tryCounter = 1000
     
     repeat -- Place the unit in a "dispersion" ft radius circle from the spawn spot
-        unitPosition = mist.getRandPointInCircle(spawnSpot, dispersion)
+        unitPosition = M.getRandPointInCircle(spawnSpot, dispersion)
         local landType = land.getSurfaceType(unitPosition)
         tryCounter = tryCounter - 1
     until ((isShip and landType == land.SurfaceType.WATER) or (not(isShip) and (landType == land.SurfaceType.LAND or landType == land.SurfaceType.ROAD or landType == land.SurfaceType.RUNWAY))) or tryCounter == 0
@@ -645,6 +762,38 @@ function M.findPointInZone(spawnSpot, dispersion, isShip)
         return unitPosition
     end
 end
+
+	-- need to return a Vec3 or Vec2?
+function M.getRandPointInCircle(p, radius, innerRadius, maxA, minA)
+		local point = M.makeVec3(p)
+        local theta = 2*math.pi*math.random()
+		local minR = innerRadius or 0
+		if maxA and not minA then
+			theta = math.rad(math.random(0, maxA - math.random()))
+		elseif maxA and minA and minA < maxA then
+			theta = math.rad(math.random(minA, maxA) - math.random())
+		end
+		local rad = math.random() + math.random()
+		if rad > 1 then
+			rad = 2 - rad
+		end
+
+		local radMult
+		if minR and minR <= radius then
+			--radMult = (radius - innerRadius)*rad + innerRadius
+			radMult = radius * math.sqrt((minR^2 + (radius^2 - minR^2) * math.random()) / radius^2)
+		else
+			radMult = radius*rad
+		end
+
+		local rndCoord
+		if radius > 0 then
+			rndCoord = {x = math.cos(theta)*radMult + point.x, y = math.sin(theta)*radMult + point.z}
+		else
+			rndCoord = {x = point.x, y = point.z}
+		end
+		return rndCoord
+	end
 
 -- Returns the wind direction (from) and strength.
 function M.getWind(point)
@@ -690,11 +839,11 @@ function M.getAveragePosition(group)
     local units = Group.getUnits(group)
     for count = 1,#units do
       if units[count] then 
-        totalPosition = mist.vec.add(totalPosition,Unit.getPosition(units[count]).p)
+        totalPosition = M.vec.add(totalPosition,Unit.getPosition(units[count]).p)
       end
     end
     if #units > 0 then
-      return mist.vec.scalar_mult(totalPosition,1/#units)
+      return M.vec.scalar_mult(totalPosition,1/#units)
     else
       return nil
     end
@@ -815,14 +964,27 @@ function M.getNearestAirbase(location, coalition, category)
     return M.findNearest(point, baseLocations)
 end
 
--- this is mega temporary, a hack if you will to help me test something
 -- this stores data for the campaign and the file needs to be deleted after restart
 -- for now it stores only 1 thing, but i need to rewrite it to be able to add to it
 function M.storeCampaignData(key, data)
-  if data ~= nil and key ~= nil then    
-    local dataTable = {}
+  if data ~= nil and key ~= nil then  
+	local dataTable = nil
+
+	-- get all data first
+	local f = io.open(campaignFileName, "r")
+	
+	if f ~= nil then
+		local json = f:read("*all")
+		f:close()
+		dataTable = JSON:decode(json)
+	end
+	
+	if dataTable == nil then		 
+		dataTable = {}
+	end
+	
     dataTable[key] = data 
-    env.info("dataTable: "..inspect(dataTable))
+    --env.info("dataTable: "..inspect(dataTable))
     local json = JSON:encode_pretty(dataTable)
     File = io.open(campaignFileName, "w")
     File:write(json)
@@ -830,17 +992,14 @@ function M.storeCampaignData(key, data)
   end
 end
 
--- we probably need to read this data on mission start and keep it in memory
-function M.getDataFromCampaign(key)
-  local retVal = ""
+function M.getDataFromCampaign(key)  
   if key ~= nil then
     local f = io.open(campaignFileName, "r")
     local json = f:read("*all")
     f:close()
     local data = JSON:decode(json)
-    retVal = data[key]     
+    return data[key]
   end
-  return retVal
 end  
   
 function M.fileExists(name) --check if the file already exists for writing
@@ -849,12 +1008,864 @@ function M.fileExists(name) --check if the file already exists for writing
     end 
 end
 
+-- this needs to be improved or maybe not needed, still testing
 function M.defaultX()
   return 122428.57142857
 end
 
+-- this needs to be improved or maybe not needed, still testing
 function M.defaultY()
   return 420857.14285714
+end
+
+-- AW33COM this will help us find out if a specific unit type in on a base or in a zone. for example: we can check if Antenna or Mobile ATC is alive on the base
+-- this is tight to ground units only as Moose is inconsitent and has 1000000 diff categires unrelated to categories in DCS.  Moose is too big for it's own good
+function M.IsUnitTypeAliveInZone(zone, unit_type, coalition)
+	local coalName = "red"
+	local retVal = false
+    if coalition == 2 then coalName = "blue" end
+	if coalition == 3 then coalName = "neutral" end	
+	local unitsByType = SET_UNIT:New():FilterCoalitions(coalName):FilterCategories("ground"):FilterTypes(unit_type):FilterActive():FilterOnce()
+		
+	if unitsByType:HasGroundUnits() then
+		env.info("AW33COM utils.isAliveUnitTypeInZone Has Ground Units of type: ("..unit_type..") in Zone")		
+		 unitsByType:ForEachUnitCompletelyInZone (zone, 
+			function(unit)
+				retVal = true
+				env.info("AW33COM utils.isAliveUnitTypeInZone Unit: ("..unit:Name()..") of Type: ("..unit_type..") is in Zone")
+				return
+			end			
+		)
+	else
+		env.info("AW33COM utils.isAliveUnitTypeInZone No Units By Type found")
+	end
+	return retVal
+end
+
+-- =AW=33COM Moved all Evil Framework functions below
+M.shapeNames = {
+	["Landmine"] = "landmine",
+	["FARP CP Blindage"] = "kp_ug",
+	["Subsidiary structure C"] = "saray-c",
+	["Barracks 2"] = "kazarma2",
+	["Small house 2C"] = "dom2c",
+	["Military staff"] = "aviashtab",
+	["Tech hangar A"] = "ceh_ang_a",
+	["Oil derrick"] = "neftevyshka",
+	["Tech combine"] = "kombinat",
+	["Garage B"] = "garage_b",
+	["Airshow_Crowd"] = "Crowd1",
+	["Hangar A"] = "angar_a",
+	["Repair workshop"] = "tech",
+	["Subsidiary structure D"] = "saray-d",
+	["FARP Ammo Dump Coating"] = "SetkaKP",
+	["Small house 1C area"] = "dom2c-all",
+	["Tank 2"] = "airbase_tbilisi_tank_01",
+	["Boiler-house A"] = "kotelnaya_a",
+	["Workshop A"] = "tec_a",
+	["Small werehouse 1"] = "s1",
+	["Garage small B"] = "garagh-small-b",
+	["Small werehouse 4"] = "s4",
+	["Shop"] = "magazin",
+	["Subsidiary structure B"] = "saray-b",
+	["FARP Fuel Depot"] = "GSM Rus",
+	["Coach cargo"] = "wagon-gruz",
+	["Electric power box"] = "tr_budka",
+	["Tank 3"] = "airbase_tbilisi_tank_02",
+	["Red_Flag"] = "H-flag_R",
+	["Container red 3"] = "konteiner_red3",
+	["Garage A"] = "garage_a",
+	["Hangar B"] = "angar_b",
+	["Black_Tyre"] = "H-tyre_B",
+	["Cafe"] = "stolovaya",
+	["Restaurant 1"] = "restoran1",
+	["Subsidiary structure A"] = "saray-a",
+	["Container white"] = "konteiner_white",
+	["Warehouse"] = "sklad",
+	["Tank"] = "bak",
+	["Railway crossing B"] = "pereezd_small",
+	["Subsidiary structure F"] = "saray-f",
+	["Farm A"] = "ferma_a",
+	["Small werehouse 3"] = "s3",
+	["Water tower A"] = "wodokachka_a",
+	["Railway station"] = "r_vok_sd",
+	["Coach a tank blue"] = "wagon-cisterna_blue",
+	["Supermarket A"] = "uniwersam_a",
+	["Coach a platform"] = "wagon-platforma",
+	["Garage small A"] = "garagh-small-a",
+	["TV tower"] = "tele_bash",
+	["Comms tower M"] = "tele_bash_m",
+	["Small house 1A"] = "domik1a",
+	["Farm B"] = "ferma_b",
+	["GeneratorF"] = "GeneratorF",
+	["Cargo1"] = "ab-212_cargo",
+	["Container red 2"] = "konteiner_red2",
+	["Subsidiary structure E"] = "saray-e",
+	["Coach a passenger"] = "wagon-pass",
+	["Black_Tyre_WF"] = "H-tyre_B_WF",
+	["Electric locomotive"] = "elektrowoz",
+	["Shelter"] = "ukrytie",
+	["Coach a tank yellow"] = "wagon-cisterna_yellow",
+	["Railway crossing A"] = "pereezd_big",
+	[".Ammunition depot"] = "SkladC",
+	["Small werehouse 2"] = "s2",
+	["Windsock"] = "H-Windsock_RW",
+	["Shelter B"] = "ukrytie_b",
+	["Fuel tank"] = "toplivo-bak",
+	["Locomotive"] = "teplowoz",
+	[".Command Center"] = "ComCenter",
+	["Pump station"] = "nasos",
+	["Black_Tyre_RF"] = "H-tyre_B_RF",
+	["Coach cargo open"] = "wagon-gruz-otkr",
+	["Subsidiary structure 3"] = "hozdomik3",
+	["FARP Tent"] = "PalatkaB",
+	["White_Tyre"] = "H-tyre_W",
+	["Subsidiary structure G"] = "saray-g",
+	["Container red 1"] = "konteiner_red1",
+	["Small house 1B area"] = "domik1b-all",
+	["Subsidiary structure 1"] = "hozdomik1",
+	["Container brown"] = "konteiner_brown",
+	["Small house 1B"] = "domik1b",
+	["Subsidiary structure 2"] = "hozdomik2",
+	["Chemical tank A"] = "him_bak_a",
+	["WC"] = "WC",
+	["Small house 1A area"] = "domik1a-all",
+	["White_Flag"] = "H-Flag_W",
+	["Airshow_Cone"] = "Comp_cone",
+}
+		
+--- Returns heading of given unit.
+-- @tparam Unit unit unit whose heading is returned.
+-- @param rawHeading
+-- @treturn number heading of the unit, in range
+-- of 0 to 2*pi.
+function M.getHeading(unit, rawHeading)
+	local unitpos = unit:getPosition()
+	if unitpos then
+		local Heading = math.atan2(unitpos.x.z, unitpos.x.x)
+		if not rawHeading then
+			Heading = Heading + M.getNorthCorrection(unitpos.p)
+		end
+		if Heading < 0 then
+			Heading = Heading + 2*math.pi	-- put heading in range of 0 to 2*pi
+		end
+		return Heading
+	end
+end
+
+--- Converts a Vec2 to a Vec3.
+-- @tparam Vec2 vec the 2D vector
+-- @param y optional new y axis (altitude) value. If omitted it's 0.
+function M.makeVec3(vec, y)
+	if not vec.z then
+		if vec.alt and not y then
+			y = vec.alt
+		elseif not y then
+			y = 0
+		end
+		return {x = vec.x, y = y, z = vec.y}
+	else
+		return {x = vec.x, y = vec.y, z = vec.z}	-- it was already Vec3, actually.
+	end
+end
+
+function M.getNorthCorrection(gPoint)	--gets the correction needed for true north
+	local point = M.deepCopy(gPoint)
+	if not point.z then --Vec2; convert to Vec3
+		point.z = point.y
+		point.y = 0
+	end
+	local lat, lon = coord.LOtoLL(point)
+	local north_posit = coord.LLtoLO(lat + 1, lon)
+	return math.atan2(north_posit.z - point.z, north_posit.x - point.x)
+end
+		
+--- Simple rounding function.
+-- From http://lua-users.org/wiki/SimpleRound
+-- use negative idp for rounding ahead of decimal place, positive for rounding after decimal place
+-- @tparam number num number to round
+-- @param idp
+function M.oldRound(num, idp)
+	local mult = 10^(idp or 0)
+	return math.floor(num * mult + 0.5) / mult
+end		
+
+--- Converts kilometers per hour to meters per second.
+-- @param kmph speed in km/h
+-- @return speed in m/s
+function M.kmphToMps(kmph)
+	return kmph/3.6
+end
+
+-- No longer accepts path
+function M.groundBuildWP(point, overRideForm, overRideSpeed)
+
+	local wp = {}
+	wp.x = point.x
+
+	if point.z then
+		wp.y = point.z
+	else
+		wp.y = point.y
+	end
+	local form, speed
+
+	if point.speed and not overRideSpeed then
+		wp.speed = point.speed
+	elseif type(overRideSpeed) == 'number' then
+		wp.speed = overRideSpeed
+	else
+		wp.speed = M.kmphToMps(20)
+	end
+
+	if point.form and not overRideForm then
+		form = point.form
+	else
+		form = overRideForm
+	end
+
+	if not form then
+		wp.action = 'Cone'
+	else
+		form = string.lower(form)
+		if form == 'off_road' or form == 'off road' then
+			wp.action = 'Off Road'
+		elseif form == 'on_road' or form == 'on road' then
+			wp.action = 'On Road'
+		elseif form == 'rank' or form == 'line_abrest' or form == 'line abrest' or form == 'lineabrest'then
+			wp.action = 'Rank'
+		elseif form == 'cone' then
+			wp.action = 'Cone'
+		elseif form == 'diamond' then
+			wp.action = 'Diamond'
+		elseif form == 'vee' then
+			wp.action = 'Vee'
+		elseif form == 'echelon_left' or form == 'echelon left' or form == 'echelonl' then
+			wp.action = 'EchelonL'
+		elseif form == 'echelon_right' or form == 'echelon right' or form == 'echelonr' then
+			wp.action = 'EchelonR'
+		else
+			wp.action = 'Cone' -- if nothing matched
+		end
+	end
+
+	wp.type = 'Turning Point'
+
+	return wp
+
+end
+
+--- Converts angle in radians to degrees.
+-- @param angle angle in radians
+-- @return angle in degrees
+function M.toDegree(angle)
+	return angle*180/math.pi
+end
+
+--- Returns heading-error corrected direction.
+-- True-north corrected direction from point along vector vec.
+-- @tparam Vec3 vec
+-- @tparam Vec2 point
+-- @return heading-error corrected direction from point.
+function M.getDir(vec, point)
+	local dir = math.atan2(vec.z, vec.x)
+	if point then
+		dir = dir + M.getNorthCorrection(point)
+	end
+	if dir < 0 then
+		dir = dir + 2 * math.pi	-- put dir in range of 0 to 2*pi
+	end
+	return dir
+end
+
+--[[acc:
+in DM: decimal point of minutes.
+In DMS: decimal point of seconds.
+position after the decimal of the least significant digit:
+So:
+42.32 - acc of 2.
+]]
+function M.tostringLL(lat, lon, acc, DMS)
+
+	local latHemi, lonHemi
+	if lat > 0 then
+		latHemi = 'N'
+	else
+		latHemi = 'S'
+	end
+
+	if lon > 0 then
+		lonHemi = 'E'
+	else
+		lonHemi = 'W'
+	end
+
+	lat = math.abs(lat)
+	lon = math.abs(lon)
+
+	local latDeg = math.floor(lat)
+	local latMin = (lat - latDeg)*60
+
+	local lonDeg = math.floor(lon)
+	local lonMin = (lon - lonDeg)*60
+
+	if DMS then	-- degrees, minutes, and seconds.
+		local oldLatMin = latMin
+		latMin = math.floor(latMin)
+		local latSec = M.oldRound((oldLatMin - latMin)*60, acc)
+
+		local oldLonMin = lonMin
+		lonMin = math.floor(lonMin)
+		local lonSec = M.oldRound((oldLonMin - lonMin)*60, acc)
+
+		if latSec == 60 then
+			latSec = 0
+			latMin = latMin + 1
+		end
+
+		if lonSec == 60 then
+			lonSec = 0
+			lonMin = lonMin + 1
+		end
+
+		local secFrmtStr -- create the formatting string for the seconds place
+		if acc <= 0 then	-- no decimal place.
+			secFrmtStr = '%02d'
+		else
+			local width = 3 + acc	-- 01.310 - that's a width of 6, for example.
+			secFrmtStr = '%0' .. width .. '.' .. acc .. 'f'
+		end
+
+		return string.format('%02d', latDeg) .. ' ' .. string.format('%02d', latMin) .. '\' ' .. string.format(secFrmtStr, latSec) .. '"' .. latHemi .. '	 '
+		.. string.format('%02d', lonDeg) .. ' ' .. string.format('%02d', lonMin) .. '\' ' .. string.format(secFrmtStr, lonSec) .. '"' .. lonHemi
+
+	else	-- degrees, decimal minutes.
+		latMin = M.oldRound(latMin, acc)
+		lonMin = M.oldRound(lonMin, acc)
+
+		if latMin == 60 then
+			latMin = 0
+			latDeg = latDeg + 1
+		end
+
+		if lonMin == 60 then
+			lonMin = 0
+			lonDeg = lonDeg + 1
+		end
+
+		local minFrmtStr -- create the formatting string for the minutes place
+		if acc <= 0 then	-- no decimal place.
+			minFrmtStr = '%02d'
+		else
+			local width = 3 + acc	-- 01.310 - that's a width of 6, for example.
+			minFrmtStr = '%0' .. width .. '.' .. acc .. 'f'
+		end
+
+		return string.format('%02d', latDeg) .. ' ' .. string.format(minFrmtStr, latMin) .. '\'' .. latHemi .. '	 '
+		.. string.format('%02d', lonDeg) .. ' ' .. string.format(minFrmtStr, lonMin) .. '\'' .. lonHemi
+	end
+end	
+	
+--- Creates a deep copy of a object.
+-- Usually this object is a table.
+-- See also: from http://lua-users.org/wiki/CopyTable
+-- @param object object to copy
+-- @return copy of object
+function M.deepCopy(object)
+	local lookup_table = {}
+	local function _copy(object)
+		if type(object) ~= "table" then
+			return object
+		elseif lookup_table[object] then
+			return lookup_table[object]
+		end
+		local new_table = {}
+		lookup_table[object] = new_table
+		for index, value in pairs(object) do
+			new_table[_copy(index)] = _copy(value)
+		end
+		return setmetatable(new_table, getmetatable(object))
+	end
+	return _copy(object)
+end
+
+--- Returns the center of a zone as Vec3.
+-- @tparam string|table zone trigger zone name or table
+-- @treturn Vec3 center of the zone
+function M.zoneToVec3(zone)
+	local new = {}
+	if type(zone) == 'table' then
+		if zone.point then
+			new.x = zone.point.x
+			new.y = zone.point.y
+			new.z = zone.point.z
+		elseif zone.x and zone.y and zone.z then
+			return zone
+		end
+		return new
+	elseif type(zone) == 'string' then
+		zone = trigger.misc.getZone(zone)
+		if zone then
+			new.x = zone.point.x
+			new.y = zone.point.y
+			new.z = zone.point.z
+			return new
+		end
+	end
+end
+
+--- Spawns a static object to the game world.
+-- @todo write good docs
+-- @tparam table staticObj table containing data needed for the object creation
+function M.dynAddStatic(newObj)
+	log:info(newObj)
+	if newObj.units and newObj.units[1] then -- if its EF format
+		for entry, val in pairs(newObj.units[1]) do
+			if newObj[entry] and newObj[entry] ~= val or not newObj[entry] then
+				newObj[entry] = val
+			end
+		end
+	end
+	
+	local cntry = newObj.country
+	if newObj.countryId then
+		cntry = newObj.countryId
+	end
+
+	local newCountry = ''
+
+	for countryId, countryName in pairs(country.name) do
+		if type(cntry) == 'string' then
+			cntry = cntry:gsub("%s+", "_")
+			if tostring(countryName) == string.upper(cntry) then
+				newCountry = countryName
+			end
+		elseif type(cntry) == 'number' then
+			if countryId == cntry then
+				newCountry = countryName
+			end
+		end
+	end
+	
+	if newCountry == '' then
+		log:error("Country not found: $1", cntry)
+		return false
+	end
+
+	if newObj.clone or not newObj.groupId then
+		utilsGpId = utilsGpId + 1
+		newObj.groupId = utilsGpId
+	end
+
+	if newObj.clone or not newObj.unitId then
+		utilsUnitId = utilsUnitId + 1
+		newObj.unitId = utilsUnitId
+	end
+
+	newObj.name = newObj.name or newObj.unitName
+	
+	if newObj.clone or not newObj.name then
+		utilsDynAddIndex[' static '] = utilsDynAddIndex[' static '] + 1
+		newObj.name = (newCountry .. ' static ' .. utilsDynAddIndex[' static '])
+	end
+
+	if not newObj.dead then
+		newObj.dead = false
+	end
+
+	if not newObj.heading then
+		newObj.heading = math.random(360)
+	end
+	
+	if newObj.categoryStatic then
+		newObj.category = newObj.categoryStatic
+	end
+	if newObj.mass then
+		newObj.category = 'Cargos'
+	end
+	
+	if newObj.shapeName then
+		newObj.shape_name = newObj.shapeName
+	end
+	
+	if not newObj.shape_name then
+		log:info('shape_name not present')
+		if M.shapeNames[newObj.type] then
+			newObj.shape_name = M.shapeNames[newObj.type]
+		end
+	end
+	
+	if newObj.x and newObj.y and newObj.type and type(newObj.x) == 'number' and type(newObj.y) == 'number' and type(newObj.type) == 'string' then
+		log:info(newObj)
+		coalition.addStaticObject(country.id[newCountry], newObj)
+		return newObj
+	end
+	log:error("Failed to add static object due to missing or incorrect value. X: $1, Y: $2, Type: $3", newObj.x, newObj.y, newObj.type)
+	return false
+end
+
+--- Spawns a dynamic group into the game world.
+-- Same as coalition.add function in SSE. checks the passed data to see if its valid.
+-- Will generate groupId, groupName, unitId, and unitName if needed
+-- @tparam table newGroup table containting values needed for spawning a group.
+function M.dynAdd(newGroup)
+	local cntry = newGroup.country
+	if newGroup.countryId then
+		cntry = newGroup.countryId
+	end
+
+	local groupType = newGroup.category
+	local newCountry = ''
+	-- validate data
+	for countryId, countryName in pairs(country.name) do
+		if type(cntry) == 'string' then
+			cntry = cntry:gsub("%s+", "_")
+			if tostring(countryName) == string.upper(cntry) then
+				newCountry = countryName
+			end
+		elseif type(cntry) == 'number' then
+			if countryId == cntry then
+				newCountry = countryName
+			end
+		end
+	end
+
+	if newCountry == '' then
+		log:error("Country not found: $1", cntry)
+		return false
+	end
+
+	local newCat = ''
+	for catName, catId in pairs(Unit.Category) do
+		if type(groupType) == 'string' then
+			if tostring(catName) == string.upper(groupType) then
+				newCat = catName
+			end
+		elseif type(groupType) == 'number' then
+			if catId == groupType then
+				newCat = catName
+			end
+		end
+
+		if catName == 'GROUND_UNIT' and (string.upper(groupType) == 'VEHICLE' or string.upper(groupType) == 'GROUND') then
+			newCat = 'GROUND_UNIT'
+		elseif catName == 'AIRPLANE' and string.upper(groupType) == 'PLANE' then
+			newCat = 'AIRPLANE'
+		end
+	end
+	local typeName
+	if newCat == 'GROUND_UNIT' then
+		typeName = ' gnd '
+	elseif newCat == 'AIRPLANE' then
+		typeName = ' air '
+	elseif newCat == 'HELICOPTER' then
+		typeName = ' hel '
+	elseif newCat == 'SHIP' then
+		typeName = ' shp '
+	elseif newCat == 'BUILDING' then
+		typeName = ' bld '
+	end
+	if newGroup.clone or not newGroup.groupId then
+		utilsDynAddIndex[typeName] = utilsDynAddIndex[typeName] + 1
+		utilsGpId = utilsGpId + 1
+		newGroup.groupId = utilsGpId
+	end
+	if newGroup.groupName or newGroup.name then
+		if newGroup.groupName then
+			newGroup.name = newGroup.groupName
+		elseif newGroup.name then
+			newGroup.name = newGroup.name
+		end
+	end
+
+	if newGroup.clone or not newGroup.name then
+		newGroup.name = tostring(newCountry .. tostring(typeName) .. utilsDynAddIndex[typeName])
+	end
+
+	if not newGroup.hidden then
+		newGroup.hidden = false
+	end
+
+	if not newGroup.visible then
+		newGroup.visible = false
+	end
+
+	if (newGroup.start_time and type(newGroup.start_time) ~= 'number') or not newGroup.start_time then
+		if newGroup.startTime then
+			newGroup.start_time = M.oldRound(newGroup.startTime)
+		else
+			newGroup.start_time = 0
+		end
+	end
+
+
+	for unitIndex, unitData in pairs(newGroup.units) do
+		local originalName = newGroup.units[unitIndex].unitName or newGroup.units[unitIndex].name
+		if newGroup.clone or not unitData.unitId then
+			utilsUnitId = utilsUnitId + 1
+			newGroup.units[unitIndex].unitId = utilsUnitId
+		end
+		if newGroup.units[unitIndex].unitName or newGroup.units[unitIndex].name then
+			if newGroup.units[unitIndex].unitName then
+				newGroup.units[unitIndex].name = newGroup.units[unitIndex].unitName
+			elseif newGroup.units[unitIndex].name then
+				newGroup.units[unitIndex].name = newGroup.units[unitIndex].name
+			end
+		end
+		if newGroup.clone or not unitData.name then
+			newGroup.units[unitIndex].name = tostring(newGroup.name .. ' unit' .. unitIndex)
+		end
+
+		if not unitData.skill then
+			newGroup.units[unitIndex].skill = 'Random'
+		end
+
+		if newCat == 'AIRPLANE' or newCat == 'HELICOPTER' then
+			if newGroup.units[unitIndex].alt_type and newGroup.units[unitIndex].alt_type ~= 'BARO' or not newGroup.units[unitIndex].alt_type then
+				newGroup.units[unitIndex].alt_type = 'RADIO'
+			end
+			if not unitData.speed then
+				if newCat == 'AIRPLANE' then
+					newGroup.units[unitIndex].speed = 150
+				elseif newCat == 'HELICOPTER' then
+					newGroup.units[unitIndex].speed = 60
+				end
+			end
+			if not unitData.payload then
+				--newGroup.units[unitIndex].payload = EF.getPayload(originalName) I had to remove this
+			end
+			if not unitData.alt then
+				if newCat == 'AIRPLANE' then
+					newGroup.units[unitIndex].alt = 2000
+					newGroup.units[unitIndex].alt_type = 'RADIO'
+					newGroup.units[unitIndex].speed = 150
+				elseif newCat == 'HELICOPTER' then
+					newGroup.units[unitIndex].alt = 500
+					newGroup.units[unitIndex].alt_type = 'RADIO'
+					newGroup.units[unitIndex].speed = 60
+				end
+			end
+			
+		elseif newCat == 'GROUND_UNIT' then
+			if nil == unitData.playerCanDrive then
+				unitData.playerCanDrive = true
+			end		
+		end		
+	end
+	
+	if newGroup.route then
+		if newGroup.route and not newGroup.route.points then
+			if newGroup.route[1] then
+				local copyRoute = M.deepCopy(newGroup.route)
+				newGroup.route = {}
+				newGroup.route.points = copyRoute
+			end
+		end
+	else -- if aircraft and no route assigned. make a quick and stupid route so AI doesnt RTB immediately
+		if newCat == 'AIRPLANE' or newCat == 'HELICOPTER' then
+			newGroup.route = {}
+			newGroup.route.points = {}
+			newGroup.route.points[1] = {}
+		end
+	end
+	newGroup.country = newCountry
+	-- sanitize table
+	newGroup.groupName = nil
+	newGroup.clone = nil
+	newGroup.category = nil
+	newGroup.country = nil
+	newGroup.tasks = {}
+
+	for unitIndex, unitData in pairs(newGroup.units) do
+		newGroup.units[unitIndex].unitName = nil
+	end
+
+	env.info("=AW=33COM new group data: "..inspect(newGroup))
+	
+	coalition.addGroup(country.id[newCountry], Unit.Category[newCat], newGroup)
+	return newGroup
+end
+
+--- Returns MGRS coordinates as string.
+-- @tparam string MGRS MGRS coordinates
+-- @tparam number acc the accuracy of each easting/northing.
+-- Can be: 0, 1, 2, 3, 4, or 5.
+function M.tostringMGRS(MGRS, acc)
+	if acc == 0 then
+		return MGRS.UTMZone .. ' ' .. MGRS.MGRSDigraph
+	else
+		return MGRS.UTMZone .. ' ' .. MGRS.MGRSDigraph .. ' ' .. string.format('%0' .. acc .. 'd', M.oldRound(MGRS.Easting/(10^(5-acc)), 0))
+		.. ' ' .. string.format('%0' .. acc .. 'd', M.oldRound(MGRS.Northing/(10^(5-acc)), 0))
+	end
+end
+
+--- Converts meters to nautical miles.
+-- @param meters distance in meters
+-- @return distance in nautical miles
+function M.metersToNM(meters)
+	return meters/1852
+end
+
+--- Converts meters to feet.
+-- @param meters distance in meters
+-- @return distance in feet
+function M.metersToFeet(meters)
+	return meters/0.3048
+end
+
+--- Converts meters per second to knots.
+-- @param mps speed in m/s
+-- @return speed in knots
+function M.mpsToKnots(mps)
+	return mps*3600/1852
+end
+
+--vars.units - table of unit names (NOT unitNameTable- maybe this should change).
+--vars.acc - integer, number of numbers after decimal place
+--vars.DMS - if true, output in degrees, minutes, seconds.	Otherwise, output in degrees, minutes.
+function M.getLLString(vars)
+	local units = vars.units
+	local acc = vars.acc or 3
+	local DMS = vars.DMS
+	local avgPos = M.getAvgPos(units)
+	if avgPos then
+		local lat, lon = coord.LOtoLL(avgPos)
+		return M.tostringLL(lat, lon, acc, DMS)
+	end
+end
+
+--Gets the average position of a group of units (by name)
+function M.getAvgPos(unitNames)
+	local avgX, avgY, avgZ, totNum = 0, 0, 0, 0
+	for i = 1, #unitNames do
+		local unit
+		if Unit.getByName(unitNames[i]) then
+			unit = Unit.getByName(unitNames[i])
+		elseif StaticObject.getByName(unitNames[i]) then
+			unit = StaticObject.getByName(unitNames[i])
+		end
+		if unit then
+			local pos = unit:getPosition().p
+			if pos then -- you never know O.o
+				avgX = avgX + pos.x
+				avgY = avgY + pos.y
+				avgZ = avgZ + pos.z
+				totNum = totNum + 1
+			end
+		end
+	end
+	if totNum ~= 0 then
+		return {x = avgX/totNum, y = avgY/totNum, z = avgZ/totNum}
+	end
+end
+
+--- Returns MGRS coordinates as string.
+-- @tparam string MGRS MGRS coordinates
+-- @tparam number acc the accuracy of each easting/northing.
+-- Can be: 0, 1, 2, 3, 4, or 5.
+function M.tostringMGRS(MGRS, acc)
+	if acc == 0 then
+		return MGRS.UTMZone .. ' ' .. MGRS.MGRSDigraph
+	else
+		return MGRS.UTMZone .. ' ' .. MGRS.MGRSDigraph .. ' ' .. string.format('%0' .. acc .. 'd', M.oldRound(MGRS.Easting/(10^(5-acc)), 0))
+		.. ' ' .. string.format('%0' .. acc .. 'd', M.oldRound(MGRS.Northing/(10^(5-acc)), 0))
+	end
+end
+
+--[[ 
+vars.units - table of unit names (NOT unitNameTable- maybe this should change).
+vars.acc - integer between 0 and 5, inclusive
+]]
+function M.getMGRSString(vars)
+	local units = vars.units
+	local acc = vars.acc or 5
+	local avgPos = M.getAvgPos(units)
+	if avgPos then
+		return M.tostringMGRS(coord.LLtoMGRS(coord.LOtoLL(avgPos)), acc)
+	end
+end
+
+--[[
+vars.units- table of unit names (NOT unitNameTable- maybe this should change).
+vars.ref -	vec3 ref point, maybe overload for vec2 as well?
+vars.alt - boolean, if used, includes altitude in string
+vars.metric - boolean, gives distance in km instead of NM.
+]]
+function M.getBRString(vars)
+	local units = vars.units
+	local ref = M.makeVec3(vars.ref, 0)	-- turn it into Vec3 if it is not already.
+	local alt = vars.alt
+	local metric = vars.metric
+	local avgPos = M.getAvgPos(units)
+	if avgPos then
+		local vec = {x = avgPos.x - ref.x, y = avgPos.y - ref.y, z = avgPos.z - ref.z}
+		local dir = M.getDir(vec, ref)
+		local dist = M.get2DDist(avgPos, ref)
+		if alt then
+			alt = avgPos.y
+		end
+		return M.tostringBR(dir, dist, alt, metric)
+	end
+end
+
+--- Returns distance in meters between two points.
+-- @tparam Vec2|Vec3 point1 first point
+-- @tparam Vec2|Vec3 point2 second point
+-- @treturn number distance between given points.
+function M.get2DDist(point1, point2)
+	point1 = M.makeVec3(point1)
+	point2 = M.makeVec3(point2)
+	return M.vec.mag({x = point1.x - point2.x, y = 0, z = point1.z - point2.z})
+end
+
+
+-- copies these methods from space until files, because we freaken have gazillion method doing the same thing all over
+local function getDistSq(x1, y1, x2, y2)
+    local dX = x1 - x2
+    local dY = y1 - y2
+    return dX * dX + dY * dY
+end
+
+function M.isPointInZone(point, zonePoint, zoneRadius)
+    return getDistSq(point.x, point.y, zonePoint.x, zonePoint.y) < zoneRadius * zoneRadius
+end
+
+function M.findNearest(point, points)
+    local pX = point.x
+    local pY = point.y
+    local minIdx, minDist
+    for idx, p in pairs(points) do
+        local dist = getDistSq(pX, pY, p.x, p.y)
+        if minDist == nil or dist < minDist then
+            minIdx = idx
+            minDist = dist
+        end
+    end
+    return minIdx, minDist and math.sqrt(minDist) or nil
+end
+
+function M.findNearestBase(point)
+    local baseLocations = {}
+    for _, base in pairs(AIRBASE.GetAllAirbases()) do
+        baseLocations[base:GetName()] = base:GetVec2()
+    end
+    return M.findNearest(point, baseLocations)
+end
+
+function M.closestBaseIsEnemyAndWithinRange(position, friendlySideName, range)
+    local state = require("state")
+    local nearestBase, distance = M.findNearestBase(position)
+    if distance > range then
+        -- far from any base
+        return false
+    end
+
+    local nearestBaseOwner = state.getOwner(nearestBase)
+    if nearestBaseOwner == nil or nearestBaseOwner == "neutral" or nearestBaseOwner == friendlySideName then
+        -- nearest base is neutral/friendly
+        return false
+    end
+    return true
 end
 
 return M

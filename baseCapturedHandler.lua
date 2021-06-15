@@ -27,12 +27,7 @@ function M.register()
             log:info("Ignoring capture event for $1: no change of side ($2)", baseName, sideName)
             return
         end
-
-        --[[
-        -- mist.getUnitsInZones(unit_names, zone_names, zone_type) --need list of 'unit_names' first...
-        -- ZONE_BASE:New(_triggerZone) --MOOSE: Adds zone to MOOSE system?
-        -- ZONE_BASE.IsPointVec2InZone(_aircraft) -- MOOSE: Returns if a 2D point vector is within the zone
-        --]]
+        
         -- enumerate units within RSRbaseCaptureZones in-line with RSR radiuses
         if event.IniTypeName ~= nil then
             baseOwnershipCheck.baseOwnership = baseOwnershipCheck.getAllBaseOwnership("ALL", event.IniTypeName, false)
@@ -45,7 +40,6 @@ function M.register()
         --migrated to baseOwnershipCheck.lua
         --bases.configureForSide(baseName, sideName)
         --bases.resupply(baseName, sideName, rsrConfig)
-
     end
 end
 

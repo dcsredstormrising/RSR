@@ -1,6 +1,6 @@
 ---@diagnostic disable: undefined-global
--- Logger inspired by MIST's logger for use inside and outside DCS
--- Here to replace the need to import MIST when we're just doing logging
+-- Logger inspired by Evil Framework's logger for use inside and outside DCS
+-- Here to replace the need to import Evil Framework's when we're just doing logging
 
 local inspect = require("inspect")
 local M = {}

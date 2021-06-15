@@ -3,6 +3,8 @@
 -- Reintroducing AI-CAP to protect warehouses, add some difficulty when it is PVE.
 -- Spawns
 
+local rsrConfig = require("RSR_config")
+
 --COMMON FUNCTIONS to save table to file and reload, in this case we are using it to make the AI-CAP persistent
 do
 --http://lua-users.org/wiki/SaveTableToFile
@@ -158,7 +160,7 @@ if file_exists("RedGraveyard.lua") then
   env.info("RedGraveyard exists, loading ...")
   RedGraveyard = table.load( "RedGraveyard.lua" )
 else RedGraveyard = {
-   ["MiG-31"]=64,
+   ["MiG-31"]=40,
 }
   env.info("RedGraveyard does not exist, writing ...")
   table.save( RedGraveyard, "RedGraveyard.lua" )
@@ -169,7 +171,7 @@ if file_exists("BlueGraveyard.lua") then
   env.info("BlueGraveyard exists, loading ...")
   BlueGraveyard = table.load( "BlueGraveyard.lua" )
 else BlueGraveyard = {  
-   ["F-14B"]=64,
+   ["F-14B"]=40,
 }
   env.info("BlueGraveyard does not exist, writing ...")
   table.save( BlueGraveyard, "BlueGraveyard.lua" )
@@ -223,38 +225,39 @@ function AnyBluePilotEject:OnEventEjection( EventData )
 -- EventData.IniUnit:MessageToAll( EventData.place:getName() .. ": " .. EventData.IniTypeName .. " landed.", 15, "Landing" )
 end
 
-Maykop_SouthCAPZone = ZONE:New( "Maykop CAP Zone", GROUP:FindByName( "Maykop CAP Zone" ) )    
+RedCAPZone = ZONE:New( "Red CAP Zone", GROUP:FindByName( "Red CAP Zone" ) )    
 
 RedDetectionSetGroup = SET_GROUP:New()
 RedDetectionSetGroup:FilterCoalitions("red")
 RedDetectionSetGroup:FilterPrefixes( { "EWR", "Overlord " } )
 RedDetectionSetGroup:FilterStart()
-RedDetection = DETECTION_AREAS:New( RedDetectionSetGroup, 15000 )
+RedDetection = DETECTION_AREAS:New( RedDetectionSetGroup, 5000 )
 
 RedA2ADispatcher = AI_A2A_DISPATCHER:New( RedDetection )
-RedA2ADispatcher:SetSquadron( "24th Fighter Aviation Regiment", AIRBASE.Caucasus.Maykop_Khanskaya, { "24th Fighter Aviation Regiment" }, RedGraveyard["MiG-31"] ) --MiG-31 Squadron
-RedA2ADispatcher:SetSquadronCap( "24th Fighter Aviation Regiment", Maykop_SouthCAPZone, 1000, 12000, 600, 800, 800, 1200, "BARO" )
+RedA2ADispatcher:SetSquadron( "24th Fighter Aviation Regiment", rsrConfig.redAiCAPAirbase, { "24th Fighter Aviation Regiment" }, RedGraveyard["MiG-31"] ) --MiG-31 Squadron
+RedA2ADispatcher:SetSquadronCap( "24th Fighter Aviation Regiment", RedCAPZone, 1000, 12000, 600, 800, 800, 1200, "BARO" )
 RedA2ADispatcher:SetSquadronCapInterval( "24th Fighter Aviation Regiment", 2, 180, 600, 1 )
 RedA2ADispatcher:SetDefaultTakeoffFromParkingHot()
 RedA2ADispatcher:SetDefaultLandingAtEngineShutdown()  
 
-Kutaisi_NorthCAPZone = ZONE:New( "Kutaisi CAP Zone", GROUP:FindByName( "Kutaisi CAP Zone" ) )
+BlueCAPZone = ZONE:New( "Blue CAP Zone", GROUP:FindByName( "Blue CAP Zone" ) )
 
 BlueDetectionSetGroup = SET_GROUP:New()
 BlueDetectionSetGroup:FilterCoalitions("blue")
 BlueDetectionSetGroup:FilterPrefixes( { "EWR", "Magic " } )
 BlueDetectionSetGroup:FilterStart()
-BlueDetection = DETECTION_AREAS:New( BlueDetectionSetGroup, 15000 )
+BlueDetection = DETECTION_AREAS:New( BlueDetectionSetGroup, 5000 )
 BlueA2ADispatcher = AI_A2A_DISPATCHER:New( BlueDetection )
 
-BlueA2ADispatcher:SetSquadron( "313th Tactical Fighter Squadron", AIRBASE.Caucasus.Kutaisi, { "313th Tactical Fighter Squadron" }, BlueGraveyard["F-14B"] ) --F14A Squadron
-BlueA2ADispatcher:SetSquadronCap( "313th Tactical Fighter Squadron", Kutaisi_NorthCAPZone, 1000, 12000, 600, 800, 800, 1200, "BARO" )
+BlueA2ADispatcher:SetSquadron( "313th Tactical Fighter Squadron", rsrConfig.blueAiCAPAirbase, { "313th Tactical Fighter Squadron" }, BlueGraveyard["F-14B"] ) --F14A Squadron
+BlueA2ADispatcher:SetSquadronCap( "313th Tactical Fighter Squadron", BlueCAPZone, 1000, 12000, 600, 800, 800, 1200, "BARO" )
 BlueA2ADispatcher:SetSquadronCapInterval( "313th Tactical Fighter Squadron", 2, 180, 600, 1 )
 BlueA2ADispatcher:SetDefaultTakeoffFromParkingHot()
 BlueA2ADispatcher:SetDefaultLandingAtEngineShutdown()
 
 SCHEDULER:New( nil,function()
 table.save( RedGraveyard, "RedGraveyard.lua" )
+--env.info("Airbases: Updated.")
 
 if RedGraveyard["MiG-31"] < 17 then RedA2ADispatcher:SetSquadronGrouping( "24th Fighter Aviation Regiment", 1) end
 if RedGraveyard["MiG-31"]<3 then RedA2ADispatcher:SetSquadronCapInterval( "24th Fighter Aviation Regiment", 1, 180, 600, 1 ) end
@@ -262,6 +265,7 @@ end, {}, 10, 300)
 
 SCHEDULER:New( nil,function()
 table.save( BlueGraveyard, "BlueGraveyard.lua" )
+--env.info("Airbases: Updated.")
 
 if BlueGraveyard["F-14B"] < 17 then BlueA2ADispatcher:SetSquadronGrouping( "313th Tactical Fighter Squadron", 1) end
 if BlueGraveyard["F-14B"]<3 then BlueA2ADispatcher:SetSquadronCapInterval( "313th Tactical Fighter Squadron", 1, 180, 600, 1 ) end

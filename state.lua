@@ -1,12 +1,9 @@
 env.info("RSR STARTUP: state.LUA INIT")
-require("mist_4_4_90")
-require("CTLD")
 local JSON = require("JSON")
 local utils = require("utils")
 local baseOwnershipCheck = require("baseOwnershipCheck")
 local updateSpawnQueue = require("updateSpawnQueue")
 local logging = require("logging")
-
 local log = logging.Logger:new("State", "info")
 
 --luacheck: push no unused
@@ -19,10 +16,9 @@ local M = {}
 
 -- The default state that should be set on a reset or if missing from the state we're restoring from
 M.defaultState = {
-    ctld = {
+    rsrData = {
         nextGroupId = 1,
-        nextUnitId = 1,
-        --JTACsPerPlayerPerSide = {}
+        nextUnitId = 1
     },
     persistentGroupData = {}, -- updated by a scheduled task
     baseOwnership = {} -- populated from DCS API if zero-length
@@ -67,7 +63,7 @@ function M.getGroupData(groupName)
     for _, unit in pairs(group:getUnits()) do
         local position = unit:getPosition()
         local unitData = {
-            heading = mist.getHeading(unit, true),
+            heading = utils.getHeading(unit, true),
             skill = "Excellent",
             type = unit:getTypeName(),
             name = unit:getName(),
@@ -81,7 +77,7 @@ function M.getGroupData(groupName)
 end
 
 function M.handleSpawnQueue()
-    -- get MIST group data for newly unpacked units (if it's available)
+    -- get group data for newly unpacked units (if it's available)
     log:info("Handling spawn queue (length $1)", #updateSpawnQueue.spawnQueue)
     for i = #updateSpawnQueue.spawnQueue, 1, -1 do
         local groupName = updateSpawnQueue.spawnQueue[i]
@@ -99,7 +95,7 @@ function M.handleSpawnQueue()
     log:info("Spawn queue handling complete")
 end
 
---- Removes groupId and unitId from data so that upon respawn, MIST assigns new IDs
+--- Removes groupId and unitId from data so that upon respawn, Evil Framework assigns new IDs
 -- Avoids accidental overwrite of units
 -- This is called at write-to-disk time
 -- Visible to allow testing
@@ -123,7 +119,7 @@ function M.readStateFromDisk(filename)
 end
 
 function M.writeStateToDisk(stateFileName)
-    local stateToWrite = mist.utils.deepCopy(M.currentState)
+    local stateToWrite = utils.deepCopy(M.currentState)
     M.removeGroupAndUnitIds(stateToWrite.persistentGroupData)
     log:info("Writing state to disk at $1", stateFileName)
     local json = JSON:encode_pretty(stateToWrite)
@@ -133,16 +129,16 @@ function M.writeStateToDisk(stateFileName)
     log:info("Finished writing state to $1", stateFileName)
 end
 
-function M.copyToCtld()
-    ctld.nextGroupId = M.currentState.ctld.nextGroupId
-    ctld.nextUnitId = M.currentState.ctld.nextUnitId
-    ctld.JTACsPerUCIDPerSide = M.currentState.ctld.JTACsPerPlayerPerSide
+-- =AW=33COM I moved the ids them from CTLD to utils
+-- this is all wrong anyway, those IDs should be build like in the E.Framework where id is unique per campaign and not 1 session, otherwise we will have conflicts
+function M.copyToUtils()	
+	utils.nextGroupId = M.currentState.rsrData.nextGroupId
+	utils.nextUnitId = M.currentState.rsrData.nextUnitId
 end
 
-function M.copyFromCtld()
-    M.currentState.ctld.nextGroupId = ctld.nextGroupId
-    M.currentState.ctld.nextUnitId = ctld.nextUnitId
-    M.currentState.ctld.JTACsPerUCIDPerSide = ctld.JTACsPerUCIDPerSide
+function M.copyFromUtils()
+    M.currentState.rsrData.nextGroupId = utils.nextGroupId
+    M.currentState.rsrData.nextUnitId = utils.nextUnitId
 end
 
 function M.updateBaseOwnership()
@@ -228,7 +224,7 @@ function M.setCurrentStateFromFile(stateFileName)
         if _campaignWinner == nil then
             -- broadcast global baseOwnership from file to then recheck
             log:info("state: MISSION INIT: baseOwnership (PRE): $1", baseOwnership)
-            baseOwnership = mist.utils.deepCopy(M.currentState.baseOwnership) --deepCopy as variable assingment is a direct reference not a copy
+            baseOwnership = utils.deepCopy(M.currentState.baseOwnership) --deepCopy as variable assingment is a direct reference not a copy
         else
             log:info("$1 TEAM WON CAMPAIGN! Ignoring state file and resetting campaign.", _campaignWinner)
             M.canUseStateFromFile = false
@@ -240,11 +236,13 @@ function M.setCurrentStateFromFile(stateFileName)
     if not M.canUseStateFromFile then
         log:info("Setting up from defaults in code, and base(airbase/FARP) ownership from 'RSRbaseCaptureZone Trigger' Zone color")
         M.campaignStartSetup = true
-        M.currentState = mist.utils.deepCopy(M.defaultState)
+        M.currentState = utils.deepCopy(M.defaultState)
         M.updateBaseOwnership()
     end
     log:info("currentState = $1", M.currentState)
     return M.canUseStateFromFile
 end
+
 env.info("RSR STARTUP: state.LUA LOADED")
+
 return M

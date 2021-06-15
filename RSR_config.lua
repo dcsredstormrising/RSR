@@ -1,10 +1,9 @@
 -- RSR's configuration object
 local utils = require("utils")
-
 local rsrConfig = {}
 
 -- enables "developer mode"; removes crate spawning/unpacking restrictions, more frequent saves
-rsrConfig.devMode = false
+rsrConfig.devMode = true
 
 -- Event reporting for the n0xy bot
 rsrConfig.udpEventReporting = false
@@ -35,6 +34,14 @@ rsrConfig.livesMultiplier = 1
 
 rsrConfig.maxLives = math.floor(rsrConfig.missionDurationInHours * rsrConfig.livesPerHour * rsrConfig.livesMultiplier + 0.5)
 
+-- Ai CAP configuration
+if env.mission.theatre == "Syria" then
+	rsrConfig.blueAiCAPAirbase = AIRBASE.Syria.Incirlik
+	rsrConfig.redAiCAPAirbase = AIRBASE.Syria.Damascus
+elseif env.mission.theatre == "Caucasus" then
+	rsrConfig.blueAiCAPAirbase = AIRBASE.Caucasus.Kutaisi
+	rsrConfig.redAiCAPAirbase = AIRBASE.Caucasus.Maykop
+end
 
 -- global message configuration
 rsrConfig.restartWarningMinutes = { 60, 45, 30, 20, 15, 10, 5, 3, 1 } -- times in minutes before restart to broadcast message
@@ -49,7 +56,7 @@ rsrConfig.blueCCCarrier = "Carrier Tarawa"
 rsrConfig.redCCCarrierZone = "Carrier Dock PickUp"
 rsrConfig.blueCCCarrierZone = "Carrier Tarawa PickUp"
 local carrierUnitRED = UNIT:FindByName(rsrConfig.redCCCarrier)
-local carrierZoneRED = ZONE_UNIT:New(rsrConfig.redCCCarrierZone, carrierUnitRED, 410)
 local carrierUnitBLUE = UNIT:FindByName(rsrConfig.blueCCCarrier)
-local carrierZoneBLUE = ZONE_UNIT:New(rsrConfig.blueCCCarrierZone, carrierUnitBLUE, 410)
+ZONE_UNIT:New(rsrConfig.blueCCCarrierZone, carrierUnitBLUE, 410)
+ZONE_UNIT:New(rsrConfig.redCCCarrierZone, carrierUnitRED, 410)
 return rsrConfig

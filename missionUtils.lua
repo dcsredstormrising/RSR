@@ -27,18 +27,21 @@ M.airbases = {
         [29] = "Tbilisi-Lochini",
         [30] = "Soganlug",
         [31] = "Vaziani",
-        [32] = "Beslan",
-    }	
---[[    Syria = {
+        [32] = "Beslan"
+    },
+    Syria = {
   	    [1] = "Abu al-Duhur", 
       	[2] = "Adana Sakirpasa", 
       	[3] = "Al Qusayr", 
       	[4] = "An Nasiriyah", 
+      	[5] = "Tha'lah",
       	[6] = "Beirut-Rafic Hariri", 
       	[7] = "Damascus", 
       	[8] = "Marj as Sultan South", 
       	[9] = "Al-Dumayr", 
-      	[10] = "Eyn Shemer", 
+      	[10] = "Eyn Shemer",
+      	[11] = "Gaziantep",
+      	[12] = "H4",
       	[13] = "Haifa", 
       	[14] = "Hama", 
       	[15] = "Hatay", 
@@ -60,10 +63,15 @@ M.airbases = {
       	[31] = "Kuweires",
       	[32] = "Rayak", 
       	[33] = "Rene Mouawad", 
-      	[37] = "Tabqa", 
-      	[38] = "Taftanaz", 
+      	[34] = "Rosh Pina",      	  
+      	[35] = "Sayqal",
+      	[36] = "Shayrat",
+      	[37] = "Tabqa",
+      	[38] = "Taftanaz",
+      	[39] = "Tiyas",
       	[40] = "Wujah Al Hajar",
-	}]]--
+      	[52] = "Naqoura"
+	}
 }
 function M.loadMission(missionDir)
     print("Loading mission from " .. missionDir)

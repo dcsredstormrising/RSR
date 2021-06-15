@@ -8,6 +8,7 @@ local utils = require("utils")
 
 local M = {}
 M.mapMarkers = {}
+M.ActualBasesUsedOnMap = {}
 
 local log = logging.Logger:new("bases")
 
@@ -83,7 +84,7 @@ local function activateBaseDefences(baseName, sideName, rsrConfig, missionInit, 
                     end
                 else
                     --mr: add to validateMissionFile.lua type check for mission editors?
-                    log:warn("Group ($1) found within $2m of airbase/FARP ($3) not activated due to base origin ($4) mismatch!", groupName, radius, baseName, _baseOriginForGroup)
+                    --log:warn("Group ($1) found within $2m of airbase/FARP ($3) not activated due to base origin ($4) mismatch!", groupName, radius, baseName, _baseOriginForGroup)
                 end
             end
         else

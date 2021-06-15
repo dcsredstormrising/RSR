@@ -60,7 +60,7 @@ function M.getTransportPilotNames(mission)
         end
     end)
     table.sort(transportPilotNames)
-    log:info("Transport pilot names are are $1", transportPilotNames)
+    --log:info("Transport pilot names are are $1", transportPilotNames)
     return transportPilotNames
 end
 

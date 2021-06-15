@@ -1,6 +1,5 @@
 -- CSAR Script for DCS Ciribob - 2015
 -- Version 1.9.2 - 23/04/2018
--- DCS 1.5 Compatible - Needs Mist 4.0.55 or higher!
 --
 -- 4 Options:
 --      0 - No Limit - NO Aircraft disabling or pilot lives
@@ -10,7 +9,6 @@
 -- luacheck: no max line length
 local ctldUtils = require("ctldUtils")
 local missionUtils = require("missionUtils")
-local spatialUtils = require("spatialUtils")
 local utils = require("utils")
 local rsrConfig = require("RSR_config")
 
@@ -64,7 +62,7 @@ csar.redsmokecolor = 1 -- Color of smokemarker for red side, 0 is green, 1 is re
 csar.requestdelay = 2 -- Time in seconds before the survivors will request Medevac
 
 csar.coordtype = 1 -- Use Lat/Long DDM (0), Lat/Long DMS (1), MGRS (2), Bullseye imperial (3) or Bullseye metric (4) for coordinates.
-csar.coordaccuracy = 1 -- Precision of the reported coordinates, see MIST-docs at http://wiki.hoggit.us/view/GetMGRSString
+csar.coordaccuracy = 1 -- Precision of the reported coordinates, see EF-docs at http://wiki.hoggit.us/view/GetMGRSString
 -- only applies to _non_ bullseye coords
 
 csar.immortalcrew = false -- Set to true to make wounded crew immortal
@@ -119,14 +117,9 @@ end
 -- **************** BE CAREFUL BELOW HERE ************************
 -- ***************************************************************
 
--- Sanity checks of mission designer
-assert(mist ~= nil, "\n\n** HEY MISSION-DESIGNER! **\n\nMiST has not been loaded!\n\nMake sure MiST 4.0.57 or higher is running\n*before* running this script!\n")
-
 csar.addedTo = {}
-
 csar.downedPilotCounterRed = 0
 csar.downedPilotCounterBlue = 0
-
 csar.woundedGroups = {} -- contains the new group of units
 csar.inTransitGroups = {} -- contain a table for each SAR with all units he has with the
 -- original name of the killed group
@@ -179,8 +172,8 @@ function csar.tooCloseToEnemyBase(_unit)
     local point = _unit:getPoint()
     local position = { x = point.x, y = point.z }
     local unitSideName = utils.getSideName(_unit:getCoalition())
-    if spatialUtils.closestBaseIsEnemyAndWithinRange(position, unitSideName, csar.enemyBaseCaptureDistance) then
-        local nearestBase, _ = spatialUtils.findNearestBase(position)
+    if utils.closestBaseIsEnemyAndWithinRange(position, unitSideName, csar.enemyBaseCaptureDistance) then
+        local nearestBase, _ = utils.findNearestBase(position)
         local message = string.format("Mayday, mayday, mayday!  %s was shot down; captured by enemy forces at %s",
                 _unit:getTypeName(), nearestBase)
         trigger.action.outTextForCoalition(_unit:getCoalition(), message, 10)
@@ -808,7 +801,7 @@ end
 
 function csar.spawnGroup(_deadUnit)
 
-    local _id = mist.getNextGroupId()
+    local _id = utils.getNextGroupId()
 
     local _groupName = "Downed Pilot #" .. _id
 
@@ -834,7 +827,7 @@ function csar.spawnGroup(_deadUnit)
     _group.category = Group.Category.GROUND;
     _group.country = _deadUnit:getCountry();
 
-    local _spawnedGroup = Group.getByName(mist.dynAdd(_group).name)
+    local _spawnedGroup = Group.getByName(utils.dynAdd(_group).name)
 
     -- Turn off AI
     trigger.action.setGroupAIOff(_spawnedGroup)
@@ -844,7 +837,7 @@ end
 
 function csar.createUnit(_x, _y, _heading, _type)
 
-    local _id = mist.getNextUnitId();
+    local _id = utils.getNextUnitId()
 
     local _name = string.format("Wounded Pilot #%s", _id)
 
@@ -1346,23 +1339,23 @@ function csar.getPositionOfWounded(_woundedGroup)
 
     if csar.coordtype == 0 then
         -- Lat/Long DMTM
-        return string.format("%s", mist.getLLString({ units = _woundedTable, acc = csar.coordaccuracy, DMS = 0 }))
+        return string.format("%s", utils.getLLString({ units = _woundedTable, acc = csar.coordaccuracy, DMS = 0 }))
 
     elseif csar.coordtype == 1 then
         -- Lat/Long DMS
-        return string.format("%s", mist.getLLString({ units = _woundedTable, acc = csar.coordaccuracy, DMS = 1 }))
+        return string.format("%s", utils.getLLString({ units = _woundedTable, acc = csar.coordaccuracy, DMS = 1 }))
 
     elseif csar.coordtype == 2 then
         -- MGRS
-        return string.format("%s", mist.getMGRSString({ units = _woundedTable, acc = csar.coordaccuracy }))
+        return string.format("%s", utils.getMGRSString({ units = _woundedTable, acc = csar.coordaccuracy }))
 
     elseif csar.coordtype == 3 then
         -- Bullseye Imperial
-        return string.format("bullseye %s", mist.getBRString({ units = _woundedTable, ref = coalition.getMainRefPoint(_woundedGroup:getCoalition()), alt = 0 }))
+        return string.format("bullseye %s", utils.getBRString({ units = _woundedTable, ref = coalition.getMainRefPoint(_woundedGroup:getCoalition()), alt = 0 }))
 
     else
         -- Bullseye Metric --(medevac.coordtype == 4)
-        return string.format("bullseye %s", mist.getBRString({ units = _woundedTable, ref = coalition.getMainRefPoint(_woundedGroup:getCoalition()), alt = 0, metric = 1 }))
+        return string.format("bullseye %s", utils.getBRString({ units = _woundedTable, ref = coalition.getMainRefPoint(_woundedGroup:getCoalition()), alt = 0, metric = 1 }))
     end
 end
 
@@ -1725,7 +1718,7 @@ function csar.inAir(_heli)
 
     -- less than 5 cm/s a second so landed
     -- BUT AI can hold a perfect hover so ignore AI
-    if mist.vec.mag(_heli:getVelocity()) < 0.05 and _heli:getPlayerName() ~= nil then
+    if utils.vec.mag(_heli:getVelocity()) < 0.05 and _heli:getPlayerName() ~= nil then
         return false
     end
     return true
@@ -1737,17 +1730,17 @@ function csar.getClockDirection(_heli, _crate)
 
     local _position = _crate:getPosition().p -- get position of crate
     local _playerPosition = _heli:getPosition().p -- get position of helicopter
-    local _relativePosition = mist.vec.sub(_position, _playerPosition)
+    local _relativePosition = utils.vec.sub(_position, _playerPosition)
 
-    local _playerHeading = mist.getHeading(_heli) -- the rest of the code determines the 'o'clock' bearing of the missile relative to the helicopter
+    local _playerHeading = utils.getHeading(_heli) -- the rest of the code determines the 'o'clock' bearing of the missile relative to the helicopter
 
     local _headingVector = { x = math.cos(_playerHeading), y = 0, z = math.sin(_playerHeading) }
 
     local _headingVectorPerpendicular = { x = math.cos(_playerHeading + math.pi / 2), y = 0, z = math.sin(_playerHeading + math.pi / 2) }
 
-    local _forwardDistance = mist.vec.dp(_relativePosition, _headingVector)
+    local _forwardDistance = utils.vec.dp(_relativePosition, _headingVector)
 
-    local _rightDistance = mist.vec.dp(_relativePosition, _headingVectorPerpendicular)
+    local _rightDistance = utils.vec.dp(_relativePosition, _headingVectorPerpendicular)
 
     local _angle = math.atan2(_rightDistance, _forwardDistance) * 180 / math.pi
 

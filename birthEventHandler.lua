@@ -16,8 +16,9 @@ function M.BIRTH_EVENTHANDLER:New(restartHours)
 end
 
 function M.BIRTH_EVENTHANDLER:_OnBirth(event)
-    self:_AddMenus(event)	
+    self:_AddMenus(event)
 end
+
 
 function M.BIRTH_EVENTHANDLER:_AddMenus(event)
     if event.IniPlayerName then
