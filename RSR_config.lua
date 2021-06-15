@@ -31,16 +31,15 @@ rsrConfig.livesPerHour = 1
 -- added on 31st March 2020 as an experiment in "unlimited lives"
 -- tuning ratio for adjusting number of lives without giving more weapons per restart
 rsrConfig.livesMultiplier = 1
-
 rsrConfig.maxLives = math.floor(rsrConfig.missionDurationInHours * rsrConfig.livesPerHour * rsrConfig.livesMultiplier + 0.5)
 
 -- Ai CAP configuration
-if env.mission.theatre == "Syria" then
+if env.mission.theatre == "Syria" then	
 	rsrConfig.blueAiCAPAirbase = AIRBASE.Syria.Incirlik
-	rsrConfig.redAiCAPAirbase = AIRBASE.Syria.Damascus
+	rsrConfig.redAiCAPAirbase = AIRBASE.Syria.Damascus	
 elseif env.mission.theatre == "Caucasus" then
 	rsrConfig.blueAiCAPAirbase = AIRBASE.Caucasus.Kutaisi
-	rsrConfig.redAiCAPAirbase = AIRBASE.Caucasus.Maykop
+	rsrConfig.redAiCAPAirbase = AIRBASE.Caucasus.Maykop_Khanskaya	
 end
 
 -- global message configuration

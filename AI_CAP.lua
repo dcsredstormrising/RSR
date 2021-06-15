@@ -233,6 +233,8 @@ RedDetectionSetGroup:FilterPrefixes( { "EWR", "Overlord " } )
 RedDetectionSetGroup:FilterStart()
 RedDetection = DETECTION_AREAS:New( RedDetectionSetGroup, 5000 )
 
+env.info("Setting RED Cap Airbase: "..rsrConfig.redAiCAPAirbase)
+
 RedA2ADispatcher = AI_A2A_DISPATCHER:New( RedDetection )
 RedA2ADispatcher:SetSquadron( "24th Fighter Aviation Regiment", rsrConfig.redAiCAPAirbase, { "24th Fighter Aviation Regiment" }, RedGraveyard["MiG-31"] ) --MiG-31 Squadron
 RedA2ADispatcher:SetSquadronCap( "24th Fighter Aviation Regiment", RedCAPZone, 1000, 12000, 600, 800, 800, 1200, "BARO" )
@@ -248,6 +250,8 @@ BlueDetectionSetGroup:FilterPrefixes( { "EWR", "Magic " } )
 BlueDetectionSetGroup:FilterStart()
 BlueDetection = DETECTION_AREAS:New( BlueDetectionSetGroup, 5000 )
 BlueA2ADispatcher = AI_A2A_DISPATCHER:New( BlueDetection )
+
+env.info("Setting BLUE Cap Airbase: "..rsrConfig.blueAiCAPAirbase)
 
 BlueA2ADispatcher:SetSquadron( "313th Tactical Fighter Squadron", rsrConfig.blueAiCAPAirbase, { "313th Tactical Fighter Squadron" }, BlueGraveyard["F-14B"] ) --F14A Squadron
 BlueA2ADispatcher:SetSquadronCap( "313th Tactical Fighter Squadron", BlueCAPZone, 1000, 12000, 600, 800, 800, 1200, "BARO" )
