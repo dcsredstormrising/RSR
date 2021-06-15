@@ -681,8 +681,8 @@ ctld.spawnableCrates = {
         { weight = 813, desc = "M-818 Ammo Truck", unit = "M 818", side = 2, cratesRequired = 1, unitQuantity = 1, internal = 1 },
         { weight = 723, desc = "EWR 1L13 - Short Range", unit = "1L13 EWR", internal = 1 },
 		{ weight = 724, desc = "EWR 55G6 - Long Range", unit = "55G6 EWR", internal = 1 },		
-		--{ weight = 667, desc = "Mobile ATC SKP 11", unit = "SKP-11", side = 1, internal = 1},
-		--{ weight = 668, desc = "Mobile ATC Trojan Spirit", unit = "Predator TrojanSpirit", side = 2, internal = 1},
+		--{ weight = 667, desc = "Mobile ATC SKP 11", unit = "SKP-11", side = 1, internal = 1},  -- future
+		--{ weight = 668, desc = "Mobile ATC Trojan Spirit", unit = "Predator TrojanSpirit", side = 2, internal = 1}, -- future
     },	
 }
 
