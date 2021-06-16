@@ -290,6 +290,7 @@ ctld.unitLoadLimits = {
     ---
     ["UH-1H"] = 10,
     ["Mi-8MT"] = 20,
+	["Mi-24P"] = 10,
     ["SA342Minigun"] = 1,
     ["SA342M"] = 1,
     ["SA342L"] = 1,
@@ -339,6 +340,7 @@ ctld.unitActions = {
     ["Ka-50"] = { crates = true, troops = false, internal = false },
     ["UH-1H"] = { crates = true, troops = true, internal = true },
     ["Mi-8MT"] = { crates = true, troops = true, internal = true },
+	["Mi-24P"] = { crates = true, troops = true, internal = false },
 
     --allowing 'troops' necessary to allow cargo plane actions for internal cargo load/unload in absence of 'crates' allowance
     ["C-101CC"] = { crates = false, troops = true, internal = true },
@@ -374,6 +376,7 @@ ctld.transportTypes = {
     "Ka-50",
     "UH-1H",
     "Mi-8MT",
+	"Mi-24P",
     ----
     "C-101CC",
     "L-39ZA",
