@@ -35,9 +35,11 @@ rsrConfig.maxLives = math.floor(rsrConfig.missionDurationInHours * rsrConfig.liv
 
 -- Ai CAP configuration
 if env.mission.theatre == "Syria" then	
+	env.info("AW33COM setting up Syria Ai Base")
 	rsrConfig.blueAiCAPAirbase = AIRBASE.Syria.Incirlik
 	rsrConfig.redAiCAPAirbase = AIRBASE.Syria.Damascus	
 elseif env.mission.theatre == "Caucasus" then
+	env.info("AW33COM setting up Caucasus Ai Base")
 	rsrConfig.blueAiCAPAirbase = AIRBASE.Caucasus.Kutaisi
 	rsrConfig.redAiCAPAirbase = AIRBASE.Caucasus.Maykop_Khanskaya	
 end

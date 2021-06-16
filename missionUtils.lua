@@ -28,7 +28,8 @@ M.airbases = {
         [30] = "Soganlug",
         [31] = "Vaziani",
         [32] = "Beslan"
-    },
+    }
+	--[[
     Syria = {
   	    [1] = "Abu al-Duhur", 
       	[2] = "Adana Sakirpasa", 
@@ -72,6 +73,7 @@ M.airbases = {
       	[40] = "Wujah Al Hajar",
       	[52] = "Naqoura"
 	}
+	]]--
 }
 function M.loadMission(missionDir)
     print("Loading mission from " .. missionDir)

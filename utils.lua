@@ -1679,8 +1679,6 @@ function M.dynAdd(newGroup)
 	for unitIndex, unitData in pairs(newGroup.units) do
 		newGroup.units[unitIndex].unitName = nil
 	end
-
-	env.info("=AW=33COM new group data: "..inspect(newGroup))
 	
 	coalition.addGroup(country.id[newCountry], Unit.Category[newCat], newGroup)
 	return newGroup
