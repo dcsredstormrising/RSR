@@ -340,7 +340,7 @@ ctld.unitActions = {
     ["Ka-50"] = { crates = true, troops = false, internal = false },
     ["UH-1H"] = { crates = true, troops = true, internal = true },
     ["Mi-8MT"] = { crates = true, troops = true, internal = true },
-	["Mi-24P"] = { crates = true, troops = true, internal = false },
+	["Mi-24P"] = { crates = true, troops = true, internal = true },
 
     --allowing 'troops' necessary to allow cargo plane actions for internal cargo load/unload in absence of 'crates' allowance
     ["C-101CC"] = { crates = false, troops = true, internal = true },
