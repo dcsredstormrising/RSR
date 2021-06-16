@@ -28,7 +28,7 @@ M.airbases = {
         [30] = "Soganlug",
         [31] = "Vaziani",
         [32] = "Beslan"
-    }	
+    },
     Syria = {
   	    [1] = "Abu al-Duhur", 
       	[2] = "Adana Sakirpasa", 
