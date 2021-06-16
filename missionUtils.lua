@@ -70,9 +70,20 @@ M.airbases = {
       	[38] = "Taftanaz",
       	[39] = "Tiyas",
       	[40] = "Wujah Al Hajar",
+		[41] = "Gazipasa",
+		[43] = "Nicosia",
+		[44] = "Akrotiri",		
+		[45] = "Kingsfield",
+		[46] = "Paphos",		
+		[47] = "Larnaca",
+		[48] = "Lakatamia",
+		[49] = "Ercan",
+		[50] = "Gecitkale",
+		[51] = "Pinarbashi",
       	[52] = "Naqoura"
 	}
 }
+
 function M.loadMission(missionDir)
     print("Loading mission from " .. missionDir)
     dofile(missionDir .. [[\mission]])
