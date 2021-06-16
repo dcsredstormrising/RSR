@@ -1720,6 +1720,13 @@ function M.mpsToKnots(mps)
 	return mps*3600/1852
 end
 
+--- Converts meters per second to kilometers per hour.
+-- @param mps speed in m/s
+-- @return speed in km/h
+function M.mpsToKmph(mps)
+	return mps*3.6
+end
+
 --vars.units - table of unit names (NOT unitNameTable- maybe this should change).
 --vars.acc - integer, number of numbers after decimal place
 --vars.DMS - if true, output in degrees, minutes, seconds.	Otherwise, output in degrees, minutes.
