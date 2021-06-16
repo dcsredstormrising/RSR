@@ -23,7 +23,6 @@ ctld = {} -- DONT REMOVE!
 -- ************************************************************************
 -- *********************  USER CONFIGURATION ******************************
 -- ************************************************************************
-
 ctld.debug = false -- Set true to turn off logistics distances, to test crates
 ctld.disableAllSmoke = true -- if true, all smoke is diabled at pickup and drop off zones regardless of settings below. Leave false to respect settings below
 

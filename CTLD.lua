@@ -6137,7 +6137,7 @@ function ctld.addF10MenuOptions(_unitName)
                         missionCommands.addCommandForGroup(_groupId, "Unload Vehicles", _vehicleCommandsPath, ctld.unloadTroops, { _unitName, false })
                         missionCommands.addCommandForGroup(_groupId, "Load / Extract Vehicles", _vehicleCommandsPath, ctld.loadTroopsFromZone, { _unitName, false, "", true })
 
-                        if ctld.enabledFOBBuilding and ctld.staticBugWorkaround == false then
+                        if ctld.enabledFOBBuilding then
                             missionCommands.addCommandForGroup(_groupId, "Load / Unload Logistics Centre crate", _vehicleCommandsPath, ctld.loadUnloadLogisticsCrate, { _unitName })
                             missionCommands.addCommandForGroup(_groupId, "List FOBs", _vehicleCommandsPath, ctld.listFOBs, { _unitName })
                         end
@@ -6151,7 +6151,7 @@ function ctld.addF10MenuOptions(_unitName)
                         --avoid duplication
 
                         local _internalCargoCommandsPath = missionCommands.addSubMenuForGroup(_groupId, "Internal Cargo", _rootPath)
-                        if ctld.enabledFOBBuilding and ctld.staticBugWorkaround == false then
+                        if ctld.enabledFOBBuilding then
                             missionCommands.addCommandForGroup(_groupId, "Load / Unload Logistics Centre crate", _internalCargoCommandsPath, ctld.loadUnloadLogisticsCrate, { _unitName })
                             missionCommands.addCommandForGroup(_groupId, "List FOBs", _internalCargoCommandsPath, ctld.listFOBs, { _unitName })
                         end
