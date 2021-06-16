@@ -2,7 +2,7 @@
   "baseOwnership": {
     "Airbases": {
       "blue": ["Incirlik","Aleppo","Gaziantep","Rene Mouawad","Palmyra","Beirut-Rafic Hariri","King Hussein Air College","Larnaca"],
-      "neutral": ["Abu al-Duhur","Adana Sakirpasa","Hatay","Minakh","Kuweires","Jirah","Tabqa","Taftanaz","Al Qusayr","Shayrat","Tiyas","Wujah Al Hajar","Rayak","Al-Dumayr","Marj as Sultan North","Marj as Sultan South","Qabr as Sitt","Marj Ruhayyil","H4","Tha'lah","Eyn Shemer","Ramat David","Megiddo","Haifa","Rosh Pina","Kiryat Shmona","Naqoura","Gazipasa","Nicosia","Akrotiri","Kingsfield","Paphos","Larnaca","Lakatamia","Ercan","Gecitkale","Pinarbashi"],
+      "neutral": ["Abu al-Duhur","Adana Sakirpasa","Hatay","Minakh","Kuweires","Jirah","Tabqa","Taftanaz","Al Qusayr","Shayrat","Tiyas","Wujah Al Hajar","Rayak","Al-Dumayr","Marj as Sultan North","Marj as Sultan South","Qabr as Sitt","Marj Ruhayyil","H4","Tha'lah","Eyn Shemer","Ramat David","Megiddo","Haifa","Rosh Pina","Kiryat Shmona","Naqoura","Gazipasa","Akrotiri","Kingsfield","Paphos","Larnaca","Lakatamia","Ercan","Gecitkale","Pinarbashi"],
       "red": ["Bassel Al-Assad","Damascus","Hama","An Nasiriyah","Sayqal","Mezzeh","Khalkhalah"]
     },
     "FARPs": {
