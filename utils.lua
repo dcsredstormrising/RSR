@@ -359,7 +359,6 @@ function M.setGroupControllerOptions(group)
     end, group, timer.getTime() + 2)
 end
 
-
 --searches for FARP name in baseOwnership nested table to determine currently assigned side
 --mr: find more efficient way to transvere nested table
 function M.getCurrFARPside (_FARPname)
@@ -1823,7 +1822,6 @@ function M.get2DDist(point1, point2)
 	return M.vec.mag({x = point1.x - point2.x, y = 0, z = point1.z - point2.z})
 end
 
-
 -- copies these methods from space until files, because we freaken have gazillion method doing the same thing all over
 local function getDistSq(x1, y1, x2, y2)
     local dX = x1 - x2
@@ -1871,6 +1869,126 @@ function M.closestBaseIsEnemyAndWithinRange(position, friendlySideName, range)
         return false
     end
     return true
+end
+
+function M.createGroupDataForWarehouseAsset(warehouseName, asset, sideName)
+	local groupData = {}
+  
+	if asset.groupCat == Group.Category.SHIP then
+		groupData = {
+		["visible"] = false,    
+		["route"] = {
+			["points"] = { { -- unfortunalty this is requried by MOOSE, not by DCS
+				["ETA"] = 0,
+				["ETA_locked"] = true,
+				["action"] = "Off Road",
+				["alt"] = 5,
+				["alt_type"] = "BARO",
+				["formation_template"] = "",
+				["speed"] = 5.5555555555556,
+				["speed_locked"] = true,
+				["task"] = {
+				  ["id"] = "ComboTask",
+				  ["params"] = {
+					["tasks"] = {}
+				  }
+				},
+				["type"] = "Turning Point",
+				["x"] = utils.defaultX(),
+				["y"] = utils.defaultY()
+			  } },
+			routeRelativeTOT = true
+		  },
+		["taskSelected"] = true,
+		["tasks"] =   
+		{
+		},
+		["hidden"] = false,
+		["units"] = 
+		{
+			[1] = 
+			{
+				["transportable"] = 
+				{
+					["randomTransportable"] = false,
+				},
+				["skill"] = asset.skill,
+				["type"] = asset.name,
+				["x"] = utils.defaultX(),
+				["y"] = utils.defaultY(),            
+				["name"] = warehouseName .. '_' .. asset.name,
+				["playerCanDrive"] = true,
+				["heading"] = 0.28605144170571,				
+			},
+		},
+		["x"] = M.defaultX(),
+		["y"] = M.defaultY(),
+		["name"] = warehouseGroupTag..' '..sideName..'_'..warehouseName..'_'..asset.name,
+		["start_time"] = 0,
+		["uncontrollable"] = false,
+		["category"] = asset.groupCat,
+		["country"] = asset.country,    
+		["task"] = "Ground Nothing",
+	  }   
+	elseif asset.groupCat == Group.Category.GROUND true
+		groupData = {
+			["visible"] = false,    
+			["route"] = {
+				["points"] = { { -- unfortunalty this is requried by MOOSE, not by DCS
+					["ETA"] = 0,
+					["ETA_locked"] = true,
+					["action"] = "Off Road",
+					["alt"] = 5,
+					["alt_type"] = "BARO",
+					["formation_template"] = "",
+					["speed"] = 5.5555555555556,
+					["speed_locked"] = true,
+					["task"] = {
+					  ["id"] = "ComboTask",
+					  ["params"] = {
+						["tasks"] = {}
+					  }
+					},
+					["type"] = "Turning Point",
+					["x"] = M.defaultX(),
+					["y"] = M.defaultY()
+				  } },
+				routeRelativeTOT = true
+			  },
+			["taskSelected"] = true,
+			["tasks"] =   
+			{
+			},
+			["hidden"] = false,
+			["units"] = 
+			{
+				[1] = 
+				{
+					["transportable"] = 
+					{
+						["randomTransportable"] = false,
+					},					
+					["skill"] = asset.skill,
+					["type"] = asset.name,
+					["x"] = M.defaultX(),
+					["y"] = M.defaultY(),            
+					["name"] = warehouseName .. '_' .. asset.name,
+					["playerCanDrive"] = true,
+					["heading"] = 0.28605144170571,					
+				},
+			},
+			["x"] = M.defaultX(), -- fake as fuck.  maybe 0 will work
+			["y"] = M.defaultY(),
+			["name"] = warehouseGroupTag..' '..sideName..'_'..warehouseName..'_'..asset.name,
+			["start_time"] = 0,
+			["uncontrollable"] = false,
+			["category"] = asset.groupCat,
+			["country"] = asset.country,    
+			["task"] = "Ground Nothing",
+		}   
+	end
+  
+	return groupData
 end
 
 return M

@@ -99,7 +99,7 @@ local warehouses =
       }},     
     ["RNavalW"] = {displayName="Red Naval Warehouse", isActive=true, type=ArmedForce.NAVY, spawnBy=SpawnType.DYNAMIC, country=country.id.RUSSIA, side=coalition.side.RED, sideName="RED", respawnDelay=7200, zoneSize=300, spawnZone="RedNavalSpawn", 
       assets = {
-        {name="CV_1143_5", groupCat=Group.Category.SHIP, catName=Unit.Category.SHIP, iniSpawnCount=1, spawnCount=1, count=6, spawnDelay=10, respawnDelay=10, country=country.id.RUSSIA, skill=AI.Skill.EXCELLENT, EPLRS=false, hiddenOnMFD=false, enableEmission=true},
+        {name="CV_1143_5", frequency=127.84, groupCat=Group.Category.SHIP, catName=Unit.Category.SHIP, iniSpawnCount=1, spawnCount=1, count=6, spawnDelay=10, respawnDelay=10, country=country.id.RUSSIA, skill=AI.Skill.EXCELLENT, EPLRS=false, hiddenOnMFD=false, enableEmission=true},
         {name="Type_052C", groupCat=Group.Category.SHIP, catName=Unit.Category.SHIP, iniSpawnCount=1, spawnCount=1, count=1, spawnDelay=1800, respawnDelay=10, country=country.id.RUSSIA, skill=AI.Skill.EXCELLENT, EPLRS=false, hiddenOnMFD=false, enableEmission=true},
         {name="Type_052B", groupCat=Group.Category.SHIP, catName=Unit.Category.SHIP, iniSpawnCount=1, spawnCount=1, count=1, spawnDelay=10, respawnDelay=10, country=country.id.RUSSIA, skill=AI.Skill.EXCELLENT, EPLRS=false, hiddenOnMFD=false, enableEmission=true},        
         {name="Type_054A", groupCat=Group.Category.SHIP, catName=Unit.Category.SHIP, iniSpawnCount=1, spawnCount=1, count=1, spawnDelay=3600, respawnDelay=10, country=country.id.RUSSIA, skill=AI.Skill.EXCELLENT, EPLRS=false, hiddenOnMFD=false, enableEmission=true},
@@ -125,69 +125,6 @@ local function getGroupName(warehouseName, asset)
   end  
 end
 
--- This creates a group with parameters that will get passed into DCS to get a spawned group
-local function createGroupData(warehouseName, asset)
-  local groupData = {
-    ["visible"] = false,    
-    ["route"] = {
-        ["points"] = { { -- unfortunalty this is requried by MOOSE, not by DCS
-            ["ETA"] = 0,
-            ["ETA_locked"] = true,
-            ["action"] = "Off Road",
-            ["alt"] = 5,
-            ["alt_type"] = "BARO",
-            ["formation_template"] = "",
-            ["speed"] = 5.5555555555556,
-            ["speed_locked"] = true,
-            ["task"] = {
-              ["id"] = "ComboTask",
-              ["params"] = {
-                ["tasks"] = {}
-              }
-            },
-            ["type"] = "Turning Point",
-            ["x"] = utils.defaultX(),
-            ["y"] = utils.defaultY()
-          } },
-        routeRelativeTOT = true
-      },
-    ["taskSelected"] = true,
-    ["tasks"] =   
-    {
-    }, -- end of ["tasks"]
-    ["hidden"] = false,
-    ["units"] = 
-    {
-        [1] = 
-        {
-            ["transportable"] = 
-            {
-                ["randomTransportable"] = false,
-            }, -- end of ["transportable"]
-            --["unitId"] = 2,
-            ["skill"] = asset.skill,
-            ["type"] = asset.name,
-            ["x"] = utils.defaultX(),
-            ["y"] = utils.defaultY(),            
-            ["name"] = warehouseName .. '_' .. asset.name,
-            ["playerCanDrive"] = true,
-            ["heading"] = 0.28605144170571,
-            -- ship:
-            -- ["frequency"] = 127500000,    
-        },
-    },
-    ["x"] = utils.defaultX(),
-    ["y"] = utils.defaultY(),
-    ["name"] = getGroupName(warehouseName, asset),
-    ["start_time"] = 0,
-    ["uncontrollable"] = false,
-    ["category"] = asset.groupCat,
-    ["country"] = asset.country,    
-    ["task"] = "Ground Nothing",
-  }     
-  return groupData
-end
-
 -- this takes care of adding groups of units from the configuration into DCS.  You need this step if you do not have late activation.  Late activation templates are
 -- loaded by DCS automatically, and dynamic units are not, so we sipmly load them here.  Required by DCS and MOOSE.
 local function addDynamicGroupsToDCSandMoose()
@@ -196,7 +133,7 @@ local function addDynamicGroupsToDCSandMoose()
       if warehouse.isActive then
         if warehouse ~= nil and warehouse.assets ~= nil and warehouse.spawnBy == SpawnType.DYNAMIC then -- run this only for dynamic spawning and not late activation           
           for j,asset in pairs (warehouse.assets) do
-            local groupData = createGroupData(i, asset)
+            local groupData = utils.createGroupDataForWarehouseAsset(i, asset, warehouse.sideName)
             coalition.addGroup(asset.country, asset.groupCat, groupData) -- add to DCS memory          
             _DATABASE:_RegisterGroupTemplate(groupData,warehouse.side,asset.catName,groupData.country,groupData.name) -- add to MOOSE memory, this is the entire MOOSE trick
             --utils.setGroupControllerOptions(_myGroup) ? -- I may need this          
