@@ -8,7 +8,7 @@
     "FARPs": {
       "blue": ["Khashuri", "Zugdidi"],
       "neutral": [ "MM75", "Gori", "LM56", "MM69", "Garbani", "Yugnoye", "Elhotovo", "Prohladniy", "Progress", "Pyatigorsk", "RedBeachhead", "FJ69", "GH17", "KN76", "Zugdidi", "GH03", "FJ03", "EJ78", "EJ45", "EK57", "DK61", "DK65", "DL40", "BlueBeachhead", "Apsheronsk" ],
-      "red": ["Cherkessk","Tuapse"]
+      "red": ["Cherkessk", "Tuapse"]
     },
     "Ships": {
       "blue": [ "Carrier Tarawa" ],
