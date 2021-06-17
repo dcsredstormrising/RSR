@@ -10,6 +10,7 @@ local utilsUnitId = 7000
 local utilsDynAddIndex = {[' air '] = 0, [' hel '] = 0, [' gnd '] = 0, [' bld '] = 0, [' static '] = 0, [' shp '] = 0}
 M.nextGroupId = 1
 M.nextUnitId = 1
+local warehouseGroupTag = "Resupply"
 
 -- this does not work like the old Evil Framework
 -- in the old framework the ids were across campaign, here they are kind of by session I think
@@ -1937,7 +1938,7 @@ function M.createGroupDataForWarehouseAsset(warehouseName, asset, sideName)
 		["category"] = asset.groupCat,
 		["country"] = asset.country,
 	  }   
-	elseif asset.groupCat == Group.Category.GROUND true then
+	elseif asset.groupCat == Group.Category.GROUND then
 		groupData = {
 			["visible"] = false,    
 			["route"] = {
