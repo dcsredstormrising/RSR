@@ -121,7 +121,7 @@ Warehouse_Dead:HandleEvent(EVENTS.Dead)
 local function getGroupName(warehouseName, asset)
   if asset ~= nil then	
 	local sideName = warehouses[warehouseName].sideName	
-    return warehouseGroupTag..' '..sideName..'_'..warehouseName..'_'..asset.name -- Resupply_BNorthW_Leopard-2
+    return warehouseGroupTag..'_'..sideName..'_'..warehouseName..'_'..asset.name -- Resupply_BNorthW_Leopard-2
   end  
 end
 

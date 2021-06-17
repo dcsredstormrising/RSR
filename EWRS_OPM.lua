@@ -98,6 +98,7 @@ ewrs.enabledAircraftTypes = {
     ["Ka-50"] = true,
     ["L-39ZA"] = true,
     ["Mi-8MT"] = true,
+	["Mi-24P"] = true,
     ["MiG-15bis"] = true,
     ["MiG-19P"] = true,
     ["MiG-21Bis"] = true,    

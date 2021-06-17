@@ -1950,7 +1950,7 @@ function M.createGroupDataForWarehouseAsset(warehouseName, asset, sideName)
 		},
 		["x"] = 0.0,--M.defaultX(),
 		["y"] = 0.0,--M.defaultY(),
-		["name"] = warehouseGroupTag..' '..sideName..'_'..warehouseName..'_'..asset.name,
+		["name"] = warehouseGroupTag..'_'..sideName..'_'..warehouseName..'_'..asset.name,
 		["start_time"] = 0,
 		["uncontrollable"] = false,
 		["category"] = asset.groupCat,
