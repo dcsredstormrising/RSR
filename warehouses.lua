@@ -99,7 +99,7 @@ local warehouses =
       }},     
     ["RNavalW"] = {displayName="Red Naval Warehouse", isActive=true, type=ArmedForce.NAVY, spawnBy=SpawnType.DYNAMIC, country=country.id.RUSSIA, side=coalition.side.RED, sideName="RED", respawnDelay=7200, zoneSize=300, spawnZone="RedNavalSpawn", 
       assets = {
-        {name="CV_1143_5", frequency=127.84, groupCat=Group.Category.SHIP, catName=Unit.Category.SHIP, iniSpawnCount=1, spawnCount=1, count=6, spawnDelay=10, respawnDelay=10, country=country.id.RUSSIA, skill=AI.Skill.EXCELLENT, EPLRS=false, hiddenOnMFD=false, enableEmission=true},
+        {name="CV_1143_5", groupCat=Group.Category.SHIP, catName=Unit.Category.SHIP, iniSpawnCount=1, spawnCount=1, count=6, spawnDelay=10, respawnDelay=10, country=country.id.RUSSIA, skill=AI.Skill.EXCELLENT, EPLRS=false, hiddenOnMFD=false, enableEmission=true},
         {name="Type_052C", groupCat=Group.Category.SHIP, catName=Unit.Category.SHIP, iniSpawnCount=1, spawnCount=1, count=1, spawnDelay=1800, respawnDelay=10, country=country.id.RUSSIA, skill=AI.Skill.EXCELLENT, EPLRS=false, hiddenOnMFD=false, enableEmission=true},
         {name="Type_052B", groupCat=Group.Category.SHIP, catName=Unit.Category.SHIP, iniSpawnCount=1, spawnCount=1, count=1, spawnDelay=10, respawnDelay=10, country=country.id.RUSSIA, skill=AI.Skill.EXCELLENT, EPLRS=false, hiddenOnMFD=false, enableEmission=true},        
         {name="Type_054A", groupCat=Group.Category.SHIP, catName=Unit.Category.SHIP, iniSpawnCount=1, spawnCount=1, count=1, spawnDelay=3600, respawnDelay=10, country=country.id.RUSSIA, skill=AI.Skill.EXCELLENT, EPLRS=false, hiddenOnMFD=false, enableEmission=true},

@@ -1877,29 +1877,36 @@ function M.createGroupDataForWarehouseAsset(warehouseName, asset, sideName)
 	if asset.groupCat == Group.Category.SHIP then
 		groupData = {
 		["visible"] = false,    
-		["route"] = {
-			["points"] = { { -- unfortunalty this is requried by MOOSE, not by DCS
-				["ETA"] = 0,
-				["ETA_locked"] = true,
-				["action"] = "Off Road",
-				["alt"] = 5,
-				["alt_type"] = "BARO",
-				["formation_template"] = "",
-				["speed"] = 5.5555555555556,
-				["speed_locked"] = true,
-				["task"] = {
-				  ["id"] = "ComboTask",
-				  ["params"] = {
-					["tasks"] = {}
-				  }
+		["route"] = 
+		{
+			["points"] = 
+			{
+				[1] = 
+				{
+					["alt"] = -0,
+					["type"] = "Turning Point",
+					["ETA"] = 0,
+					["alt_type"] = "BARO",
+					["formation_template"] = "",
+					["y"] = M.defaultX(),
+					["x"] = M.defaultY(),
+					["ETA_locked"] = true,
+					["speed"] = 0,
+					["action"] = "Turning Point",
+					["task"] = 
+					{
+						["id"] = "ComboTask",
+						["params"] = 
+						{
+							["tasks"] = 
+							{
+							},
+						},
+					},
+					["speed_locked"] = true,
 				},
-				["type"] = "Turning Point",
-				["x"] = utils.defaultX(),
-				["y"] = utils.defaultY()
-			  } },
-			routeRelativeTOT = true
-		  },
-		["taskSelected"] = true,
+			},
+		},		
 		["tasks"] =   
 		{
 		},
@@ -1914,11 +1921,12 @@ function M.createGroupDataForWarehouseAsset(warehouseName, asset, sideName)
 				},
 				["skill"] = asset.skill,
 				["type"] = asset.name,
-				["x"] = utils.defaultX(),
-				["y"] = utils.defaultY(),            
+				["x"] = M.defaultX(),
+				["y"] = M.defaultY(),
 				["name"] = warehouseName .. '_' .. asset.name,
 				["playerCanDrive"] = true,
-				["heading"] = 0.28605144170571,				
+				["heading"] = 0,
+                ["modulation"] = 0,
 			},
 		},
 		["x"] = M.defaultX(),
@@ -1927,10 +1935,9 @@ function M.createGroupDataForWarehouseAsset(warehouseName, asset, sideName)
 		["start_time"] = 0,
 		["uncontrollable"] = false,
 		["category"] = asset.groupCat,
-		["country"] = asset.country,    
-		["task"] = "Ground Nothing",
+		["country"] = asset.country,
 	  }   
-	elseif asset.groupCat == Group.Category.GROUND true
+	elseif asset.groupCat == Group.Category.GROUND true then
 		groupData = {
 			["visible"] = false,    
 			["route"] = {
@@ -1974,7 +1981,7 @@ function M.createGroupDataForWarehouseAsset(warehouseName, asset, sideName)
 					["y"] = M.defaultY(),            
 					["name"] = warehouseName .. '_' .. asset.name,
 					["playerCanDrive"] = true,
-					["heading"] = 0.28605144170571,					
+					["heading"] = 0,				
 				},
 			},
 			["x"] = M.defaultX(), -- fake as fuck.  maybe 0 will work
@@ -1983,7 +1990,7 @@ function M.createGroupDataForWarehouseAsset(warehouseName, asset, sideName)
 			["start_time"] = 0,
 			["uncontrollable"] = false,
 			["category"] = asset.groupCat,
-			["country"] = asset.country,    
+			["country"] = asset.country,
 			["task"] = "Ground Nothing",
 		}   
 	end
