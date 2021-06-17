@@ -1901,9 +1901,28 @@ function M.createGroupDataForWarehouseAsset(warehouseName, asset, sideName)
 						{
 							["tasks"] = 
 							{
+								[1] = 
+								{
+									["enabled"] = true,
+									["auto"] = false,
+									["id"] = "WrappedAction",
+									["number"] = 1,
+									["params"] = 
+									{
+										["action"] = 
+										{
+											["id"] = "Option",
+											["params"] = 
+											{
+												["value"] = 25,
+												["name"] = 24,
+											},
+										},
+									},
+								},
 							},
 						},
-					},
+					}, 
 					["speed_locked"] = true,
 				},
 			},
