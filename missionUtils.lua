@@ -188,6 +188,7 @@ local transportTypes = {
     "Ka-50",
     "UH-1H",
     "Mi-8MT",
+	"Mi-24P",
     ----
     "C-101CC",
     "L-39ZA",
