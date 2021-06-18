@@ -36,38 +36,34 @@ local RedRecceSetGroup = SET_GROUP:New():FilterCoalitions("red"):FilterPrefixes(
 
 	BlueRecceDetection = DETECTION_AREAS:New(BlueRecceSetGroup, 15000)
 	BlueRecceDetection:SetAcceptRange(15000)
-	BlueRecceDetection:FilterCategories({Unit.Category.GROUND_UNIT})
-	--BlueRecceDetection:SmokeDetectedUnits()
+	BlueRecceDetection:FilterCategories({Unit.Category.GROUND_UNIT})	
 	BlueRecceDetection:SetRefreshTimeInterval(20) -- seconds
 	BlueRecceDetection:Start()
 
 	RedRecceDetection = DETECTION_AREAS:New(RedRecceSetGroup, 15000)
 	RedRecceDetection:SetAcceptRange(15000)
-	RedRecceDetection:FilterCategories({Unit.Category.GROUND_UNIT})
-	--RedRecceDetection:SmokeDetectedUnits()
+	RedRecceDetection:FilterCategories({Unit.Category.GROUND_UNIT})	
 	RedRecceDetection:SetRefreshTimeInterval(20) -- seconds
 	RedRecceDetection:Start()
 	
-local function GetAttackingUnitTypes(DetectedUnits)
-	local units = ""
+local function GetAttackingUnitTypes(DetectedUnits, coalition)	
 	if DetectedUnits ~= nil then
-		for DetectedUnit,Detected in pairs(DetectedUnits)do		
-			local unit = Detected:GetDCSObject()
-			Detected:SmokeBlue()
-			units = units..Detected:GetDCSObject():getTypeName()..", "
+		for DetectedUnit,Detected in pairs(DetectedUnits) do
+			if coalition == 2 then
+				Detected:SmokeBlue()
+			elseif coalition == 1 then
+				Detected:SmokeRed()
+			end
 		end
-		units = units:sub(1,-3)
 	end
-	return units
 end
 
 function BlueRecceDetection:OnAfterDetected(From, Event, To, DetectedUnits)
-	trigger.action.outTextForCoalition(coalition.side.BLUE, "Is being attacked by ground forces: "..inspect(GetAttackingUnitTypes(DetectedUnits)), 10)
-	
+	GetAttackingUnitTypes(DetectedUnits, 1)
 end
 
 function RedRecceDetection:OnAfterDetected(From, Event, To, DetectedUnits)
-	trigger.action.outTextForCoalition(coalition.side.RED, "Is being attacked by ground forces: "..inspect(GetAttackingUnitTypes(DetectedUnits)), 10)	
+	GetAttackingUnitTypes(DetectedUnits, 2)
 end
 	
 ----Function to actually spawn the UAV from the players nose      
