@@ -51,8 +51,7 @@ end
 
 local function showReconLocations(coalitionNumber)    
   local reconCount = 0
-  local recons = nil
-  local uavText = ""
+  local recons = nil  
   local uavBases = ""
   
   if coalitionNumber == coalition.side.BLUE then
@@ -75,10 +74,11 @@ local function showReconLocations(coalitionNumber)
   end
        
   if reconCount > 0 then            
-    uavText = string.format("Team has %i UAV RECON Drones in the air by: %s", reconCount, uavBases)    
+    return string.format("Team has %i UAV RECON Drones in the air by: %s", reconCount, uavBases)    
   else
-    uavText = string.format("Team does not have any UAV RECON Drones in the air at the moment", reconCount)
+    return string.format("Team does not have any UAV RECON Drones in the air at the moment", reconCount)
   end
+  
 end
 
 -- this is called from the global on birth event handler
