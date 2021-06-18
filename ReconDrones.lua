@@ -49,6 +49,38 @@ local function getDronesRemaining(coalitionNumber)
 	return 0
 end
 
+local function showReconLocations(coalitionNumber)    
+  local reconCount = 0
+  local recons = nil
+  local uavText = ""
+  local uavBases = ""
+  
+  if coalitionNumber == coalition.side.BLUE then
+    recons = SET_GROUP:New():FilterCategoryAirplane():FilterPrefixes( {"Pontiac 1"} ):FilterActive():FilterOnce()
+  elseif coalitionNumber == coalition.side.RED then
+    recons = SET_GROUP:New():FilterCategoryAirplane():FilterPrefixes( {"Pontiac 6"} ):FilterActive():FilterOnce()
+  end
+        
+  if recons ~= nil then
+    recons:ForEachGroup(
+      function(grp)
+        local vec = grp:GetVec2()
+        if vec ~= nil then
+          local uavNearBase = utils.getNearestAirbase(vec, coalitionNumber, Airbase.Category.AIRDROME)                
+          uavBases = uavBases..string.format("%s ", uavNearBase)
+        end
+        reconCount = reconCount+1
+      end
+     )  
+  end
+       
+  if reconCount > 0 then            
+    uavText = string.format("Team has %i UAV RECON Drones in the air by: %s", reconCount, uavBases)    
+  else
+    uavText = string.format("Team does not have any UAV RECON Drones in the air at the moment", reconCount)
+  end
+end
+
 -- this is called from the global on birth event handler
 function ReconDrones.AddMenu(playerGroup)
 	local playerName = playerGroup:GetPlayerName()
@@ -59,7 +91,10 @@ function ReconDrones.AddMenu(playerGroup)
 	MENU_GROUP_COMMAND:New(playerGroup, "Spawn MQ-1 UAV 10 nm away", menuRoot, spawnUAV, playerGroup, 10, coalitionNumber, playerName)
 	MENU_GROUP_COMMAND:New(playerGroup, "UAV RECON Drones Remaining", menuRoot, function()
 		trigger.action.outTextForCoalition(coalitionNumber, "[TEAM] Has " ..getDronesRemaining(coalitionNumber).. " Remaining UAVs", 15)		
-	end)	
+	end)
+	MENU_GROUP_COMMAND:New(playerGroup, "Show UAV RECON Drone Locations", menuRoot, function()
+		trigger.action.outTextForCoalition(coalitionNumber, showReconLocations(coalitionNumber), 15)		
+	end)
 end
 
 -- notify team
@@ -71,4 +106,6 @@ function DroneSpawned:OnEventBirth(EventData)
 		trigger.action.outTextForCoalition(coalition,"[TEAM] " ..spawnerName.. " called in a UAV RECON Drone close to "..uavNearBase.."\nYour team has "..getDronesRemaining(coalition).." remaining UAVs", 10)		
 	end
 end
+
+
 
