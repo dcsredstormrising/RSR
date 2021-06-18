@@ -9,8 +9,7 @@ local droneMaxCount = 4
 local droneMaxCountAtOnce = 2
 local smokeInterval = 120
 local lastSmokedTime = timer.getTime()
-local laseInterval = 10
-local detectInterval = 20
+local detectInterval = 20  -- this is also lase duration that resets each time detection runs
 blueDroneCount = 0
 redDroneCount = 0
 local spawnerName = nil
@@ -57,51 +56,25 @@ local function isReadyToSmokeAgain()
 		return true
 	end
 end
-	
-local function smokeDetectedUnits(DetectedUnits, coalition)	
-	if DetectedUnits ~= nil then
-		for DetectedUnit,Detected in pairs(DetectedUnits) do
-			if coalition == 2 then
-				Detected:Smoke(trigger.smokeColor.Blue, 0, 2)
-				--UNIT:LaseUnit(Target, 1684, 900)
-			elseif coalition == 1 then
-				Detected:Smoke(trigger.smokeColor.Red, 0, 2)
-			end
-		end
-	end
-end
-
-local function laseDetectedUnits(DetectedUnits, coalition)	
-	if DetectedUnits ~= nil then
-		for DetectedUnit,Detected in pairs(DetectedUnits) do
-			if coalition == 2 then
-				--UNIT:LaseUnit(Target, 1684, 900)
-			elseif coalition == 1 then
-				--UNIT:LaseUnit(Target, 1684, 900)
-			end
-		end
-	end
-end
 
 function BlueRecceDetection:OnAfterDetected(From, Event, To, DetectedUnits)
 	if isReadyToSmokeAgain() then
-		env.info("isReadyToSmokeAgain for some reason")
-		smokeDetectedUnits(DetectedUnits, 1)
+		utils.smokeUnits(DetectedUnits, 1)
 		lastSmokedTime = timer.getTime()
-		trigger.action.outTextForCoalition(2, "Smoking RED for BLUE team", 4)
 	end
-	laseDetectedUnits(DetectedUnits, 1)
+	utils.laseUnits(lasingUnit, DetectedUnits, detectInterval, laserCode, 1)
 	trigger.action.outTextForCoalition(2, "Detection ran for BLUE", 4)
 end
 
 function RedRecceDetection:OnAfterDetected(From, Event, To, DetectedUnits)
-	if isReadyToSmokeAgain() then		
-		env.info("isReadyToSmokeAgain for some reason")
-		smokeDetectedUnits(DetectedUnits, 2)
+	env.info("AW33COM Event: "..inspect(Event))
+	env.info("AW33COM From: "..inspect(From))
+	env.info("AW33COM To: "..inspect(To))
+	if isReadyToSmokeAgain() then
+		utils.smokeUnits(DetectedUnits, 1)
 		lastSmokedTime = timer.getTime()
-		trigger.action.outTextForCoalition(1, "Smoking BLUE for RED team", 4)
 	end
-	laseDetectedUnits(DetectedUnits, 2)
+	utils.laseUnits(lasingUnit, DetectedUnits, detectInterval, laserCode, 2)
 	trigger.action.outTextForCoalition(1, "Detection ran for RED", 4)
 end
 	

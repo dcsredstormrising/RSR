@@ -2016,4 +2016,28 @@ function M.createGroupDataForWarehouseAsset(warehouseName, asset, sideName)
 	return groupData
 end
 
+function M.smokeUnits(units, coalition)	
+	if units ~= nil then
+		for _,unit in pairs(units) do
+			if coalition == 2 then
+				unit:Smoke(trigger.smokeColor.Blue, 0, 2)				
+			elseif coalition == 1 then
+				unit:Smoke(trigger.smokeColor.Red, 0, 2)
+			end
+		end
+	end
+end
+
+local function M.laseUnits(laser, units, laseDuration, laserCode, coalition)
+	if units ~= nil then
+		for _,unit in pairs(units) do
+			if coalition == 2 then
+				--laser:LaseUnit(unit, laserCode, laseDuration)
+			elseif coalition == 1 then
+				--UNIT:LaseUnit(Target, 1684, 900)
+			end
+		end
+	end
+end
+
 return M
