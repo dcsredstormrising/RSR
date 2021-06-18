@@ -52,7 +52,8 @@ RedRecceDetection:Start()
 
 local function isReadyToSmokeAgain()	
 	local diff = timer.getTime() - lastSmokedTime
-	if diff > smokeInterval
+	env.info("Smoking times diff: "..inspect(diff).." lastSmokedTime: "..inspect(lastSmokedTime))
+	if diff > smokeInterval then		
 		return true
 	end
 end
@@ -83,7 +84,8 @@ local function laseDetectedUnits(DetectedUnits, coalition)
 end
 
 function BlueRecceDetection:OnAfterDetected(From, Event, To, DetectedUnits)
-	if isReadyToSmokeAgain then
+	if isReadyToSmokeAgain() then
+		env.info("isReadyToSmokeAgain for some reason")
 		smokeDetectedUnits(DetectedUnits, 1)
 		lastSmokedTime = timer.getTime()
 		trigger.action.outTextForCoalition(2, "Smoking RED for BLUE team", 4)
@@ -93,7 +95,8 @@ function BlueRecceDetection:OnAfterDetected(From, Event, To, DetectedUnits)
 end
 
 function RedRecceDetection:OnAfterDetected(From, Event, To, DetectedUnits)
-	if isReadyToSmokeAgain then		
+	if isReadyToSmokeAgain() then		
+		env.info("isReadyToSmokeAgain for some reason")
 		smokeDetectedUnits(DetectedUnits, 2)
 		lastSmokedTime = timer.getTime()
 		trigger.action.outTextForCoalition(1, "Smoking BLUE for RED team", 4)
