@@ -7,8 +7,8 @@ local inspect = require("inspect")
 ReconDrones = {}
 local droneMaxCount = 4
 local droneMaxCountAtOnce = 2
-local blueDroneCount = 0
-local redDroneCount = 0
+blueDroneCount = 0
+redDroneCount = 0
 local spawnerName = nil
 DroneSpawned = EVENTHANDLER:New()
 DroneSpawned:HandleEvent(EVENTS.Birth)
@@ -42,8 +42,10 @@ end
 
 local function getDronesRemaining(coalitionNumber)
 	if coalition == 1 then
+		env.info("getDronesRemaining coaliltion RED")
 		return droneMaxCount - redDroneCount
 	elseif coalition == 2 then
+		env.info("getDronesRemaining coaliltion BLUE")
 		return droneMaxCount - blueDroneCount
 	end
 	return 0
@@ -53,15 +55,14 @@ end
 function ReconDrones.AddMenu(playerGroup)
 	local playerName = playerGroup:GetPlayerName()
 	local coalitionNumber = playerGroup:GetCoalition()
+	env.info("coalitionNumber: "..inspect(coalitionNumber))
 	local menuRoot = MENU_GROUP:New(playerGroup, "UAV Reconnaissance")	
 	MENU_GROUP_COMMAND:New(playerGroup, "Spawn MQ-1 UAV 1 nm away", menuRoot, spawnUAV, playerGroup, 1, coalitionNumber, playerName)
 	MENU_GROUP_COMMAND:New(playerGroup, "Spawn MQ-1 UAV 5 nm away", menuRoot, spawnUAV, playerGroup, 5, coalitionNumber, playerName)
 	MENU_GROUP_COMMAND:New(playerGroup, "Spawn MQ-1 UAV 10 nm away", menuRoot, spawnUAV, playerGroup, 10, coalitionNumber, playerName)
 	MENU_GROUP_COMMAND:New(playerGroup, "UAV RECON Drones Remaining", menuRoot, function()
 		trigger.action.outTextForCoalition(coalitionNumber, "[TEAM] Has " ..getDronesRemaining(coalitionNumber).. " Remaining UAVs", 15)		
-	end)
-	-- add lase and smoke option for drones in the air
-	MENU_GROUP_COMMAND:New(playerGroup, "Lase Units from MQ-1 by Aleppo", menuRoot)
+	end)	
 end
 
 -- notify team
