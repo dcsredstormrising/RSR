@@ -10,17 +10,65 @@ local droneMaxCountAtOnce = 2
 blueDroneCount = 0
 redDroneCount = 0
 local spawnerName = nil
+local BlueRecceDetection = {}
+local RedRecceDetection = {}
+
 DroneSpawned = EVENTHANDLER:New()
 DroneSpawned:HandleEvent(EVENTS.Birth)
 
+BlueHQ = GROUP:FindByName( "Northern Blue HQ" )
+BlueCommandCenter = COMMANDCENTER:New( BlueHQ, "Blue Command" )
+
+RedHQ = GROUP:FindByName( "Northern Red HQ" )
+RedCommandCenter = COMMANDCENTER:New( RedHQ, "Red Command" )
+
 ---Objects to be spawned with attributes set
-Spawn_Blue_UAV = SPAWN:NewWithAlias("Blue UAV-Recon-FAC","Pontiac 1-1")
+local Spawn_Blue_UAV = SPAWN:NewWithAlias("Blue UAV-Recon-FAC","Pontiac 1-1")
     :InitLimit(droneMaxCountAtOnce, droneMaxCount)
 	:InitKeepUnitNames(true)
     
-Spawn_Red_UAV = SPAWN:NewWithAlias("Red UAV-Recon-FAC","Pontiac 6-1")
+local Spawn_Red_UAV = SPAWN:NewWithAlias("Red UAV-Recon-FAC","Pontiac 6-1")
     :InitLimit(droneMaxCountAtOnce, droneMaxCount)
     :InitKeepUnitNames(true)
+	
+local BlueRecceSetGroup = SET_GROUP:New():FilterCoalitions("blue"):FilterPrefixes( {"Pontiac 1"} ):FilterStart()
+local RedRecceSetGroup = SET_GROUP:New():FilterCoalitions("red"):FilterPrefixes( {"Pontiac 6"} ):FilterStart()
+
+	BlueRecceDetection = DETECTION_AREAS:New(BlueRecceSetGroup, 15000)
+	BlueRecceDetection:SetAcceptRange(15000)
+	BlueRecceDetection:FilterCategories({Unit.Category.GROUND_UNIT})
+	BlueRecceDetection:SmokeDetectedUnits()
+	BlueRecceDetection:SetRefreshTimeInterval(20) -- seconds
+	BlueRecceDetection:Start()
+
+	RedRecceDetection = DETECTION_AREAS:New(RedRecceSetGroup, 15000)
+	RedRecceDetection:SetAcceptRange(15000)
+	RedRecceDetection:FilterCategories({Unit.Category.GROUND_UNIT})
+	RedRecceDetection:SmokeDetectedUnits()
+	RedRecceDetection:SetRefreshTimeInterval(20) -- seconds
+	RedRecceDetection:Start()
+	
+local function GetAttackingUnitTypes(DetectedUnits)
+	local units = ""
+	if DetectedUnits ~= nil then
+		for DetectedUnit,Detected in pairs(DetectedUnits)do		
+			local unit = Detected:GetDCSObject()
+			Detected.SmokeBlue()
+			units = units..Detected:GetDCSObject():getTypeName()..", "
+		end
+		units = units:sub(1,-3)
+	end
+	return units
+end
+
+function BlueRecceDetection:OnAfterDetected(From, Event, To, DetectedUnits)
+	trigger.action.outTextForCoalition(coalition.side.BLUE, "Is being attacked by ground forces: "..inspect(GetAttackingUnitTypes(DetectedUnits)), 10)
+	
+end
+
+function RedRecceDetection:OnAfterDetected(From, Event, To, DetectedUnits)
+	trigger.action.outTextForCoalition(coalition.side.RED, "Is being attacked by ground forces: "..inspect(GetAttackingUnitTypes(DetectedUnits)), 10)	
+end
 	
 ----Function to actually spawn the UAV from the players nose      
 local function spawnUAV(group, rng, coalition, playerName)
