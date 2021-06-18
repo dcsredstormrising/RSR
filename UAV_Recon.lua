@@ -16,21 +16,14 @@ function RemainingRedUAVs()
   trigger.action.outTextForCoalition(1, "[TEAM] Has " .. _RedUAVsLeft .. " Remaining UAVs", 10)
 end
 
---- Event Handler
-BlueUAV_EventHandler = EVENTHANDLER:New()
-BlueUAV_EventHandler:HandleEvent( EVENTS.Birth )
-
-
-
---- Event Handler
-RedUAV_EventHandler = EVENTHANDLER:New()
-RedUAV_EventHandler:HandleEvent( EVENTS.Birth )
+DroneSpawned = EVENTHANDLER:New()
+DroneSpawned:HandleEvent(EVENTS.Birth)
 
 
 ---Objects to be spawned with attributes set
-
 Spawn_Blue_UAV = SPAWN:NewWithAlias("Blue UAV-Recon-FAC","Pontiac 1-1")
     :InitLimit(2,4)
+	:InitKeepUnitNames(true)
     
 Spawn_Red_UAV = SPAWN:NewWithAlias("Red UAV-Recon-FAC","Pontiac 6-1")
     :InitLimit(2,4)

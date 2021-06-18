@@ -1,3 +1,9 @@
+-- =AW33COM= Inheriting from event hanlders and creating objects like this makes 0.0 sense when all your method calls behind it are static anyway.
+-- Not to mention this code is not modular as you can't pull a module out without editing this. 
+-- this requires a rewrite, badly architected app
+-- getting player name in each method and doing the same code over and over is silly
+-- global functions, local keywords in front of _   Why not use Hungarian?
+
 local missionUtils = require("missionUtils")
 local missionInfoMenu = require("missionInfoMenu")
 local M = {}
@@ -19,6 +25,9 @@ function M.BIRTH_EVENTHANDLER:_OnBirth(event)
     self:_AddMenus(event)
 end
 
+local function M.BIRTH_EVENTHANDLER:AddDronesMenu(playerGroup)
+	ReconDrones.AddMenu(playerGroup)
+end
 
 function M.BIRTH_EVENTHANDLER:_AddMenus(event)
     if event.IniPlayerName then
@@ -43,6 +52,7 @@ function M.BIRTH_EVENTHANDLER:_AddMenus(event)
                 self:_AddLivesLeftMenu(playerGroup, unitName)
             end
 
+			self:AddDronesMenu(playerGroup)
             self:_AddEWRS(groupId, event.IniDCSUnit)
         end
     else
@@ -57,7 +67,7 @@ function M.BIRTH_EVENTHANDLER:_AddJTACStatusMenu(groupId, unitName)
     end
 end
 
-function M.BIRTH_EVENTHANDLER:_AddWeaponsManagerMenus(groupId)
+local function M.BIRTH_EVENTHANDLER:_AddWeaponsManagerMenus(groupId)
     --missionCommands.addCommandForGroup(groupId, "Show weapons left", nil, weaponManager.printHowManyLeft, groupId)
     --missionCommands.addCommandForGroup(groupId, "Validate Loadout", nil, weaponManager.validateLoadout, groupId)
 end
