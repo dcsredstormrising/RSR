@@ -34,36 +34,37 @@ local Spawn_Red_UAV = SPAWN:NewWithAlias("Red UAV-Recon-FAC","Pontiac 6-1")
 local BlueRecceSetGroup = SET_GROUP:New():FilterCoalitions("blue"):FilterPrefixes( {"Pontiac 1"} ):FilterStart()
 local RedRecceSetGroup = SET_GROUP:New():FilterCoalitions("red"):FilterPrefixes( {"Pontiac 6"} ):FilterStart()
 
-	BlueRecceDetection = DETECTION_AREAS:New(BlueRecceSetGroup, 15000)
-	BlueRecceDetection:SetAcceptRange(15000)
-	BlueRecceDetection:FilterCategories({Unit.Category.GROUND_UNIT})	
-	BlueRecceDetection:SetRefreshTimeInterval(20) -- seconds
-	BlueRecceDetection:Start()
+BlueRecceDetection = DETECTION_AREAS:New(BlueRecceSetGroup, 10000)
+BlueRecceDetection:SetAcceptRange(10000)
+BlueRecceDetection:FilterCategories({Unit.Category.GROUND_UNIT})	
+BlueRecceDetection:SetRefreshTimeInterval(20) -- seconds
+BlueRecceDetection:Start()
 
-	RedRecceDetection = DETECTION_AREAS:New(RedRecceSetGroup, 15000)
-	RedRecceDetection:SetAcceptRange(15000)
-	RedRecceDetection:FilterCategories({Unit.Category.GROUND_UNIT})	
-	RedRecceDetection:SetRefreshTimeInterval(20) -- seconds
-	RedRecceDetection:Start()
+RedRecceDetection = DETECTION_AREAS:New(RedRecceSetGroup, 10000)
+RedRecceDetection:SetAcceptRange(10000)
+RedRecceDetection:FilterCategories({Unit.Category.GROUND_UNIT})	
+RedRecceDetection:SetRefreshTimeInterval(20) -- seconds
+RedRecceDetection:Start()
 	
-local function GetAttackingUnitTypes(DetectedUnits, coalition)	
+local function SmokeLaseDetectedUnits(DetectedUnits, coalition)	
 	if DetectedUnits ~= nil then
 		for DetectedUnit,Detected in pairs(DetectedUnits) do
 			if coalition == 2 then
-				Detected:SmokeBlue()
+				Detected:SmokeRed(SMOKECOLOR.Blue, 0, 2)
+				--UNIT:LaseUnit(Target, 1684, 900)
 			elseif coalition == 1 then
-				Detected:SmokeRed()
+				Detected:SmokeRed(SMOKECOLOR.Red, 0, 2)
 			end
 		end
 	end
 end
 
 function BlueRecceDetection:OnAfterDetected(From, Event, To, DetectedUnits)
-	GetAttackingUnitTypes(DetectedUnits, 1)
+	SmokeLaseDetectedUnits(DetectedUnits, 1)	
 end
 
 function RedRecceDetection:OnAfterDetected(From, Event, To, DetectedUnits)
-	GetAttackingUnitTypes(DetectedUnits, 2)
+	SmokeLaseDetectedUnits(DetectedUnits, 2)
 end
 	
 ----Function to actually spawn the UAV from the players nose      
