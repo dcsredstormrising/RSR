@@ -38,21 +38,21 @@ local Spawn_Red_UAV = SPAWN:NewWithAlias("Red UAV-Recon-FAC","Pontiac 6-1")
 local BlueRecceSetGroup = SET_GROUP:New():FilterCoalitions("blue"):FilterPrefixes( {"Pontiac 1"} ):FilterStart()
 local RedRecceSetGroup = SET_GROUP:New():FilterCoalitions("red"):FilterPrefixes( {"Pontiac 6"} ):FilterStart()
 
-BlueRecceDetection = DETECTION_AREAS:New(BlueRecceSetGroup, 10000)
-BlueRecceDetection:SetAcceptRange(10000)
-BlueRecceDetection:FilterCategories({Unit.Category.GROUND_UNIT})	
-BlueRecceDetection:SetRefreshTimeInterval(detectInterval) -- seconds
-BlueRecceDetection:DetectedItemMax(detectMaxCount)
-BlueRecceDetection:Start()
+blueDetection = DETECTION_AREAS:New(BlueRecceSetGroup, 10000)
+blueDetection:SetAcceptRange(10000)
+blueDetection:FilterCategories({Unit.Category.GROUND_UNIT})	
+blueDetection:SetRefreshTimeInterval(detectInterval) -- seconds
+blueDetection.DetectedItemMax = detectMaxCount
+blueDetection:Start()
 
-RedRecceDetection = DETECTION_AREAS:New(RedRecceSetGroup, 10000)
-RedRecceDetection:SetAcceptRange(10000)
-RedRecceDetection:FilterCategories({Unit.Category.GROUND_UNIT})	
-RedRecceDetection:SetRefreshTimeInterval(detectInterval) -- seconds
-RedRecceDetection:DetectedItemMax(detectMaxCount)
-RedRecceDetection:Start()
+redDetection = DETECTION_AREAS:New(RedRecceSetGroup, 10000)
+redDetection:SetAcceptRange(10000)
+redDetection:FilterCategories({Unit.Category.GROUND_UNIT})	
+redDetection:SetRefreshTimeInterval(detectInterval) -- seconds
+redDetection.DetectedItemMax = detectMaxCount
+redDetection:Start()
 
-local function isReadyToSmokeAgain()	
+local function isReadyToSmokeAgain()
 	local diff = timer.getTime() - lastSmokedTime
 	env.info("Smoking times diff: "..inspect(diff).." lastSmokedTime: "..inspect(lastSmokedTime))
 	if diff > smokeInterval then		
@@ -60,7 +60,7 @@ local function isReadyToSmokeAgain()
 	end
 end
 
-function BlueRecceDetection:OnAfterDetected(From, Event, To, DetectedUnits)
+function blueDetection:OnAfterDetected(From, Event, To, DetectedUnits)
 	if isReadyToSmokeAgain() then
 		utils.smokeUnits(DetectedUnits, 1)
 		lastSmokedTime = timer.getTime()
@@ -69,8 +69,8 @@ function BlueRecceDetection:OnAfterDetected(From, Event, To, DetectedUnits)
 	trigger.action.outTextForCoalition(2, "Detection ran for BLUE", 4)
 end
 
-function RedRecceDetection:OnAfterDetected(From, Event, To, DetectedUnits)	
-	env.info("AW33COM RedRecceDetection.DetectionSetGroup: "..inspect(RedRecceDetection.DetectionSetGroup))
+function redDetection:OnAfterDetected(From, Event, To, DetectedUnits)	
+	env.info("AW33COM redDetection.DetectionSetGroup: "..inspect(redDetection.DetectionSetGroup))
 	
 	if isReadyToSmokeAgain() then
 		utils.smokeUnits(DetectedUnits, 1)
