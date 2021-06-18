@@ -69,7 +69,9 @@ function DroneSpawned:OnEventBirth(EventData)
 	if string.find(inspect(EventData.IniDCSGroupName), "Pontiac") then 
 		env.info("DroneSpawned:OnEventBirth 2")						
 		local coalition = EventData.IniCoalition
-		trigger.action.outTextForCoalition(coalition,"[TEAM] " ..spawnerName.. " called in a UAV\nYour team has "..getDronesRemaining(coalition).." remaining UAVs", 10)
+		local vec = EventData.IniGroup:GetVec2()        
+        local uavNearBase = utils.getNearestAirbase(vec, coalition, Airbase.Category.AIRDROME)
+		trigger.action.outTextForCoalition(coalition,"[TEAM] " ..spawnerName.. " called in a UAV RECON Drone close to "..uavNearBase.."\nYour team has "..getDronesRemaining(coalition).." remaining UAVs", 10)
 		env.info("DroneSpawned:OnEventBirth 3")
 	end
 end
