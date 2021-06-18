@@ -16,7 +16,10 @@ redDroneCount = 0
 local spawnerName = nil
 local BlueRecceDetection = {}
 local RedRecceDetection = {}
+local laserCodeRed = 1686
+local laserCodeBlue = 1687
 
+-- setup
 DroneSpawned = EVENTHANDLER:New()
 DroneSpawned:HandleEvent(EVENTS.Birth)
 
@@ -26,7 +29,6 @@ BlueCommandCenter = COMMANDCENTER:New( BlueHQ, "Blue Command" )
 RedHQ = GROUP:FindByName( "Northern Red HQ" )
 RedCommandCenter = COMMANDCENTER:New( RedHQ, "Red Command" )
 
----Objects to be spawned with attributes set
 local Spawn_Blue_UAV = SPAWN:NewWithAlias("Blue UAV-Recon-FAC","Pontiac 1-1")
     :InitLimit(droneMaxCountAtOnce, droneMaxCount)
 	:InitKeepUnitNames(true)
@@ -38,11 +40,14 @@ local Spawn_Red_UAV = SPAWN:NewWithAlias("Red UAV-Recon-FAC","Pontiac 6-1")
 local BlueRecceSetGroup = SET_GROUP:New():FilterCoalitions("blue"):FilterPrefixes( {"Pontiac 1"} ):FilterStart()
 local RedRecceSetGroup = SET_GROUP:New():FilterCoalitions("red"):FilterPrefixes( {"Pontiac 6"} ):FilterStart()
 
+-- detection
 blueDetection = DETECTION_AREAS:New(BlueRecceSetGroup, 10000)
 blueDetection:SetAcceptRange(10000)
 blueDetection:FilterCategories({Unit.Category.GROUND_UNIT})	
 blueDetection:SetRefreshTimeInterval(detectInterval) -- seconds
 blueDetection.DetectedItemMax = detectMaxCount
+blueDetection:SetDistanceProbability(0.3)
+blueDetection:SetAlphaAngleProbability(0.3)
 blueDetection:Start()
 
 redDetection = DETECTION_AREAS:New(RedRecceSetGroup, 10000)
@@ -50,8 +55,11 @@ redDetection:SetAcceptRange(10000)
 redDetection:FilterCategories({Unit.Category.GROUND_UNIT})	
 redDetection:SetRefreshTimeInterval(detectInterval) -- seconds
 redDetection.DetectedItemMax = detectMaxCount
+redDetection:SetDistanceProbability(0.3)
+redDetection:SetAlphaAngleProbability(0.3)
 redDetection:Start()
 
+-- designation
 local function isReadyToSmokeAgain()
 	local diff = timer.getTime() - lastSmokedTime
 	env.info("Smoking times diff: "..inspect(diff).." lastSmokedTime: "..inspect(lastSmokedTime))
@@ -65,22 +73,23 @@ function blueDetection:OnAfterDetected(From, Event, To, DetectedUnits)
 		utils.smokeUnits(DetectedUnits, 1)
 		lastSmokedTime = timer.getTime()
 	end
-	utils.laseUnits(lasingUnit, DetectedUnits, detectInterval, laserCode, 1)
+	utils.laseUnits(lasingUnit, DetectedUnits, detectInterval, laserCodeBlue, 1)
 	trigger.action.outTextForCoalition(2, "Detection ran for BLUE", 4)
 end
 
 function redDetection:OnAfterDetected(From, Event, To, DetectedUnits)	
-	env.info("AW33COM redDetection.DetectionSetGroup: "..inspect(redDetection.DetectionSetGroup))
+	--env.info("AW33COM redDetection.GetDetectionSet: "..inspect(redDetection:GetDetectionSet()))
+	env.info("AW33COM redDetection.NearestRecce: "..inspect(redDetection:NearestRecce(DetectedUnits[0])))
 	
 	if isReadyToSmokeAgain() then
 		utils.smokeUnits(DetectedUnits, 1)
 		lastSmokedTime = timer.getTime()
 	end
-	utils.laseUnits(lasingUnit, DetectedUnits, detectInterval, laserCode, 2)
+	utils.laseUnits(lasingUnit, DetectedUnits, detectInterval, laserCodeRed, 2)
 	trigger.action.outTextForCoalition(1, "Detection ran for RED", 4)
 end
 	
-----Function to actually spawn the UAV from the players nose      
+----Function to actually spawn the RECON from the players nose
 local function spawnUAV(group, rng, coalition, playerName)
 	local range = rng * 1852
 	local hdg = group:GetHeading()
@@ -155,7 +164,6 @@ function ReconDrones.AddMenu(playerGroup)
 	end)
 end
 
--- notify team
 function DroneSpawned:OnEventBirth(EventData)
 	if string.find(inspect(EventData.IniDCSGroupName), "Pontiac") then 							
 		local coalition = EventData.IniCoalition
