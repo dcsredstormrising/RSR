@@ -61,8 +61,7 @@ redDetection:Start()
 
 -- designation
 local function isReadyToSmokeAgain()
-	local diff = timer.getTime() - lastSmokedTime
-	env.info("Smoking times diff: "..inspect(diff).." lastSmokedTime: "..inspect(lastSmokedTime))
+	local diff = timer.getTime() - lastSmokedTime	
 	if diff > smokeInterval then		
 		return true
 	end
@@ -80,20 +79,21 @@ end
 
 function redDetection:OnAfterDetected(From, Event, To, DetectedUnits)	
 	--UNIT:LaseOff() -- reset laser because unit position could have changed since last detection
-	local first = nil
+	local detector = nil
 	for _,detectedItem in pairs(redDetection.DetectedItems) do			
-		first = detectedItem
+		detector = detectedItem.NearestFAC
 		break;
 	end
-	
-	env.info("AW33COM Nearest: ".. inspect(redDetection:NearestRecce(first)))
-	
+		
 	if isReadyToSmokeAgain() then
 		utils.smokeUnits(DetectedUnits, 1)
 		lastSmokedTime = timer.getTime()
 	end
-	--utils.laseUnits(RedRecceSetGroup, DetectedUnits, detectInterval, laserCodeRed, 2)
-	trigger.action.outTextForCoalition(1, "Detection ran for RED", 4)
+	
+	if detector then
+		utils.laseUnits(detector, DetectedUnits, detectInterval, laserCodeRed, 2)
+		trigger.action.outTextForCoalition(1, "Detection ran for RED", 4)
+	end
 end
 	
 ----Function to actually spawn the RECON from the players nose
