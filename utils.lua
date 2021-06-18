@@ -2030,12 +2030,8 @@ end
 
 function M.laseUnits(laser, units, laseDuration, laserCode, coalition)
 	if units ~= nil then
-		for _,unit in pairs(units) do
-			if coalition == 2 then
-				--laser:LaseUnit(unit, laserCode, laseDuration)
-			elseif coalition == 1 then
-				--UNIT:LaseUnit(Target, 1684, 900)
-			end
+		for _,unit in pairs(units) do			
+			laser:LaseUnit(unit, laserCode, laseDuration)				
 		end
 	end
 end

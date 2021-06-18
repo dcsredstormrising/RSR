@@ -69,23 +69,30 @@ local function isReadyToSmokeAgain()
 end
 
 function blueDetection:OnAfterDetected(From, Event, To, DetectedUnits)
+	--UNIT:LaseOff() -- reset laser because unit position could have changed since last detection
 	if isReadyToSmokeAgain() then
 		utils.smokeUnits(DetectedUnits, 1)
 		lastSmokedTime = timer.getTime()
 	end
-	utils.laseUnits(lasingUnit, DetectedUnits, detectInterval, laserCodeBlue, 1)
+	--utils.laseUnits(BlueRecceSetGroup, DetectedUnits, detectInterval, laserCodeBlue, 1)
 	trigger.action.outTextForCoalition(2, "Detection ran for BLUE", 4)
 end
 
 function redDetection:OnAfterDetected(From, Event, To, DetectedUnits)	
-	--env.info("AW33COM redDetection.GetDetectionSet: "..inspect(redDetection:GetDetectionSet()))
-	env.info("AW33COM redDetection.NearestRecce: "..inspect(redDetection:NearestRecce(DetectedUnits[0])))
+	--UNIT:LaseOff() -- reset laser because unit position could have changed since last detection
+	local first = nil
+	for _,detectedItem in pairs(redDetection.DetectedItems) do			
+		first = detectedItem
+		break;
+	end
+	
+	env.info("AW33COM Nearest: ".. inspect(redDetection:NearestRecce(first)))
 	
 	if isReadyToSmokeAgain() then
 		utils.smokeUnits(DetectedUnits, 1)
 		lastSmokedTime = timer.getTime()
 	end
-	utils.laseUnits(lasingUnit, DetectedUnits, detectInterval, laserCodeRed, 2)
+	--utils.laseUnits(RedRecceSetGroup, DetectedUnits, detectInterval, laserCodeRed, 2)
 	trigger.action.outTextForCoalition(1, "Detection ran for RED", 4)
 end
 	
