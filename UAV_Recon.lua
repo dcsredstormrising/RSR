@@ -57,8 +57,8 @@ function RedUAV(group,rng)
 end
 
 ----Define the client to have the menu
-local SetClient = SET_CLIENT:New():FilterCoalitions("blue"):FilterPrefixes({" Blue Cargo", " Blue Helos"}):FilterStart()
-local SetClient2 = SET_CLIENT:New():FilterCoalitions("red"):FilterPrefixes({" Red Cargo", " Red Helos"}):FilterStart()
+local SetClient = SET_CLIENT:New():FilterCoalitions("blue"):FilterPrefixes({" Blue Cargo", " Blue Helos"}):FilterOnce()
+local SetClient2 = SET_CLIENT:New():FilterCoalitions("red"):FilterPrefixes({" Red Cargo", " Red Helos"}):FilterOnce()
 ----Menus for the client
 local function UAV_MENU()
   SetClient:ForEachClient(function(client1)
@@ -107,7 +107,7 @@ local function UAV_MENU()
             SetClient:Remove(client1:GetName(), true)
     end
   end)
-timer.scheduleFunction(UAV_MENU,nil,timer.getTime() + 1)
+--timer.scheduleFunction(UAV_MENU,nil,timer.getTime() + 1)
 end
 local function UAV_MENU2()
   SetClient2:ForEachClient(function(client2)
@@ -156,9 +156,9 @@ local function UAV_MENU2()
             SetClient2:Remove(client2:GetName(), true)
     end
   end)
-timer.scheduleFunction(UAV_MENU2,nil,timer.getTime() + 1)
+--timer.scheduleFunction(UAV_MENU2,nil,timer.getTime() + 1)
 end
 
 
-UAV_MENU()
-UAV_MENU2()
+--UAV_MENU()
+--UAV_MENU2()
