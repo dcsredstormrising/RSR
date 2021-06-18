@@ -50,10 +50,10 @@ local function SmokeLaseDetectedUnits(DetectedUnits, coalition)
 	if DetectedUnits ~= nil then
 		for DetectedUnit,Detected in pairs(DetectedUnits) do
 			if coalition == 2 then
-				Detected:SmokeRed(SMOKECOLOR.Blue, 0, 2)
+				Detected:SmokeRed(trigger.smokeColor.Blue, 0, 2)
 				--UNIT:LaseUnit(Target, 1684, 900)
 			elseif coalition == 1 then
-				Detected:SmokeRed(SMOKECOLOR.Red, 0, 2)
+				Detected:SmokeRed(trigger.smokeColor.Red, 0, 2)
 			end
 		end
 	end
