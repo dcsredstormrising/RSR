@@ -44,7 +44,7 @@ local function getDronesRemaining(coalitionNumber)
 	return 0
 end
 
--- this is called in the global on birth event handler
+-- this is called from the global on birth event handler
 function ReconDrones.AddMenu(playerGroup)
 	local groupName = playerGroup:GetName()
 	local coalitionNumber = playerGroup:GetCoalition()
@@ -57,9 +57,14 @@ function ReconDrones.AddMenu(playerGroup)
   end)
 end
 
+-- notify team
 function DroneSpawned:OnEventBirth(EventData)
-	local coalition = EventData.IniCoalition
-	local playerName = playerGroup:GetName()
-	trigger.action.outTextForCoalition(2,"[TEAM] " ..client1:GetPlayerName().. " called in a UAV\nContact via F10/F8 Designation for UAV \nBlue team has ".._BlueUAVsLeft.." remaining UAVs", 10)
+	if string.find(EventData.IniDCSGroupName, "Pontiac") then 
+		if EventData.IniPlayerName then
+			local playerName = EventData.IniGroup:GetName()			
+			local coalition = EventData.IniCoalition
+			trigger.action.outTextForCoalition(coalition,"[TEAM] " ..playerName.. " called in a UAV\nYour team has "..getDronesRemaining(coalition).." remaining UAVs", 10)
+		end
+	end
 end
 
