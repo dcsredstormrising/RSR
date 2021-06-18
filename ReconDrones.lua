@@ -7,6 +7,10 @@ local inspect = require("inspect")
 ReconDrones = {}
 local droneMaxCount = 4
 local droneMaxCountAtOnce = 2
+local smokeInterval = 120
+local lastSmokedTime = timer.getTime()
+local laseInterval = 10
+local detectInterval = 20
 blueDroneCount = 0
 redDroneCount = 0
 local spawnerName = nil
@@ -37,34 +41,65 @@ local RedRecceSetGroup = SET_GROUP:New():FilterCoalitions("red"):FilterPrefixes(
 BlueRecceDetection = DETECTION_AREAS:New(BlueRecceSetGroup, 10000)
 BlueRecceDetection:SetAcceptRange(10000)
 BlueRecceDetection:FilterCategories({Unit.Category.GROUND_UNIT})	
-BlueRecceDetection:SetRefreshTimeInterval(20) -- seconds
+BlueRecceDetection:SetRefreshTimeInterval(detectInterval) -- seconds
 BlueRecceDetection:Start()
 
 RedRecceDetection = DETECTION_AREAS:New(RedRecceSetGroup, 10000)
 RedRecceDetection:SetAcceptRange(10000)
 RedRecceDetection:FilterCategories({Unit.Category.GROUND_UNIT})	
-RedRecceDetection:SetRefreshTimeInterval(20) -- seconds
+RedRecceDetection:SetRefreshTimeInterval(detectInterval) -- seconds
 RedRecceDetection:Start()
+
+local function isReadyToSmokeAgain()	
+	local diff = timer.getTime() - lastSmokedTime
+	if diff > smokeInterval
+		return true
+	end
+end
 	
-local function SmokeLaseDetectedUnits(DetectedUnits, coalition)	
+local function smokeDetectedUnits(DetectedUnits, coalition)	
 	if DetectedUnits ~= nil then
 		for DetectedUnit,Detected in pairs(DetectedUnits) do
 			if coalition == 2 then
-				Detected:SmokeRed(trigger.smokeColor.Blue, 0, 2)
+				Detected:Smoke(trigger.smokeColor.Blue, 0, 2)
 				--UNIT:LaseUnit(Target, 1684, 900)
 			elseif coalition == 1 then
-				Detected:SmokeRed(trigger.smokeColor.Red, 0, 2)
+				Detected:Smoke(trigger.smokeColor.Red, 0, 2)
+			end
+		end
+	end
+end
+
+local function laseDetectedUnits(DetectedUnits, coalition)	
+	if DetectedUnits ~= nil then
+		for DetectedUnit,Detected in pairs(DetectedUnits) do
+			if coalition == 2 then
+				--UNIT:LaseUnit(Target, 1684, 900)
+			elseif coalition == 1 then
+				--UNIT:LaseUnit(Target, 1684, 900)
 			end
 		end
 	end
 end
 
 function BlueRecceDetection:OnAfterDetected(From, Event, To, DetectedUnits)
-	SmokeLaseDetectedUnits(DetectedUnits, 1)	
+	if isReadyToSmokeAgain then
+		smokeDetectedUnits(DetectedUnits, 1)
+		lastSmokedTime = timer.getTime()
+		trigger.action.outTextForCoalition(2, "Smoking RED for BLUE team", 4)
+	end
+	laseDetectedUnits(DetectedUnits, 1)
+	trigger.action.outTextForCoalition(2, "Detection ran for BLUE", 4)
 end
 
 function RedRecceDetection:OnAfterDetected(From, Event, To, DetectedUnits)
-	SmokeLaseDetectedUnits(DetectedUnits, 2)
+	if isReadyToSmokeAgain then		
+		smokeDetectedUnits(DetectedUnits, 2)
+		lastSmokedTime = timer.getTime()
+		trigger.action.outTextForCoalition(1, "Smoking BLUE for RED team", 4)
+	end
+	laseDetectedUnits(DetectedUnits, 2)
+	trigger.action.outTextForCoalition(1, "Detection ran for RED", 4)
 end
 	
 ----Function to actually spawn the UAV from the players nose      
