@@ -37,14 +37,14 @@ local RedRecceSetGroup = SET_GROUP:New():FilterCoalitions("red"):FilterPrefixes(
 	BlueRecceDetection = DETECTION_AREAS:New(BlueRecceSetGroup, 15000)
 	BlueRecceDetection:SetAcceptRange(15000)
 	BlueRecceDetection:FilterCategories({Unit.Category.GROUND_UNIT})
-	BlueRecceDetection:SmokeDetectedUnits()
+	--BlueRecceDetection:SmokeDetectedUnits()
 	BlueRecceDetection:SetRefreshTimeInterval(20) -- seconds
 	BlueRecceDetection:Start()
 
 	RedRecceDetection = DETECTION_AREAS:New(RedRecceSetGroup, 15000)
 	RedRecceDetection:SetAcceptRange(15000)
 	RedRecceDetection:FilterCategories({Unit.Category.GROUND_UNIT})
-	RedRecceDetection:SmokeDetectedUnits()
+	--RedRecceDetection:SmokeDetectedUnits()
 	RedRecceDetection:SetRefreshTimeInterval(20) -- seconds
 	RedRecceDetection:Start()
 	
@@ -53,7 +53,7 @@ local function GetAttackingUnitTypes(DetectedUnits)
 	if DetectedUnits ~= nil then
 		for DetectedUnit,Detected in pairs(DetectedUnits)do		
 			local unit = Detected:GetDCSObject()
-			Detected.SmokeBlue()
+			Detected:SmokeBlue()
 			units = units..Detected:GetDCSObject():getTypeName()..", "
 		end
 		units = units:sub(1,-3)
