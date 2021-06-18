@@ -7,9 +7,10 @@ local inspect = require("inspect")
 ReconDrones = {}
 local droneMaxCount = 4
 local droneMaxCountAtOnce = 2
+local detectMaxCount = 3
 local smokeInterval = 120
 local lastSmokedTime = timer.getTime()
-local detectInterval = 20  -- this is also lase duration that resets each time detection runs
+local detectInterval = 20  -- this is also lase duration that resets each time detection runs-- super simple way to update laser
 blueDroneCount = 0
 redDroneCount = 0
 local spawnerName = nil
@@ -41,12 +42,14 @@ BlueRecceDetection = DETECTION_AREAS:New(BlueRecceSetGroup, 10000)
 BlueRecceDetection:SetAcceptRange(10000)
 BlueRecceDetection:FilterCategories({Unit.Category.GROUND_UNIT})	
 BlueRecceDetection:SetRefreshTimeInterval(detectInterval) -- seconds
+BlueRecceDetection:DetectedItemMax(detectMaxCount)
 BlueRecceDetection:Start()
 
 RedRecceDetection = DETECTION_AREAS:New(RedRecceSetGroup, 10000)
 RedRecceDetection:SetAcceptRange(10000)
 RedRecceDetection:FilterCategories({Unit.Category.GROUND_UNIT})	
 RedRecceDetection:SetRefreshTimeInterval(detectInterval) -- seconds
+RedRecceDetection:DetectedItemMax(detectMaxCount)
 RedRecceDetection:Start()
 
 local function isReadyToSmokeAgain()	
@@ -66,10 +69,9 @@ function BlueRecceDetection:OnAfterDetected(From, Event, To, DetectedUnits)
 	trigger.action.outTextForCoalition(2, "Detection ran for BLUE", 4)
 end
 
-function RedRecceDetection:OnAfterDetected(From, Event, To, DetectedUnits)
-	env.info("AW33COM Event: "..inspect(Event))
-	env.info("AW33COM From: "..inspect(From))
-	env.info("AW33COM To: "..inspect(To))
+function RedRecceDetection:OnAfterDetected(From, Event, To, DetectedUnits)	
+	env.info("AW33COM RedRecceDetection.DetectionSetGroup: "..inspect(RedRecceDetection.DetectionSetGroup))
+	
 	if isReadyToSmokeAgain() then
 		utils.smokeUnits(DetectedUnits, 1)
 		lastSmokedTime = timer.getTime()

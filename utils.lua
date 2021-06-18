@@ -2028,7 +2028,7 @@ function M.smokeUnits(units, coalition)
 	end
 end
 
-local function M.laseUnits(laser, units, laseDuration, laserCode, coalition)
+function M.laseUnits(laser, units, laseDuration, laserCode, coalition)
 	if units ~= nil then
 		for _,unit in pairs(units) do
 			if coalition == 2 then
