@@ -959,8 +959,7 @@ function M.getNearestAirbase(location, coalition, category)
     local baseLocations = {}
     for _, base in pairs(AIRBASE.GetAllAirbases(coalition, category)) do
         baseLocations[base:GetName()] = base:GetVec2()
-    end
-    env.info("M.findNearest(point, baseLocations): "..M.findNearest(point, baseLocations))
+    end    
     return M.findNearest(point, baseLocations)
 end
 

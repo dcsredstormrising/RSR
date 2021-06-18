@@ -40,12 +40,10 @@ local function spawnUAV(group, rng, coalition, playerName)
 	end
 end
 
-local function getDronesRemaining(coalitionNumber)
-	if coalition == 1 then
-		env.info("getDronesRemaining coaliltion RED")
+local function getDronesRemaining(coalitionNumber)	
+	if coalitionNumber == 1 then		
 		return droneMaxCount - redDroneCount
-	elseif coalition == 2 then
-		env.info("getDronesRemaining coaliltion BLUE")
+	elseif coalitionNumber == 2 then		
 		return droneMaxCount - blueDroneCount
 	end
 	return 0
@@ -54,8 +52,7 @@ end
 -- this is called from the global on birth event handler
 function ReconDrones.AddMenu(playerGroup)
 	local playerName = playerGroup:GetPlayerName()
-	local coalitionNumber = playerGroup:GetCoalition()
-	env.info("coalitionNumber: "..inspect(coalitionNumber))
+	local coalitionNumber = playerGroup:GetCoalition()	
 	local menuRoot = MENU_GROUP:New(playerGroup, "UAV Reconnaissance")	
 	MENU_GROUP_COMMAND:New(playerGroup, "Spawn MQ-1 UAV 1 nm away", menuRoot, spawnUAV, playerGroup, 1, coalitionNumber, playerName)
 	MENU_GROUP_COMMAND:New(playerGroup, "Spawn MQ-1 UAV 5 nm away", menuRoot, spawnUAV, playerGroup, 5, coalitionNumber, playerName)
@@ -66,15 +63,12 @@ function ReconDrones.AddMenu(playerGroup)
 end
 
 -- notify team
-function DroneSpawned:OnEventBirth(EventData)	
-	env.info("DroneSpawned:OnEventBirth 1")
-	if string.find(inspect(EventData.IniDCSGroupName), "Pontiac") then 
-		env.info("DroneSpawned:OnEventBirth 2")						
+function DroneSpawned:OnEventBirth(EventData)
+	if string.find(inspect(EventData.IniDCSGroupName), "Pontiac") then 							
 		local coalition = EventData.IniCoalition
 		local vec = EventData.IniGroup:GetVec2()        
         local uavNearBase = utils.getNearestAirbase(vec, coalition, Airbase.Category.AIRDROME)
-		trigger.action.outTextForCoalition(coalition,"[TEAM] " ..spawnerName.. " called in a UAV RECON Drone close to "..uavNearBase.."\nYour team has "..getDronesRemaining(coalition).." remaining UAVs", 10)
-		env.info("DroneSpawned:OnEventBirth 3")
+		trigger.action.outTextForCoalition(coalition,"[TEAM] " ..spawnerName.. " called in a UAV RECON Drone close to "..uavNearBase.."\nYour team has "..getDronesRemaining(coalition).." remaining UAVs", 10)		
 	end
 end
 
