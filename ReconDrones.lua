@@ -1,6 +1,7 @@
 -- =AW=33COM
 -- Simple rewrite of our drones who were OK, but their menus were completely wrong and impossible to function.
 -- This is no near perfect, but will fix the bugs
+local utils = require("utils")
 local inspect = require("inspect")
 
 ReconDrones = {}
