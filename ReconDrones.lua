@@ -49,12 +49,14 @@ function ReconDrones.AddMenu(playerGroup)
 	local groupName = playerGroup:GetName()
 	local coalitionNumber = playerGroup:GetCoalition()
 	local menuRoot = MENU_GROUP:New(playerGroup, "UAV Reconnaissance")	
-	MENU_GROUP_COMMAND:New(playerGroup, "Spawn MQ-1 UAV 1 nm away", menuRoot, spawnBlueUAV, playerGroup, 1, coalitionNumber)
-	MENU_GROUP_COMMAND:New(playerGroup, "Spawn MQ-1 UAV 5 nm away", menuRoot, spawnBlueUAV, playerGroup, 5, coalitionNumber)
-	MENU_GROUP_COMMAND:New(playerGroup, "Spawn MQ-1 UAV 10 nm away", menuRoot, spawnBlueUAV, playerGroup, 10, coalitionNumber)
+	MENU_GROUP_COMMAND:New(playerGroup, "Spawn MQ-1 UAV 1 nm away", menuRoot, spawnUAV, playerGroup, 1, coalitionNumber)
+	MENU_GROUP_COMMAND:New(playerGroup, "Spawn MQ-1 UAV 5 nm away", menuRoot, spawnUAV, playerGroup, 5, coalitionNumber)
+	MENU_GROUP_COMMAND:New(playerGroup, "Spawn MQ-1 UAV 10 nm away", menuRoot, spawnUAV, playerGroup, 10, coalitionNumber)
 	MENU_GROUP_COMMAND:New(playerGroup, "UAV RECON Drones Remaining", menuRoot, function()
 		trigger.action.outTextForCoalition(coalitionNumber, "[TEAM] Has " ..getDronesRemaining(coalitionNumber).. " Remaining UAVs", 15)		
-  end)
+	end)
+	-- add lase and smoke option for drones in the air
+	MENU_GROUP_COMMAND:New(playerGroup, "Lase Units from MQ-1 by Aleppo", menuRoot)
 end
 
 -- notify team
