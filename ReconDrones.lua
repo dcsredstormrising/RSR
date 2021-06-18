@@ -1,6 +1,7 @@
 -- =AW=33COM
 -- Simple rewrite of our drones who were OK, but their menus were completely wrong and impossible to function.
 -- This is no near perfect, but will fix the bugs
+local inspect = require("inspect")
 
 ReconDrones = {}
 local droneMaxCount = 4
@@ -61,7 +62,7 @@ end
 
 -- notify team
 function DroneSpawned:OnEventBirth(EventData)
-	if string.find(EventData.IniDCSGroupName, "Pontiac") then 
+	if string.find(inspect(EventData.IniDCSGroupName), "Pontiac") then 
 		if EventData.IniPlayerName then
 			local playerName = EventData.IniGroup:GetName()			
 			local coalition = EventData.IniCoalition

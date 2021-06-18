@@ -25,7 +25,7 @@ function M.BIRTH_EVENTHANDLER:_OnBirth(event)
     self:_AddMenus(event)
 end
 
-local function M.BIRTH_EVENTHANDLER:AddDronesMenu(playerGroup)
+function M.BIRTH_EVENTHANDLER:AddDronesMenu(playerGroup)
 	ReconDrones.AddMenu(playerGroup)
 end
 
@@ -67,7 +67,7 @@ function M.BIRTH_EVENTHANDLER:_AddJTACStatusMenu(groupId, unitName)
     end
 end
 
-local function M.BIRTH_EVENTHANDLER:_AddWeaponsManagerMenus(groupId)
+function M.BIRTH_EVENTHANDLER:_AddWeaponsManagerMenus(groupId)
     --missionCommands.addCommandForGroup(groupId, "Show weapons left", nil, weaponManager.printHowManyLeft, groupId)
     --missionCommands.addCommandForGroup(groupId, "Validate Loadout", nil, weaponManager.validateLoadout, groupId)
 end
