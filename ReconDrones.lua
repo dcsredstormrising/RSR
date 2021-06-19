@@ -62,6 +62,14 @@ redDetection:SetDistanceProbability(0.3)
 redDetection:SetAlphaAngleProbability(0.3)
 redDetection:Start()
 
+local function getAirbaseUnderAttack(detector, coalition)
+	local airbase = nil	
+	local vec = detector:GetVec2()
+    if vec ~= nil then
+		return utils.getNearestAirbase(vec, coalition, Airbase.Category.AIRDROME)        
+	end
+end
+
 local function isReadyToSmokeAgain()
 	local diff = timer.getTime() - lastSmokedTime	
 	if diff > smokeInterval then		
@@ -87,8 +95,9 @@ local function smokeAndLase(DetectedUnits, coalition)
 		utils.smokeUnits(DetectedUnits, 2)
 		lastSmokedTime = timer.getTime()
 	end	
-	if isReadyToNotifyTeamAgain() then
-		trigger.action.outTextForCoalition(1, "Units are on the way to attack Bassel Al-Assad: "..inspect(coalition), 4)
+	if isReadyToNotifyTeamAgain() then		
+		local airbase = getAirbaseUnderAttack(detector, coalition)		
+		trigger.action.outTextForCoalition(1, "Units are on the way to attack "..airbase..": for coalition: "..inspect(coalition), 4)
 		lastNotifyTime = timer.getTime()
 	end
 	if detector then
