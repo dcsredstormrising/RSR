@@ -86,7 +86,7 @@ function redDetection:OnAfterDetected(From, Event, To, DetectedUnits)
 	end
 		
 	if isReadyToSmokeAgain() then
-		utils.smokeUnits(DetectedUnits, 1)
+		utils.smokeUnits(DetectedUnits, 2)
 		lastSmokedTime = timer.getTime()
 	end
 	
