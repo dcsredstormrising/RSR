@@ -2032,7 +2032,7 @@ function M.laseUnits(laser, units, laseDuration, laserCode, coalition)
 	if units ~= nil then
 		for _,unit in pairs(units) do
 			trigger.action.outTextForCoalition(coalition, "We are lasing unit: "..inspect(unit:GetName()).." with laser code: "..inspect(laserCode), 5)
-			env.info("AW33COM We are lasing units "..inspect(unit:GetName()).." with laser code: "..inspect(laserCode))			
+			laser:LaseUnit(unit, laserCode, laseDuration)
 		end
 	end
 end
