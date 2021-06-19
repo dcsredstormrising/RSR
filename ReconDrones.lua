@@ -152,19 +152,24 @@ local function getFullDetectionReport(coalitionNumber)
 	local text = "RECON Airplane Detection Status:\n\n"
 		
 	if detectionStatus then
+		env.info("AW got here 1")
 		for reconName, data in pairs(detectionStatus) do
-			if coalitionNumber == data.coalition then				
+			if coalitionNumber == data.coalition then
+				env.info("AW got here 2")
 				for unitName, unit in pairs(data.detected) do				
 					if coalition == 2 then
+						env.info("AW got here 3")
 						text = text..string.format("RECON airplane: %s - Location: %s - Enemy Unit: %s  - Laser Code: %s", reconName, data.airbase, unit:GetTypeName(), laserCodeBlue)
 					elseif coalition == 1 then
+						env.info("AW got here 4")
 						text = text..string.format("RECON airplane: %s - Location: %s - Enemy Unit: %s  - Laser Code: %s", reconName, data.airbase, unit:GetTypeName(), laserCodeRed)					
 					end
+					env.info("AW got here 5")
 				end
 			end
 		end
 	else
-		text = string.format("RECON airplanes are not detecting any enemy units near by, or there is no RECON airplane in the air.\n")		
+		text = text..string.format("RECON airplanes are not detecting any enemy units near by, or there is no RECON airplane in the air.\n")		
 	end	
 	return text
 end
