@@ -77,7 +77,11 @@ end
 local function findNearestRecce(detectedUnit, detectionSet)
 	local NearestRecce=nil
 	local DistanceRecce=maxLaseDistane
-	for RecceGroupName,RecceGroup in pairs(detectionSet)do
+	--env.info("AW33COM detectionSet: "..inspect(detectionSet))
+	for RecceGroupName,RecceGroup in pairs(detectionSet:GetSet())do
+		--env.info("AW33COM RecceGroupName: "..inspect(RecceGroupName))
+		--env.info("AW33COM RECCE GROUP: "..inspect(RecceGroup))
+		
 		if RecceGroup and RecceGroup:IsAlive()then
 			for _,RecceUnit in pairs(RecceGroup:GetUnits())do
 				if RecceUnit:IsActive()then
