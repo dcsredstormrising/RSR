@@ -1,5 +1,5 @@
--- =AW=33COM
--- Simple rewrite of our drones who were OK, but their menus were completely wrong and impossible to function.
+-- =AW=33COM Simple rewrite of our drones who were OK, but their menus were completely wrong and impossible to function.
+-- Their lasing and smoking was complicated to the end user..now everything auto lases and smokes just like our JTAC
 -- This is no near perfect, but will fix the bugs
 local utils = require("utils")
 local inspect = require("inspect")
@@ -45,7 +45,7 @@ blueDetection = DETECTION_AREAS:New(BlueRecceSetGroup, 10000)
 blueDetection:SetAcceptRange(10000)
 blueDetection:FilterCategories({Unit.Category.GROUND_UNIT})	
 blueDetection:SetRefreshTimeInterval(detectInterval) -- seconds
-blueDetection.DetectedItemMax = detectMaxCount
+blueDetection.DetectedItemMax = detectMaxCount -- I dont' think this works in Moose correctly
 blueDetection:SetDistanceProbability(0.3)
 blueDetection:SetAlphaAngleProbability(0.3)
 blueDetection:Start()
@@ -54,7 +54,7 @@ redDetection = DETECTION_AREAS:New(RedRecceSetGroup, 10000)
 redDetection:SetAcceptRange(10000)
 redDetection:FilterCategories({Unit.Category.GROUND_UNIT})	
 redDetection:SetRefreshTimeInterval(detectInterval) -- seconds
-redDetection.DetectedItemMax = detectMaxCount
+redDetection.DetectedItemMax = detectMaxCount -- I dont' think this works in Moose correctly
 redDetection:SetDistanceProbability(0.3)
 redDetection:SetAlphaAngleProbability(0.3)
 redDetection:Start()
