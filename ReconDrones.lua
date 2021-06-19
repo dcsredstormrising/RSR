@@ -101,10 +101,10 @@ local function smokeAndLase(DetectedUnits, coalition)
 		lastNotifyTime = timer.getTime()
 	end
 	if detector then
-		if coalition == coalition.side.BLUE then
+		if coalition == 2 then
 			env.info("RECON:smokeAndLase BLUE")
 			utils.laseUnits(detector, DetectedUnits, detectInterval, laserCodeBlue, 1, detectMaxCount)
-		elseif coalition == coalition.side.RED then
+		elseif coalition == 1 then
 			env.info("RECON:smokeAndLase RED")
 			utils.laseUnits(detector, DetectedUnits, detectInterval, laserCodeRed, 1, detectMaxCount)			
 		end

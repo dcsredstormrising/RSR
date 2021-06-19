@@ -2018,6 +2018,7 @@ end
 
 function M.smokeUnits(units, coalition, detectMaxCount)	
 	if units ~= nil then
+		local runner = 0
 		for _,unit in pairs(units) do
 			runner = runner + 1
 			if runner <= detectMaxCount then			
