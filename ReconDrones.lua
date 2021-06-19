@@ -14,6 +14,7 @@ local droneMaxCount = 4
 local droneMaxCountAtOnce = 2
 local detectMaxCount = 6
 local detectionRange = 18000  --meters
+local maxLaseDistane = 60000 -- I need this becuase of Moose bugs, I need to find the closest RECON airplane that is detecting the units.  More than 60,000 is crazy and shuld not lase from that far
 local smokeInterval = 120
 local lastSmokedTime = timer.getTime()
 local detectInterval = 20  -- this is also lase duration that resets each time detection runs-- super simple way to update laser
@@ -73,6 +74,26 @@ local function PlaySound(args)
 	trigger.action.outSoundForCoalition(args[2], args[1])
 end
 
+local function findNearestRecce(detectedUnit, detectionSet)
+	local NearestRecce=nil
+	local DistanceRecce=maxLaseDistane
+	for RecceGroupName,RecceGroup in pairs(detectionSet)do
+		if RecceGroup and RecceGroup:IsAlive()then
+			for _,RecceUnit in pairs(RecceGroup:GetUnits())do
+				if RecceUnit:IsActive()then
+					local RecceUnitCoord=RecceUnit:GetCoordinate()
+					local Distance=RecceUnitCoord:Get2DDistance(detectedUnit.coordinate)
+					if Distance<DistanceRecce then
+						DistanceRecce=Distance	-- pretty clever trick to find the nearest, he simply cuts the distance
+						NearestRecce=RecceUnit
+					end
+				end
+			end
+		end
+	end		
+	return NearestRecce
+end
+
 local function getAirbaseUnderAttack(detector, coalition)
 	local airbase = nil		
 	if detector then
@@ -110,39 +131,43 @@ end
 
 local function smokeAndLase(DetectedUnits, coalition)
 	local unitAirbase = ""
-	local detectorAirbase = ""
-	local runner = 0
-	for _,unit in pairs(DetectedUnits) do
-		runner = runner + 1
-	end
-	
-	local detector = nil
-	for _,detectedItem in pairs(DetectedUnits) do		
-		env.info("AW33COM detectedItem: "..inspect(detectedItem))
-		detector = detectedItem.NearestFAC
-		if detectedItem then unitAirbase = utils.getNearestAirbase(detectedItem:GetVec2(), coalition, Airbase.Category.AIRDROME) end
-		if detector then detectorAirbase = utils.getNearestAirbase(detector:GetVec2(), coalition, Airbase.Category.AIRDROME) end		
+	local reconAirbase = ""
+	local nearestRECON = nil
+		
+	for _,detectedUnit in pairs(DetectedUnits) do		
+		local detectionSet = nil -- I need to do all this, due to Moose bugs, their inheritance loses properites and their DetectedItem.NearestFAC is gone since they pass UNIT as oppose to DetectedItem
+		if coalition == 1 then
+			detectionSet = redDetection:GetDetectionSet()
+		elseif coalition == 2 then
+			detectionSet = blueDetection:GetDetectionSet()
+		end		
+		if detectionSet then
+			nearestRECON = findNearestRecce(detectedUnit, detectionSet)			
+			if nearestRECON then
+				reconAirbase = utils.getNearestAirbase(nearestRECON:GetVec2(), coalition, Airbase.Category.AIRDROME)
+			end			
+		end
 		break
 	end
 	
-	trigger.action.outTextForCoalition(coalition, "Detection ran at "..detectorAirbase.." and Detected units around "..unitAirbase.." are: "..inspect(GetAttackingUnitTypes(DetectedUnits)), 4)
+	trigger.action.outTextForCoalition(coalition, "Detection ran at "..reconAirbase.." and Detected units around "..unitAirbase.." are: "..inspect(GetAttackingUnitTypes(DetectedUnits)), 4)
 	
 	if isReadyToSmokeAgain() then
 		utils.smokeUnits(DetectedUnits, 2, detectMaxCount)
 		lastSmokedTime = timer.getTime()
 	end	
 	if isReadyToNotifyTeamAgain() then		
-		--local airbase = getAirbaseUnderAttack(detector, coalition)
+		--local airbase = getAirbaseUnderAttack(nearestRECON, coalition)
 		--trigger.action.outSoundForCoalition(coalition, "squelch.ogg")
 		--timer.scheduleFunction(SendMessage, {"Enemy units are on the way to attack "..airbase.." airbase and it's surrounded territories.\nDeploy JTACs to the field and start Close Air Support coalition against the attack.", coalition}, timer.getTime() + 2)
 		--timer.scheduleFunction(PlaySound, {"siren.ogg", coalition}, timer.getTime() + 4)
 		lastNotifyTime = timer.getTime()
 	end
-	if detector then
+	if nearestRECON then
 		if coalition == 2 then
-			utils.laseUnits(detector, DetectedUnits, detectInterval, laserCodeBlue, 1, detectMaxCount)
+			utils.laseUnits(nearestRECON, DetectedUnits, detectInterval, laserCodeBlue, 1, detectMaxCount)
 		elseif coalition == 1 then
-			utils.laseUnits(detector, DetectedUnits, detectInterval, laserCodeRed, 1, detectMaxCount)			
+			utils.laseUnits(nearestRECON, DetectedUnits, detectInterval, laserCodeRed, 1, detectMaxCount)			
 		end
 	end
 end
@@ -256,23 +281,3 @@ function DroneSpawned:OnEventBirth(EventData)
 	end
 end
 
-function findNearestRecce(DetectedItem)
-local NearestRecce=nil
-local DistanceRecce=1000000000
-for RecceGroupName,RecceGroup in pairs(self.DetectionSet:GetSet())do
-if RecceGroup and RecceGroup:IsAlive()then
-for RecceUnit,RecceUnit in pairs(RecceGroup:GetUnits())do
-if RecceUnit:IsActive()then
-local RecceUnitCoord=RecceUnit:GetCoordinate()
-local Distance=RecceUnitCoord:Get2DDistance(self:GetDetectedItemCoordinate(DetectedItem))
-if Distance<DistanceRecce then
-DistanceRecce=Distance
-NearestRecce=RecceUnit
-end
-end
-end
-end
-end
-DetectedItem.NearestFAC=NearestRecce
-DetectedItem.DistanceRecce=DistanceRecce
-end
