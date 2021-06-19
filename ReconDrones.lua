@@ -19,7 +19,7 @@ local smokeInterval = 120
 local lastSmokedTime = timer.getTime()
 local detectInterval = 20  -- this is also lase duration that resets each time detection runs-- super simple way to update laser
 local lastNotifyTime = timer.getTime()
-local detectMessageInterval = 40
+local detectMessageInterval = 30
 blueDroneCount = 0
 redDroneCount = 0
 local spawnerName = nil
@@ -147,23 +147,33 @@ local function smokeAndLase(DetectedUnits, coalition)
 				reconAirbase = utils.getNearestAirbase(nearestRECON:GetVec2(), coalition, Airbase.Category.AIRDROME)
 			end			
 		end
-			unitAirbase = utils.getNearestAirbase(detectedUnit:GetVec2(), coalition, Airbase.Category.AIRDROME)
+		unitAirbase = utils.getNearestAirbase(detectedUnit:GetVec2(), coalition, Airbase.Category.AIRDROME)			
 		break
 	end
 	
-	trigger.action.outTextForCoalition(coalition, "Detection ran at "..reconAirbase.." and Detected units around "..unitAirbase.." are: "..inspect(GetAttackingUnitTypes(DetectedUnits)), 4)
+	env.info("AW33COM redDetection.DetectedItemCount: "..inspect(redDetection.DetectedItemCount))
+	
+	for unitName,unitObj in pairs(DetectedItems) do
+		unitType = unitObj:GetDCSObject():getTypeName()
+		env.info("AW33COM by airbase: "..reconAirbase.." unitName - unitType: "..unitName.." - "..unitType)
+	end	
+	
+	env.info("AW33COM redDetection.DetectedItemCount: "..inspect(redDetection.DetectedItemCount))
+	
+	trigger.action.outTextForCoalition(coalition, "RECON Airplane at "..reconAirbase.." detected enemy units {"..GetAttackingUnitTypes(DetectedUnits).."} approaching "..unitAirbase.." airbase.", 6)
 	
 	if isReadyToSmokeAgain() then
 		utils.smokeUnits(DetectedUnits, 2, detectMaxCount)
 		lastSmokedTime = timer.getTime()
 	end	
-	if isReadyToNotifyTeamAgain() then		
-		--local airbase = getAirbaseUnderAttack(nearestRECON, coalition)
-		--trigger.action.outSoundForCoalition(coalition, "squelch.ogg")
-		--timer.scheduleFunction(SendMessage, {"Enemy units are on the way to attack "..airbase.." airbase and it's surrounded territories.\nDeploy JTACs to the field and start Close Air Support coalition against the attack.", coalition}, timer.getTime() + 2)
-		--timer.scheduleFunction(PlaySound, {"siren.ogg", coalition}, timer.getTime() + 4)
+	
+	if isReadyToNotifyTeamAgain() then			
+		trigger.action.outSoundForCoalition(coalition, "squelch.ogg")
+		timer.scheduleFunction(SendMessage, {"Enemy units {"..GetAttackingUnitTypes(DetectedUnits).."} are on the way to attack "..unitAirbase.." airbase and it's surrounded territories. Deploy JTACs to the field and start Close Air Support coalition against the attack.", coalition}, timer.getTime() + 2)
+		timer.scheduleFunction(PlaySound, {"siren.ogg", coalition}, timer.getTime() + 4)
 		lastNotifyTime = timer.getTime()
 	end
+	
 	if nearestRECON then
 		if coalition == 2 then
 			utils.laseUnits(nearestRECON, DetectedUnits, detectInterval, laserCodeBlue, 1, detectMaxCount)
