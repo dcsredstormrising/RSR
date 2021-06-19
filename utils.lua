@@ -1888,8 +1888,8 @@ function M.createGroupDataForWarehouseAsset(warehouseName, asset, sideName)
 					["ETA"] = 0,
 					["alt_type"] = "BARO",
 					["formation_template"] = "",
-					["y"] = 0.0,--M.defaultX(),
-					["x"] = 0.0,--M.defaultY(),
+					["y"] = 0.0,
+					["x"] = 0.0,
 					["ETA_locked"] = true,
 					["speed"] = 0,
 					["action"] = "Turning Point",
@@ -1913,7 +1913,7 @@ function M.createGroupDataForWarehouseAsset(warehouseName, asset, sideName)
 											["id"] = "Option",
 											["params"] = 
 											{
-												["value"] = 25,
+												["value"] = 25,	-- cut the interception range
 												["name"] = 24,
 											},
 										},
@@ -1940,15 +1940,15 @@ function M.createGroupDataForWarehouseAsset(warehouseName, asset, sideName)
 				},
 				["skill"] = asset.skill,
 				["type"] = asset.name,
-				["x"] = 0.0,--M.defaultX(),
-				["y"] = 0.0,--M.defaultY(),
+				["x"] = 0.0,
+				["y"] = 0.0,
 				["name"] = warehouseName .. '_' .. asset.name,				
 				["heading"] = 0,
                 ["modulation"] = 0,
 			},
 		},
-		["x"] = 0.0,--M.defaultX(),
-		["y"] = 0.0,--M.defaultY(),
+		["x"] = 0.0,
+		["y"] = 0.0,
 		["name"] = warehouseGroupTag..'_'..sideName..'_'..warehouseName..'_'..asset.name,
 		["start_time"] = 0,
 		["uncontrollable"] = false,
@@ -1975,8 +1975,8 @@ function M.createGroupDataForWarehouseAsset(warehouseName, asset, sideName)
 					  }
 					},
 					["type"] = "Turning Point",
-					["x"] = M.defaultX(),
-					["y"] = M.defaultY()
+					["x"] = 0.0,
+					["y"] = 0.0
 				  } },
 				routeRelativeTOT = true
 			  },
@@ -1995,16 +1995,16 @@ function M.createGroupDataForWarehouseAsset(warehouseName, asset, sideName)
 					},					
 					["skill"] = asset.skill,
 					["type"] = asset.name,
-					["x"] = M.defaultX(),
-					["y"] = M.defaultY(),            
+					["x"] = 0.0,
+					["y"] = 0.0,            
 					["name"] = warehouseName .. '_' .. asset.name,
 					["playerCanDrive"] = true,
 					["heading"] = 0,				
 				},
 			},
-			["x"] = M.defaultX(), -- fake as fuck.  maybe 0 will work
-			["y"] = M.defaultY(),
-			["name"] = warehouseGroupTag..' '..sideName..'_'..warehouseName..'_'..asset.name,
+			["y"] = 0.0,
+			["x"] = 0.0
+			["name"] = warehouseGroupTag..'_'..sideName..'_'..warehouseName..'_'..asset.name,
 			["start_time"] = 0,
 			["uncontrollable"] = false,
 			["category"] = asset.groupCat,
