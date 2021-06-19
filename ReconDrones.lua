@@ -25,8 +25,6 @@ redDroneCount = 0
 local spawnerName = nil
 local BlueRecceDetection = {}
 local RedRecceDetection = {}
-local simpleDetectionReportRed = ""
-local fullDetectionReportRed = ""
 local detectionStatus = {}
 
 -- setup
@@ -134,32 +132,41 @@ end
 
 -- stupid Moose does not keep detectedItems in their detection object we need to store out ourselfs if we want to have multiple RECONs and be able to 
 -- report the status
-local function buildDetectionStatus(nearestRECON, reconAirbase, detectedUnits, coalition)
-	detectionStatus[nearestRECON:GetName()] = nil -- reset
-	detectionStatus[nearestRECON:GetName()] = {airbase = reconAirbase, detected = detectedUnits, coalition = coalition}
-	
+local function getSimpleDetectionReport(coalition)	
 	local simpleStart = "Enemy units are on the way to attack "
 	local simpleEnd = " and it's surrounded territories. Deploy JTACs to the field and start Close Air Support coalition against the attack."
 	local bases = ""
-	local fullReportLine = ""
-	simpleDetectionReport = ""
-	fullDetectionReport = ""
-	
+			
 	if detectionStatus then
 		for reconName, data in pairs(detectionStatus) do
 			if coalition == data.coalition then
-				bases = bases..data.airbase.." "
-				for unitName, unit in pairs(data.detected) do
-				
-				if coalition == 2 then
-					fullDetectionReport = fullDetectionReport..reconName.." - "..data.airbase.." - "..unit:GetTypeName().." - Laser Code: "..laserCodeBlue
-				elseif coalition == 1 then
-					fullDetectionReport = fullDetectionReport..reconName.." - "..data.airbase.." - "..unit:GetTypeName().." - Laser Code: "..laserCodeRed
+				bases = bases..data.airbase.." "				
+			end
+		end
+		return simpleStart..bases..simpleEnd		
+	end	
+end
+
+local function getFullDetectionReport(coalitionNumber)	
+	
+	local text = "RECON Airplane Detection Status:\n\n"
+		
+	if detectionStatus then
+		for reconName, data in pairs(detectionStatus) do
+			if coalitionNumber == data.coalition then				
+				for unitName, unit in pairs(data.detected) do				
+					if coalition == 2 then
+						text = text..string.format("RECON airplane: %s - Location: %s - Enemy Unit: %s  - Laser Code: %s", reconName, data.airbase, unit:GetTypeName(), laserCodeBlue)
+					elseif coalition == 1 then
+						text = text..string.format("RECON airplane: %s - Location: %s - Enemy Unit: %s  - Laser Code: %s", reconName, data.airbase, unit:GetTypeName(), laserCodeRed)					
+					end
 				end
 			end
 		end
-		simpleDetectionReport = simpleStart..bases..simpleEnd
+	else
+		text = string.format("RECON airplanes are not detecting any enemy units near by, or there is no RECON airplane in the air.\n")		
 	end	
+	return text
 end
 
 local function smokeAndLase(DetectedUnits, coalition)
@@ -178,7 +185,8 @@ local function smokeAndLase(DetectedUnits, coalition)
 			nearestRECON = findNearestRecce(detectedUnit, detectionSet)			
 			if nearestRECON then
 				reconAirbase = utils.getNearestAirbase(nearestRECON:GetVec2(), coalition, Airbase.Category.AIRDROME)
-				buildDetectionReport(nearestRECON, reconAirbase, detectedUnits)
+				detectionStatus[nearestRECON:GetName()] = nil -- reset
+				detectionStatus[nearestRECON:GetName()] = {airbase = reconAirbase, detected = detectedUnits, coalition = coalition}				
 			end			
 		end
 		unitAirbase = utils.getNearestAirbase(detectedUnit:GetVec2(), coalition, Airbase.Category.AIRDROME)			
@@ -188,18 +196,15 @@ local function smokeAndLase(DetectedUnits, coalition)
 	if nearestRECON then
 		buildDetectionStatus(nearestRECON, reconAirbase, DetectedUnits, coalition)
 	end
-	
-	trigger.action.outTextForCoalition(coalition, simpleDetectionReport, 6)
-	
+		
 	if isReadyToSmokeAgain() then
 		utils.smokeUnits(DetectedUnits, 2, detectMaxCount)
 		lastSmokedTime = timer.getTime()
 	end	
 	
 	if isReadyToNotifyTeamAgain() then			
-		trigger.action.outSoundForCoalition(coalition, "squelch.ogg")
-		--simpleDetectionReport
-		timer.scheduleFunction(SendMessage, {"Enemy units {"..GetAttackingUnitTypes(DetectedUnits).."} are on the way to attack "..unitAirbase.." airbase and it's surrounded territories. Deploy JTACs to the field and start Close Air Support coalition against the attack.", coalition}, timer.getTime() + 2)
+		trigger.action.outSoundForCoalition(coalition, "squelch.ogg")		
+		timer.scheduleFunction(SendMessage, getSimpleDetectionReport(coalition), coalition}, timer.getTime() + 2)
 		timer.scheduleFunction(PlaySound, {"siren.ogg", coalition}, timer.getTime() + 4)
 		lastNotifyTime = timer.getTime()
 	end
@@ -276,25 +281,6 @@ local function showReconLocations(coalitionNumber)
   end  
 end
 
-local function getFullDetectionReport(coalitionNumber)	
-	--fullDetectionReport
-	local text = ""
-	if redDetection.DetectedItems then
-		text = string.format("Lasing Status for RECON detected enemy units.\n")
-		for _,detectedItem in pairs(redDetection.DetectedItems) do		
-			local airbase = utils.getNearestAirbase(detectedItem:GetVec2(), coalitionNumber, Airbase.Category.AIRDROME)
-			if coalitionNumber == 2 then
-				text = text..string.format("Location: %s - Enemy Unit: %s  - Laser Code: %s", airbase, detectedItem:GetDCSObject():getTypeName(), laserCodeBlue)
-			elseif coalitionNumber == 1 then
-				text = text..string.format("Location: %s - Enemy Unit: %s  - Laser Code: %s", airbase, detectedItem:GetDCSObject():getTypeName(), laserCodeRed)
-			end
-		end	
-	else
-		text = string.format("RECON airplanes are not detecting any enemy units near by, or there is no RECON airplane in the air.\n")		
-	end	
-	return text
-end
-
 -- this is called from the global on birth event handler
 function ReconDrones.AddMenu(playerGroup)
 	local playerName = playerGroup:GetPlayerName()
@@ -310,7 +296,7 @@ function ReconDrones.AddMenu(playerGroup)
 		trigger.action.outTextForCoalition(coalitionNumber, showReconLocations(coalitionNumber), 15)		
 	end)
 	MENU_GROUP_COMMAND:New(playerGroup, "Show RECON Lasing Status", menuRoot, function()
-		trigger.action.outTextForCoalition(coalitionNumber, fullDetectionReport, 25)
+		trigger.action.outTextForCoalition(coalitionNumber, getFullDetectionReport(coalitionNumber), 15)
 	end)
 end
 
@@ -322,4 +308,3 @@ function DroneSpawned:OnEventBirth(EventData)
 		trigger.action.outTextForCoalition(coalition,"[TEAM] " ..spawnerName.. " called in a UAV RECON Drone close to "..uavNearBase.."\nYour team has "..getDronesRemaining(coalition).." remaining UAVs", 10)		
 	end
 end
-
