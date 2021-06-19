@@ -13,9 +13,9 @@ local _redTypes = {"Roland", "Tor"}
 -- can not run this due to performance until we figure out what is Moose/DCS doing with this: grp:CommandEPLRS(true, 3)
 -- might be that Moose is the problem here not DCS and that's why the big performance hit every 15 sec
 -- This sets EPRLS ON
-GroupsForEPLRS = SET_GROUP:New():FilterCategoryGround():FilterPrefixes( {"Red Start","Blue Start", "CTLD"} ):FilterActive():FilterOnce()
-local _eplrsTypes = {"Hawk", "Buk", "Kub", "p-19", "SNR_75V", "Patriot", "S-300PS", "snr s-125", "Tor", "Roland"}
-local useFullEPLRS = true
+--GroupsForEPLRS = SET_GROUP:New():FilterCategoryGround():FilterPrefixes( {"Red Start","Blue Start", "CTLD"} ):FilterActive():FilterOnce()
+--local _eplrsTypes = {"Hawk", "Buk", "Kub", "p-19", "SNR_75V", "Patriot", "S-300PS", "snr s-125", "Tor", "Roland"}
+--local useFullEPLRS = true
 
 -- logic to load saved AASystems into CTLD. This fixes the problem of static sams not being part of CTLD.  Now they are. This fixes half the problem, 
   -- the other problem is CTLD Repair was written for 1 session.  It has to be rewritten in order to repair systems through out the entire round.  
@@ -54,6 +54,7 @@ SCHEDULER:New( nil, function()
    end) 
          
    --env.info("**=AW=33COM GroupsForEPLRS Scheduler")   
+   --[[
    GroupsForEPLRS:ForEachGroup(
       function( grp )                  
 		if useFullEPLRS then
@@ -77,6 +78,7 @@ SCHEDULER:New( nil, function()
 			end
 		end
 	end)
+	]]--
      
   -- rebuild all AA system in CTLD on session start
 	env.info("**=AW=33COM Loaded Existing AASystems into CTLD Scheduler")

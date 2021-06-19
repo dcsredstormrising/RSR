@@ -91,7 +91,7 @@ function redDetection:OnAfterDetected(From, Event, To, DetectedUnits)
 	end
 	
 	if detector then
-		utils.laseUnits(detector, DetectedUnits, detectInterval, laserCodeRed, 2)
+		utils.laseUnits(detector, DetectedUnits, detectInterval, laserCodeRed, 1)
 		trigger.action.outTextForCoalition(1, "Detection ran for RED", 4)
 	end
 end
