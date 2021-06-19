@@ -15,7 +15,7 @@ local smokeInterval = 120
 local lastSmokedTime = timer.getTime()
 local detectInterval = 20  -- this is also lase duration that resets each time detection runs-- super simple way to update laser
 local lastNotifyTime = timer.getTime()
-local detectMessageInterval = 30
+local detectMessageInterval = 40
 blueDroneCount = 0
 redDroneCount = 0
 local spawnerName = nil
@@ -62,12 +62,12 @@ redDetection:SetDistanceProbability(1)
 redDetection:SetAlphaAngleProbability(1)
 redDetection:Start()
 
-local function SendMessage(msg, coalition)
-	trigger.action.outTextForCoalition(coalition, msg, 20)
+local function SendMessage(args)
+	trigger.action.outTextForCoalition(args[2], args[1], 20)
 end
 
-local function PlaySound(file, coalition)
-	trigger.action.outSoundForCoalition(coalition, file)
+local function PlaySound(args)
+	trigger.action.outSoundForCoalition(args[2], args[1])
 end
 
 local function getAirbaseUnderAttack(detector, coalition)
@@ -95,8 +95,6 @@ local function isReadyToNotifyTeamAgain()
 end
 
 local function smokeAndLase(DetectedUnits, coalition)
-	env.info("AW33COM smokeAndLase 111")
-	trigger.action.outTextForCoalition(1, "Detection ran for coalition: "..inspect(coalition), 4)
 	local detector = nil
 	for _,detectedItem in pairs(redDetection.DetectedItems) do			
 		detector = detectedItem.NearestFAC
@@ -107,10 +105,10 @@ local function smokeAndLase(DetectedUnits, coalition)
 		lastSmokedTime = timer.getTime()
 	end	
 	if isReadyToNotifyTeamAgain() then		
-		local airbase = getAirbaseUnderAttack(detector, coalition)		
-		trigger.action.outSoundForCoalition(coalition, "squelch.ogg")
-		timer.scheduleFunction(SendMessage, {"Enemy units are on the way to attack "..airbase.." airbase and it's surrounded territories.\nDeploy JTACs to the field and start Close Air Support coalition against the attack.", coalition}, timer.getTime() + 2)
-		timer.scheduleFunction(PlaySound, {"siren.ogg", coalition}, timer.getTime() + 4)
+		--local airbase = getAirbaseUnderAttack(detector, coalition)		
+		--trigger.action.outSoundForCoalition(coalition, "squelch.ogg")
+		--timer.scheduleFunction(SendMessage, {"Enemy units are on the way to attack "..airbase.." airbase and it's surrounded territories.\nDeploy JTACs to the field and start Close Air Support coalition against the attack.", coalition}, timer.getTime() + 2)
+		--timer.scheduleFunction(PlaySound, {"siren.ogg", coalition}, timer.getTime() + 4)
 		lastNotifyTime = timer.getTime()
 	end
 	if detector then
