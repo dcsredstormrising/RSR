@@ -49,8 +49,8 @@ blueDetection:SetAcceptRange(detectionRange)
 blueDetection:FilterCategories({Unit.Category.GROUND_UNIT})	
 blueDetection:SetRefreshTimeInterval(detectInterval) -- seconds
 blueDetection.DetectedItemMax = detectMaxCount -- I dont' think this works in Moose correctly
-blueDetection:SetDistanceProbability(0.3)
-blueDetection:SetAlphaAngleProbability(0.3)
+blueDetection:SetDistanceProbability(0.9)
+blueDetection:SetAlphaAngleProbability(0.9)
 blueDetection:Start()
 
 redDetection = DETECTION_AREAS:New(RedRecceSetGroup, detectionRange)
@@ -58,8 +58,8 @@ redDetection:SetAcceptRange(detectionRange)
 redDetection:FilterCategories({Unit.Category.GROUND_UNIT})	
 redDetection:SetRefreshTimeInterval(detectInterval) -- seconds
 redDetection.DetectedItemMax = detectMaxCount -- I dont' think this works in Moose correctly
-redDetection:SetDistanceProbability(0.3)
-redDetection:SetAlphaAngleProbability(0.3)
+redDetection:SetDistanceProbability(0.9)
+redDetection:SetAlphaAngleProbability(0.9)
 redDetection:Start()
 
 local function getAirbaseUnderAttack(detector, coalition)
@@ -92,7 +92,7 @@ local function smokeAndLase(DetectedUnits, coalition)
 		break;
 	end		
 	if isReadyToSmokeAgain() then
-		utils.smokeUnits(DetectedUnits, 2)
+		utils.smokeUnits(DetectedUnits, 2, detectMaxCount)
 		lastSmokedTime = timer.getTime()
 	end	
 	if isReadyToNotifyTeamAgain() then		
