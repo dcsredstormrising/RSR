@@ -77,16 +77,12 @@ end
 local function findNearestRecce(detectedUnit, detectionSet)
 	local NearestRecce=nil
 	local DistanceRecce=maxLaseDistane
-	--env.info("AW33COM detectionSet: "..inspect(detectionSet))
-	for RecceGroupName,RecceGroup in pairs(detectionSet:GetSet())do
-		--env.info("AW33COM RecceGroupName: "..inspect(RecceGroupName))
-		--env.info("AW33COM RECCE GROUP: "..inspect(RecceGroup))
-		
+	for RecceGroupName,RecceGroup in pairs(detectionSet:GetSet())do		
 		if RecceGroup and RecceGroup:IsAlive()then
 			for _,RecceUnit in pairs(RecceGroup:GetUnits())do
 				if RecceUnit:IsActive()then
-					local RecceUnitCoord=RecceUnit:GetCoordinate()
-					local Distance=RecceUnitCoord:Get2DDistance(detectedUnit.coordinate)
+					local RecceUnitCoord=RecceUnit:GetCoordinate()					
+					local Distance=RecceUnitCoord:Get2DDistance(detectedUnit:GetCoordinate())
 					if Distance<DistanceRecce then
 						DistanceRecce=Distance	-- pretty clever trick to find the nearest, he simply cuts the distance
 						NearestRecce=RecceUnit
