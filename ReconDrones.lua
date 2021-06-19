@@ -192,11 +192,7 @@ local function smokeAndLase(DetectedUnits, coalition)
 		unitAirbase = utils.getNearestAirbase(detectedUnit:GetVec2(), coalition, Airbase.Category.AIRDROME)			
 		break
 	end
-	
-	if nearestRECON then
-		buildDetectionStatus(nearestRECON, reconAirbase, DetectedUnits, coalition)
-	end
-		
+			
 	if isReadyToSmokeAgain() then
 		utils.smokeUnits(DetectedUnits, 2, detectMaxCount)
 		lastSmokedTime = timer.getTime()
@@ -204,7 +200,7 @@ local function smokeAndLase(DetectedUnits, coalition)
 	
 	if isReadyToNotifyTeamAgain() then			
 		trigger.action.outSoundForCoalition(coalition, "squelch.ogg")		
-		timer.scheduleFunction(SendMessage, getSimpleDetectionReport(coalition), coalition}, timer.getTime() + 2)
+		timer.scheduleFunction(SendMessage, {getSimpleDetectionReport(coalition), coalition}, timer.getTime() + 2)
 		timer.scheduleFunction(PlaySound, {"siren.ogg", coalition}, timer.getTime() + 4)
 		lastNotifyTime = timer.getTime()
 	end
