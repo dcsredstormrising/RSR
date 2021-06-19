@@ -25,8 +25,8 @@ redDroneCount = 0
 local spawnerName = nil
 local BlueRecceDetection = {}
 local RedRecceDetection = {}
-local simpleDetectionReport = ""
-local fullDetectionReport = ""
+local simpleDetectionReportRed = ""
+local fullDetectionReportRed = ""
 local detectionStatus = {}
 
 -- setup
@@ -134,22 +134,31 @@ end
 
 -- stupid Moose does not keep detectedItems in their detection object we need to store out ourselfs if we want to have multiple RECONs and be able to 
 -- report the status
-local function buildDetectionStatus(nearestRECON, reconAirbase, detectedUnits)
+local function buildDetectionStatus(nearestRECON, reconAirbase, detectedUnits, coalition)
 	detectionStatus[nearestRECON:GetName()] = nil -- reset
-	detectionStatus[nearestRECON:GetName()] = {airbase = reconAirbase, detected = detectedUnits}
+	detectionStatus[nearestRECON:GetName()] = {airbase = reconAirbase, detected = detectedUnits, coalition = coalition}
 	
 	local simpleStart = "Enemy units are on the way to attack "
 	local simpleEnd = " and it's surrounded territories. Deploy JTACs to the field and start Close Air Support coalition against the attack."
 	local bases = ""
+	local fullReportLine = ""
+	simpleDetectionReport = ""
+	fullDetectionReport = ""
 	
 	if detectionStatus then
 		for reconName, data in pairs(detectionStatus) do
-			bases = bases..data.airbase.." "
+			if coalition == data.coalition then
+				bases = bases..data.airbase.." "
+				for unitName, unit in pairs(data.detected) do
+				
+				if coalition == 2 then
+					fullDetectionReport = fullDetectionReport..reconName.." - "..data.airbase.." - "..unit:GetTypeName().." - Laser Code: "..laserCodeBlue
+				elseif coalition == 1 then
+					fullDetectionReport = fullDetectionReport..reconName.." - "..data.airbase.." - "..unit:GetTypeName().." - Laser Code: "..laserCodeRed
+				end
+			end
 		end
 		simpleDetectionReport = simpleStart..bases..simpleEnd
-		
-		fullDetectionReport
-		
 	end	
 end
 
@@ -177,10 +186,10 @@ local function smokeAndLase(DetectedUnits, coalition)
 	end
 	
 	if nearestRECON then
-		buildDetectionStatus(nearestRECON, reconAirbase, DetectedUnits)
+		buildDetectionStatus(nearestRECON, reconAirbase, DetectedUnits, coalition)
 	end
 	
-	trigger.action.outTextForCoalition(coalition, "RECON Airplane at "..reconAirbase.." detected enemy units {"..GetAttackingUnitTypes(DetectedUnits).."} approaching "..unitAirbase.." airbase.", 6)
+	trigger.action.outTextForCoalition(coalition, simpleDetectionReport, 6)
 	
 	if isReadyToSmokeAgain() then
 		utils.smokeUnits(DetectedUnits, 2, detectMaxCount)
@@ -301,7 +310,7 @@ function ReconDrones.AddMenu(playerGroup)
 		trigger.action.outTextForCoalition(coalitionNumber, showReconLocations(coalitionNumber), 15)		
 	end)
 	MENU_GROUP_COMMAND:New(playerGroup, "Show RECON Lasing Status", menuRoot, function()
-		trigger.action.outTextForCoalition(coalitionNumber, getFullDetectionReport(coalitionNumber), 25)
+		trigger.action.outTextForCoalition(coalitionNumber, fullDetectionReport, 25)
 	end)
 end
 
