@@ -25,6 +25,8 @@ redDroneCount = 0
 local spawnerName = nil
 local BlueRecceDetection = {}
 local RedRecceDetection = {}
+local detectionReport = ""
+local detectionStatus = {}
 
 -- setup
 DroneSpawned = EVENTHANDLER:New()
@@ -129,6 +131,12 @@ local function GetAttackingUnitTypes(DetectedUnits)
 	return units
 end
 
+-- stupid Moose does not keep detectedItems in their detection object we need to store out ourselfs if we want to have multiple RECONs and be able to 
+-- report the status
+local function buildDetectionStatus(nearestRECON, reconAirbase, detectedUnits)
+	detectionStatus
+end
+
 local function smokeAndLase(DetectedUnits, coalition)
 	local unitAirbase = ""
 	local reconAirbase = ""
@@ -145,20 +153,12 @@ local function smokeAndLase(DetectedUnits, coalition)
 			nearestRECON = findNearestRecce(detectedUnit, detectionSet)			
 			if nearestRECON then
 				reconAirbase = utils.getNearestAirbase(nearestRECON:GetVec2(), coalition, Airbase.Category.AIRDROME)
+				buildDetectionReport(nearestRECON, reconAirbase, detectedUnits)
 			end			
 		end
 		unitAirbase = utils.getNearestAirbase(detectedUnit:GetVec2(), coalition, Airbase.Category.AIRDROME)			
 		break
 	end
-	
-	env.info("AW33COM redDetection.DetectedItemCount: "..inspect(redDetection.DetectedItemCount))
-	
-	for unitName,unitObj in pairs(DetectedItems) do
-		unitType = unitObj:GetDCSObject():getTypeName()
-		env.info("AW33COM by airbase: "..reconAirbase.." unitName - unitType: "..unitName.." - "..unitType)
-	end	
-	
-	env.info("AW33COM redDetection.DetectedItemCount: "..inspect(redDetection.DetectedItemCount))
 	
 	trigger.action.outTextForCoalition(coalition, "RECON Airplane at "..reconAirbase.." detected enemy units {"..GetAttackingUnitTypes(DetectedUnits).."} approaching "..unitAirbase.." airbase.", 6)
 	
@@ -172,6 +172,8 @@ local function smokeAndLase(DetectedUnits, coalition)
 		timer.scheduleFunction(SendMessage, {"Enemy units {"..GetAttackingUnitTypes(DetectedUnits).."} are on the way to attack "..unitAirbase.." airbase and it's surrounded territories. Deploy JTACs to the field and start Close Air Support coalition against the attack.", coalition}, timer.getTime() + 2)
 		timer.scheduleFunction(PlaySound, {"siren.ogg", coalition}, timer.getTime() + 4)
 		lastNotifyTime = timer.getTime()
+		detectionStatus = {} -- reset report to 0 after reporting and build the report again for every RECON
+		detectionReport = ""
 	end
 	
 	if nearestRECON then
