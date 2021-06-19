@@ -147,6 +147,7 @@ local function smokeAndLase(DetectedUnits, coalition)
 				reconAirbase = utils.getNearestAirbase(nearestRECON:GetVec2(), coalition, Airbase.Category.AIRDROME)
 			end			
 		end
+			unitAirbase = utils.getNearestAirbase(detectedUnit:GetVec2(), coalition, Airbase.Category.AIRDROME)
 		break
 	end
 	
