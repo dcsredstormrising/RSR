@@ -1,19 +1,21 @@
 -- =AW=33COM Simple rewrite of our drones who were OK, but their menus were completely wrong and impossible to function.
 -- Their lasing and smoking was complicated to the end user..now everything auto lases and smokes just like our JTAC
 -- This is no near perfect, but will fix the bugs
+-- due to Moose some of these setting are per instance of the RECON..this is goog but just keep in mind those events below run per instance of drone in the air
 local utils = require("utils")
 local inspect = require("inspect")
+ReconDrones = {}
 local laserCodeRed = 1686
 local laserCodeBlue = 1687
-
-ReconDrones = {}
 local droneMaxCount = 4
 local droneMaxCountAtOnce = 2
 local detectMaxCount = 4
-local detectionRange = 20000  --meters
+local detectionRange = 12000  --meters
 local smokeInterval = 120
 local lastSmokedTime = timer.getTime()
 local detectInterval = 20  -- this is also lase duration that resets each time detection runs-- super simple way to update laser
+local lastNotifyTime = timer.getTime()
+local detectMessageInterval = 60
 blueDroneCount = 0
 redDroneCount = 0
 local spawnerName = nil
@@ -60,7 +62,6 @@ redDetection:SetDistanceProbability(0.3)
 redDetection:SetAlphaAngleProbability(0.3)
 redDetection:Start()
 
--- designation
 local function isReadyToSmokeAgain()
 	local diff = timer.getTime() - lastSmokedTime	
 	if diff > smokeInterval then		
@@ -68,7 +69,15 @@ local function isReadyToSmokeAgain()
 	end
 end
 
+local function isReadyToNotifyTeamAgain()
+	local diff = timer.getTime() - lastNotifyTime	
+	if diff > detectMessageInterval then		
+		return true
+	end
+end
+
 local function smokeAndLase(DetectedUnits, coalition)
+	trigger.action.outTextForCoalition(1, "Detection ran for coalition: "..inspect(coalition), 4)
 	local detector = nil
 	for _,detectedItem in pairs(redDetection.DetectedItems) do			
 		detector = detectedItem.NearestFAC
@@ -78,15 +87,17 @@ local function smokeAndLase(DetectedUnits, coalition)
 		utils.smokeUnits(DetectedUnits, 2)
 		lastSmokedTime = timer.getTime()
 	end	
+	if isReadyToNotifyTeamAgain() then
+		trigger.action.outTextForCoalition(1, "Units are on the way to attack Bassel Al-Assad: "..inspect(coalition), 4)
+		lastNotifyTime = timer.getTime()
+	end
 	if detector then
 		if coalition == coalition.side.BLUE then
 			env.info("RECON:smokeAndLase BLUE")
-			utils.laseUnits(detector, DetectedUnits, detectInterval, laserCodeBlue, 1, detectMaxCount)			
-			trigger.action.outTextForCoalition(1, "Detection ran for BLUE", 4)
+			utils.laseUnits(detector, DetectedUnits, detectInterval, laserCodeBlue, 1, detectMaxCount)
 		elseif coalition == coalition.side.RED then
 			env.info("RECON:smokeAndLase RED")
 			utils.laseUnits(detector, DetectedUnits, detectInterval, laserCodeRed, 1, detectMaxCount)			
-			trigger.action.outTextForCoalition(1, "Detection ran for RED", 4)
 		end
 	end
 end

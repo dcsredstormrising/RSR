@@ -2020,7 +2020,7 @@ function M.smokeUnits(units, coalition, detectMaxCount)
 	if units ~= nil then
 		for _,unit in pairs(units) do
 			runner = runner + 1
-			if runner <= detectMaxCount			
+			if runner <= detectMaxCount then			
 				if coalition == 2 then
 					unit:Smoke(trigger.smokeColor.Blue, 0, 2)				
 				elseif coalition == 1 then
@@ -2036,7 +2036,8 @@ function M.laseUnits(laser, units, laseDuration, laserCode, coalition, detectMax
 		local runner = 0
 		for _,unit in pairs(units) do
 			runner = runner + 1
-			if runner <= detectMaxCount
+			if runner <= detectMaxCount then
+				env.info("AW33COM utils.laseUnits lasing")
 				laser:LaseUnit(unit, laserCode, laseDuration)
 			end
 		end
