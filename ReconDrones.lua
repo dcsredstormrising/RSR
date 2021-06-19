@@ -3,11 +3,14 @@
 -- This is no near perfect, but will fix the bugs
 local utils = require("utils")
 local inspect = require("inspect")
+local laserCodeRed = 1686
+local laserCodeBlue = 1687
 
 ReconDrones = {}
 local droneMaxCount = 4
 local droneMaxCountAtOnce = 2
-local detectMaxCount = 3
+local detectMaxCount = 4
+local detectionRange = 20000  --meters
 local smokeInterval = 120
 local lastSmokedTime = timer.getTime()
 local detectInterval = 20  -- this is also lase duration that resets each time detection runs-- super simple way to update laser
@@ -16,8 +19,6 @@ redDroneCount = 0
 local spawnerName = nil
 local BlueRecceDetection = {}
 local RedRecceDetection = {}
-local laserCodeRed = 1686
-local laserCodeBlue = 1687
 
 -- setup
 DroneSpawned = EVENTHANDLER:New()
@@ -41,8 +42,8 @@ local BlueRecceSetGroup = SET_GROUP:New():FilterCoalitions("blue"):FilterPrefixe
 local RedRecceSetGroup = SET_GROUP:New():FilterCoalitions("red"):FilterPrefixes( {"Pontiac 6"} ):FilterStart()
 
 -- detection
-blueDetection = DETECTION_AREAS:New(BlueRecceSetGroup, 10000)
-blueDetection:SetAcceptRange(10000)
+blueDetection = DETECTION_AREAS:New(BlueRecceSetGroup, detectionRange)
+blueDetection:SetAcceptRange(detectionRange)
 blueDetection:FilterCategories({Unit.Category.GROUND_UNIT})	
 blueDetection:SetRefreshTimeInterval(detectInterval) -- seconds
 blueDetection.DetectedItemMax = detectMaxCount -- I dont' think this works in Moose correctly
@@ -50,8 +51,8 @@ blueDetection:SetDistanceProbability(0.3)
 blueDetection:SetAlphaAngleProbability(0.3)
 blueDetection:Start()
 
-redDetection = DETECTION_AREAS:New(RedRecceSetGroup, 10000)
-redDetection:SetAcceptRange(10000)
+redDetection = DETECTION_AREAS:New(RedRecceSetGroup, detectionRange)
+redDetection:SetAcceptRange(detectionRange)
 redDetection:FilterCategories({Unit.Category.GROUND_UNIT})	
 redDetection:SetRefreshTimeInterval(detectInterval) -- seconds
 redDetection.DetectedItemMax = detectMaxCount -- I dont' think this works in Moose correctly
@@ -67,33 +68,35 @@ local function isReadyToSmokeAgain()
 	end
 end
 
-function blueDetection:OnAfterDetected(From, Event, To, DetectedUnits)
-	--UNIT:LaseOff() -- reset laser because unit position could have changed since last detection
-	if isReadyToSmokeAgain() then
-		utils.smokeUnits(DetectedUnits, 1)
-		lastSmokedTime = timer.getTime()
-	end
-	--utils.laseUnits(BlueRecceSetGroup, DetectedUnits, detectInterval, laserCodeBlue, 1)
-	trigger.action.outTextForCoalition(2, "Detection ran for BLUE", 4)
-end
-
-function redDetection:OnAfterDetected(From, Event, To, DetectedUnits)	
-	--UNIT:LaseOff() -- reset laser because unit position could have changed since last detection
+local function smokeAndLase(DetectedUnits, coalition)
 	local detector = nil
 	for _,detectedItem in pairs(redDetection.DetectedItems) do			
 		detector = detectedItem.NearestFAC
 		break;
-	end
-		
+	end		
 	if isReadyToSmokeAgain() then
 		utils.smokeUnits(DetectedUnits, 2)
 		lastSmokedTime = timer.getTime()
-	end
-	
+	end	
 	if detector then
-		utils.laseUnits(detector, DetectedUnits, detectInterval, laserCodeRed, 1)
-		trigger.action.outTextForCoalition(1, "Detection ran for RED", 4)
+		if coalition == coalition.side.BLUE then
+			env.info("RECON:smokeAndLase BLUE")
+			utils.laseUnits(detector, DetectedUnits, detectInterval, laserCodeBlue, 1, detectMaxCount)			
+			trigger.action.outTextForCoalition(1, "Detection ran for BLUE", 4)
+		elseif coalition == coalition.side.RED then
+			env.info("RECON:smokeAndLase RED")
+			utils.laseUnits(detector, DetectedUnits, detectInterval, laserCodeRed, 1, detectMaxCount)			
+			trigger.action.outTextForCoalition(1, "Detection ran for RED", 4)
+		end
 	end
+end
+
+function blueDetection:OnAfterDetected(From, Event, To, DetectedUnits)	
+	smokeAndLase(DetectedUnits, coalition.side.BLUE)	
+end
+
+function redDetection:OnAfterDetected(From, Event, To, DetectedUnits)
+	smokeAndLase(DetectedUnits, coalition.side.RED)	
 end
 	
 ----Function to actually spawn the RECON from the players nose
@@ -179,6 +182,3 @@ function DroneSpawned:OnEventBirth(EventData)
 		trigger.action.outTextForCoalition(coalition,"[TEAM] " ..spawnerName.. " called in a UAV RECON Drone close to "..uavNearBase.."\nYour team has "..getDronesRemaining(coalition).." remaining UAVs", 10)		
 	end
 end
-
-
-

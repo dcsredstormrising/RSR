@@ -2016,23 +2016,29 @@ function M.createGroupDataForWarehouseAsset(warehouseName, asset, sideName)
 	return groupData
 end
 
-function M.smokeUnits(units, coalition)	
+function M.smokeUnits(units, coalition, detectMaxCount)	
 	if units ~= nil then
 		for _,unit in pairs(units) do
-			if coalition == 2 then
-				unit:Smoke(trigger.smokeColor.Blue, 0, 2)				
-			elseif coalition == 1 then
-				unit:Smoke(trigger.smokeColor.Red, 0, 2)
+			runner = runner + 1
+			if runner <= detectMaxCount			
+				if coalition == 2 then
+					unit:Smoke(trigger.smokeColor.Blue, 0, 2)				
+				elseif coalition == 1 then
+					unit:Smoke(trigger.smokeColor.Red, 0, 2)
+				end
 			end
 		end
 	end
 end
 
-function M.laseUnits(laser, units, laseDuration, laserCode, coalition)
+function M.laseUnits(laser, units, laseDuration, laserCode, coalition, detectMaxCount)
 	if units ~= nil then
+		local runner = 0
 		for _,unit in pairs(units) do
-			trigger.action.outTextForCoalition(coalition, "We are lasing unit: "..inspect(unit:GetName()).." with laser code: "..inspect(laserCode), 5)
-			laser:LaseUnit(unit, laserCode, laseDuration)
+			runner = runner + 1
+			if runner <= detectMaxCount
+				laser:LaseUnit(unit, laserCode, laseDuration)
+			end
 		end
 	end
 end
