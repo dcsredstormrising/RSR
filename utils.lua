@@ -2003,7 +2003,7 @@ function M.createGroupDataForWarehouseAsset(warehouseName, asset, sideName)
 				},
 			},
 			["y"] = 0.0,
-			["x"] = 0.0
+			["x"] = 0.0,
 			["name"] = warehouseGroupTag..'_'..sideName..'_'..warehouseName..'_'..asset.name,
 			["start_time"] = 0,
 			["uncontrollable"] = false,
