@@ -186,7 +186,7 @@ local function smokeAndLase(DetectedUnits, coalition)
 			if nearestRECON then
 				reconAirbase = utils.getNearestAirbase(nearestRECON:GetVec2(), coalition, Airbase.Category.AIRDROME)
 				detectionStatus[nearestRECON:GetName()] = nil -- reset
-				detectionStatus[nearestRECON:GetName()] = {airbase = reconAirbase, detected = detectedUnits, coalition = coalition}				
+				detectionStatus[nearestRECON:GetName()] = {airbase = reconAirbase, detected = DetectedUnits, coalition = coalition}				
 			end			
 		end
 		unitAirbase = utils.getNearestAirbase(detectedUnit:GetVec2(), coalition, Airbase.Category.AIRDROME)			
