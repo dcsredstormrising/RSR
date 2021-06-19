@@ -9,13 +9,13 @@ local laserCodeRed = 1686
 local laserCodeBlue = 1687
 local droneMaxCount = 4
 local droneMaxCountAtOnce = 2
-local detectMaxCount = 4
+local detectMaxCount = 6
 local detectionRange = 12000  --meters
 local smokeInterval = 120
 local lastSmokedTime = timer.getTime()
 local detectInterval = 20  -- this is also lase duration that resets each time detection runs-- super simple way to update laser
 local lastNotifyTime = timer.getTime()
-local detectMessageInterval = 60
+local detectMessageInterval = 30
 blueDroneCount = 0
 redDroneCount = 0
 local spawnerName = nil
@@ -49,8 +49,8 @@ blueDetection:SetAcceptRange(detectionRange)
 blueDetection:FilterCategories({Unit.Category.GROUND_UNIT})	
 blueDetection:SetRefreshTimeInterval(detectInterval) -- seconds
 blueDetection.DetectedItemMax = detectMaxCount -- I dont' think this works in Moose correctly
-blueDetection:SetDistanceProbability(0.9)
-blueDetection:SetAlphaAngleProbability(0.9)
+blueDetection:SetDistanceProbability(1)
+blueDetection:SetAlphaAngleProbability(1)
 blueDetection:Start()
 
 redDetection = DETECTION_AREAS:New(RedRecceSetGroup, detectionRange)
@@ -58,15 +58,25 @@ redDetection:SetAcceptRange(detectionRange)
 redDetection:FilterCategories({Unit.Category.GROUND_UNIT})	
 redDetection:SetRefreshTimeInterval(detectInterval) -- seconds
 redDetection.DetectedItemMax = detectMaxCount -- I dont' think this works in Moose correctly
-redDetection:SetDistanceProbability(0.9)
-redDetection:SetAlphaAngleProbability(0.9)
+redDetection:SetDistanceProbability(1)
+redDetection:SetAlphaAngleProbability(1)
 redDetection:Start()
 
+local function SendMessage(msg, coalition)
+	trigger.action.outTextForCoalition(coalition, msg, 20)
+end
+
+local function PlaySound(file, coalition)
+	trigger.action.outSoundForCoalition(coalition, file)
+end
+
 local function getAirbaseUnderAttack(detector, coalition)
-	local airbase = nil	
-	local vec = detector:GetVec2()
-    if vec ~= nil then
-		return utils.getNearestAirbase(vec, coalition, Airbase.Category.AIRDROME)        
+	local airbase = nil		
+	if detector then
+		local vec = detector:GetVec2()
+		if vec ~= nil then
+			return utils.getNearestAirbase(vec, coalition, Airbase.Category.AIRDROME)        
+		end
 	end
 end
 
@@ -85,6 +95,7 @@ local function isReadyToNotifyTeamAgain()
 end
 
 local function smokeAndLase(DetectedUnits, coalition)
+	env.info("AW33COM smokeAndLase 111")
 	trigger.action.outTextForCoalition(1, "Detection ran for coalition: "..inspect(coalition), 4)
 	local detector = nil
 	for _,detectedItem in pairs(redDetection.DetectedItems) do			
@@ -97,15 +108,15 @@ local function smokeAndLase(DetectedUnits, coalition)
 	end	
 	if isReadyToNotifyTeamAgain() then		
 		local airbase = getAirbaseUnderAttack(detector, coalition)		
-		trigger.action.outTextForCoalition(1, "Units are on the way to attack "..airbase..": for coalition: "..inspect(coalition), 4)
+		trigger.action.outSoundForCoalition(coalition, "squelch.ogg")
+		timer.scheduleFunction(SendMessage, {"Enemy units are on the way to attack "..airbase.." airbase and it's surrounded territories.\nDeploy JTACs to the field and start Close Air Support coalition against the attack.", coalition}, timer.getTime() + 2)
+		timer.scheduleFunction(PlaySound, {"siren.ogg", coalition}, timer.getTime() + 4)
 		lastNotifyTime = timer.getTime()
 	end
 	if detector then
 		if coalition == 2 then
-			env.info("RECON:smokeAndLase BLUE")
 			utils.laseUnits(detector, DetectedUnits, detectInterval, laserCodeBlue, 1, detectMaxCount)
 		elseif coalition == 1 then
-			env.info("RECON:smokeAndLase RED")
 			utils.laseUnits(detector, DetectedUnits, detectInterval, laserCodeRed, 1, detectMaxCount)			
 		end
 	end
@@ -149,14 +160,12 @@ end
 local function showReconLocations(coalitionNumber)    
   local reconCount = 0
   local recons = nil  
-  local uavBases = ""
-  
+  local uavBases = ""  
   if coalitionNumber == coalition.side.BLUE then
     recons = SET_GROUP:New():FilterCategoryAirplane():FilterPrefixes( {"Pontiac 1"} ):FilterActive():FilterOnce()
   elseif coalitionNumber == coalition.side.RED then
     recons = SET_GROUP:New():FilterCategoryAirplane():FilterPrefixes( {"Pontiac 6"} ):FilterActive():FilterOnce()
-  end
-        
+  end        
   if recons ~= nil then
     recons:ForEachGroup(
       function(grp)
@@ -168,14 +177,30 @@ local function showReconLocations(coalitionNumber)
         reconCount = reconCount+1
       end
      )  
-  end
-       
+  end       
   if reconCount > 0 then            
     return string.format("Team has %i UAV RECON Drones in the air by: %s", reconCount, uavBases)    
   else
     return string.format("Team does not have any UAV RECON Drones in the air at the moment", reconCount)
-  end
-  
+  end  
+end
+
+local function showReconStatus(coalitionNumber)	
+	local text = ""
+	if redDetection.DetectedItems then
+		text = string.format("Lasing Status for RECON detected enemy units.\n")
+		for _,detectedItem in pairs(redDetection.DetectedItems) do		
+			local airbase = utils.getNearestAirbase(detectedItem:GetVec2(), coalitionNumber, Airbase.Category.AIRDROME)
+			if coalitionNumber == 2 then
+				text = text..string.format("Location: %s - Enemy Unit: %s  - Laser Code: %s", airbase, detectedItem:GetDCSObject():getTypeName(), laserCodeBlue)
+			elseif coalitionNumber == 1 then
+				text = text..string.format("Location: %s - Enemy Unit: %s  - Laser Code: %s", airbase, detectedItem:GetDCSObject():getTypeName(), laserCodeRed)
+			end
+		end	
+	else
+		text = string.format("RECON airplanes are not detecting any enemy units near by, or there is no RECON airplane in the air.\n")		
+	end	
+	return text
 end
 
 -- this is called from the global on birth event handler
@@ -191,6 +216,9 @@ function ReconDrones.AddMenu(playerGroup)
 	end)
 	MENU_GROUP_COMMAND:New(playerGroup, "Show UAV RECON Drone Locations", menuRoot, function()
 		trigger.action.outTextForCoalition(coalitionNumber, showReconLocations(coalitionNumber), 15)		
+	end)
+	MENU_GROUP_COMMAND:New(playerGroup, "Show RECON Lasing Status", menuRoot, function()
+		trigger.action.outTextForCoalition(coalitionNumber, showReconStatus(coalitionNumber), 25)
 	end)
 end
 
