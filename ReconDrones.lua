@@ -25,7 +25,8 @@ redDroneCount = 0
 local spawnerName = nil
 local BlueRecceDetection = {}
 local RedRecceDetection = {}
-local detectionReport = ""
+local simpleDetectionReport = ""
+local fullDetectionReport = ""
 local detectionStatus = {}
 
 -- setup
@@ -134,7 +135,22 @@ end
 -- stupid Moose does not keep detectedItems in their detection object we need to store out ourselfs if we want to have multiple RECONs and be able to 
 -- report the status
 local function buildDetectionStatus(nearestRECON, reconAirbase, detectedUnits)
-	detectionStatus
+	detectionStatus[nearestRECON:GetName()] = nil -- reset
+	detectionStatus[nearestRECON:GetName()] = {airbase = reconAirbase, detected = detectedUnits}
+	
+	local simpleStart = "Enemy units are on the way to attack "
+	local simpleEnd = " and it's surrounded territories. Deploy JTACs to the field and start Close Air Support coalition against the attack."
+	local bases = ""
+	
+	if detectionStatus then
+		for reconName, data in pairs(detectionStatus) do
+			bases = bases..data.airbase.." "
+		end
+		simpleDetectionReport = simpleStart..bases..simpleEnd
+		
+		fullDetectionReport
+		
+	end	
 end
 
 local function smokeAndLase(DetectedUnits, coalition)
@@ -160,6 +176,10 @@ local function smokeAndLase(DetectedUnits, coalition)
 		break
 	end
 	
+	if nearestRECON then
+		buildDetectionStatus(nearestRECON, reconAirbase, DetectedUnits)
+	end
+	
 	trigger.action.outTextForCoalition(coalition, "RECON Airplane at "..reconAirbase.." detected enemy units {"..GetAttackingUnitTypes(DetectedUnits).."} approaching "..unitAirbase.." airbase.", 6)
 	
 	if isReadyToSmokeAgain() then
@@ -169,11 +189,10 @@ local function smokeAndLase(DetectedUnits, coalition)
 	
 	if isReadyToNotifyTeamAgain() then			
 		trigger.action.outSoundForCoalition(coalition, "squelch.ogg")
+		--simpleDetectionReport
 		timer.scheduleFunction(SendMessage, {"Enemy units {"..GetAttackingUnitTypes(DetectedUnits).."} are on the way to attack "..unitAirbase.." airbase and it's surrounded territories. Deploy JTACs to the field and start Close Air Support coalition against the attack.", coalition}, timer.getTime() + 2)
 		timer.scheduleFunction(PlaySound, {"siren.ogg", coalition}, timer.getTime() + 4)
 		lastNotifyTime = timer.getTime()
-		detectionStatus = {} -- reset report to 0 after reporting and build the report again for every RECON
-		detectionReport = ""
 	end
 	
 	if nearestRECON then
@@ -248,7 +267,8 @@ local function showReconLocations(coalitionNumber)
   end  
 end
 
-local function showReconStatus(coalitionNumber)	
+local function getFullDetectionReport(coalitionNumber)	
+	--fullDetectionReport
 	local text = ""
 	if redDetection.DetectedItems then
 		text = string.format("Lasing Status for RECON detected enemy units.\n")
@@ -281,7 +301,7 @@ function ReconDrones.AddMenu(playerGroup)
 		trigger.action.outTextForCoalition(coalitionNumber, showReconLocations(coalitionNumber), 15)		
 	end)
 	MENU_GROUP_COMMAND:New(playerGroup, "Show RECON Lasing Status", menuRoot, function()
-		trigger.action.outTextForCoalition(coalitionNumber, showReconStatus(coalitionNumber), 25)
+		trigger.action.outTextForCoalition(coalitionNumber, getFullDetectionReport(coalitionNumber), 25)
 	end)
 end
 
