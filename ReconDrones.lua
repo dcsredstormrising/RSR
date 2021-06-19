@@ -2,6 +2,9 @@
 -- Their lasing and smoking was complicated to the end user..now everything auto lases and smokes just like our JTAC
 -- This is no near perfect, but will fix the bugs
 -- due to Moose some of these setting are per instance of the RECON..this is goog but just keep in mind those events below run per instance of drone in the air
+-- This is my last work with Moose, and their lack of software understanding.  Their inheritance is not really inheritance and you will run into trouble
+-- pretty fast.  For example:  DETECTION_AREAS inherits from DETECTION_BASE, but public DETECTION_BASE.DetectedItem is never inherited so asking for something simple
+-- like this: DetectedItem.NearestFAC will never work.
 local utils = require("utils")
 local inspect = require("inspect")
 ReconDrones = {}
@@ -10,7 +13,7 @@ local laserCodeBlue = 1687
 local droneMaxCount = 4
 local droneMaxCountAtOnce = 2
 local detectMaxCount = 6
-local detectionRange = 12000  --meters
+local detectionRange = 18000  --meters
 local smokeInterval = 120
 local lastSmokedTime = timer.getTime()
 local detectInterval = 20  -- this is also lase duration that resets each time detection runs-- super simple way to update laser
@@ -44,7 +47,7 @@ local BlueRecceSetGroup = SET_GROUP:New():FilterCoalitions("blue"):FilterPrefixe
 local RedRecceSetGroup = SET_GROUP:New():FilterCoalitions("red"):FilterPrefixes( {"Pontiac 6"} ):FilterStart()
 
 -- detection
-blueDetection = DETECTION_AREAS:New(BlueRecceSetGroup, detectionRange)
+blueDetection = DETECTION_BASE:New(BlueRecceSetGroup)
 blueDetection:SetAcceptRange(detectionRange)
 blueDetection:FilterCategories({Unit.Category.GROUND_UNIT})	
 blueDetection:SetRefreshTimeInterval(detectInterval) -- seconds
@@ -53,7 +56,7 @@ blueDetection:SetDistanceProbability(1)
 blueDetection:SetAlphaAngleProbability(1)
 blueDetection:Start()
 
-redDetection = DETECTION_AREAS:New(RedRecceSetGroup, detectionRange)
+redDetection = DETECTION_BASE:New(RedRecceSetGroup)
 redDetection:SetAcceptRange(detectionRange)
 redDetection:FilterCategories({Unit.Category.GROUND_UNIT})	
 redDetection:SetRefreshTimeInterval(detectInterval) -- seconds
@@ -75,7 +78,7 @@ local function getAirbaseUnderAttack(detector, coalition)
 	if detector then
 		local vec = detector:GetVec2()
 		if vec ~= nil then
-			return utils.getNearestAirbase(vec, coalition, Airbase.Category.AIRDROME)        
+			return utils.getNearestAirbase(vec, coalition, Airbase.Category.AIRDROME)
 		end
 	end
 end
@@ -94,18 +97,42 @@ local function isReadyToNotifyTeamAgain()
 	end
 end
 
+local function GetAttackingUnitTypes(DetectedUnits)
+	local units = ""
+	if DetectedUnits ~= nil then
+		for DetectedUnit,Detected in pairs(DetectedUnits)do		
+			units = units..Detected:GetDCSObject():getTypeName()..", "
+		end
+		units = units:sub(1,-3)
+	end
+	return units
+end
+
 local function smokeAndLase(DetectedUnits, coalition)
+	local unitAirbase = ""
+	local detectorAirbase = ""
+	local runner = 0
+	for _,unit in pairs(DetectedUnits) do
+		runner = runner + 1
+	end
+	
 	local detector = nil
-	for _,detectedItem in pairs(redDetection.DetectedItems) do			
+	for _,detectedItem in pairs(DetectedUnits) do		
+		env.info("AW33COM detectedItem: "..inspect(detectedItem))
 		detector = detectedItem.NearestFAC
-		break;
-	end		
+		if detectedItem then unitAirbase = utils.getNearestAirbase(detectedItem:GetVec2(), coalition, Airbase.Category.AIRDROME) end
+		if detector then detectorAirbase = utils.getNearestAirbase(detector:GetVec2(), coalition, Airbase.Category.AIRDROME) end		
+		break
+	end
+	
+	trigger.action.outTextForCoalition(coalition, "Detection ran at "..detectorAirbase.." and Detected units around "..unitAirbase.." are: "..inspect(GetAttackingUnitTypes(DetectedUnits)), 4)
+	
 	if isReadyToSmokeAgain() then
 		utils.smokeUnits(DetectedUnits, 2, detectMaxCount)
 		lastSmokedTime = timer.getTime()
 	end	
 	if isReadyToNotifyTeamAgain() then		
-		--local airbase = getAirbaseUnderAttack(detector, coalition)		
+		--local airbase = getAirbaseUnderAttack(detector, coalition)
 		--trigger.action.outSoundForCoalition(coalition, "squelch.ogg")
 		--timer.scheduleFunction(SendMessage, {"Enemy units are on the way to attack "..airbase.." airbase and it's surrounded territories.\nDeploy JTACs to the field and start Close Air Support coalition against the attack.", coalition}, timer.getTime() + 2)
 		--timer.scheduleFunction(PlaySound, {"siren.ogg", coalition}, timer.getTime() + 4)
@@ -227,4 +254,25 @@ function DroneSpawned:OnEventBirth(EventData)
         local uavNearBase = utils.getNearestAirbase(vec, coalition, Airbase.Category.AIRDROME)
 		trigger.action.outTextForCoalition(coalition,"[TEAM] " ..spawnerName.. " called in a UAV RECON Drone close to "..uavNearBase.."\nYour team has "..getDronesRemaining(coalition).." remaining UAVs", 10)		
 	end
+end
+
+function findNearestRecce(DetectedItem)
+local NearestRecce=nil
+local DistanceRecce=1000000000
+for RecceGroupName,RecceGroup in pairs(self.DetectionSet:GetSet())do
+if RecceGroup and RecceGroup:IsAlive()then
+for RecceUnit,RecceUnit in pairs(RecceGroup:GetUnits())do
+if RecceUnit:IsActive()then
+local RecceUnitCoord=RecceUnit:GetCoordinate()
+local Distance=RecceUnitCoord:Get2DDistance(self:GetDetectedItemCoordinate(DetectedItem))
+if Distance<DistanceRecce then
+DistanceRecce=Distance
+NearestRecce=RecceUnit
+end
+end
+end
+end
+end
+DetectedItem.NearestFAC=NearestRecce
+DetectedItem.DistanceRecce=DistanceRecce
 end
