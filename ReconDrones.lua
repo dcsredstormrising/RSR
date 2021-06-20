@@ -25,7 +25,7 @@ redDroneCount = 0
 local spawnerName = nil
 local BlueRecceDetection = {}
 local RedRecceDetection = {}
-local detectionStatus = {}
+local detectionStatus = nil
 
 -- setup
 DroneSpawned = EVENTHANDLER:New()
