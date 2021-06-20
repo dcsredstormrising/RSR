@@ -176,7 +176,7 @@ else --Save File does not exist we start a fresh table, no spawns needed
     --:FilterPrefixes( {"Re-enforcements ", "Blue Campaign Start ", "Red Campaign Start "} )
     --:FilterActive(true)
     --:FilterStart()
-  AllGroups = SET_GROUP:New():FilterPrefixes( {"Re-enforcements", "Red Start","Blue Start", "Resupply ", " Convoy", "Dropped Group ","CTLD"} ):FilterActive(true):FilterStart()
+  AllGroups = SET_GROUP:New():FilterPrefixes( {"Re-enforcements", "Red Start","Blue Start", "Resupply", " Convoy", "Dropped Group ","CTLD"} ):FilterActive(true):FilterStart()
   
 end
 
