@@ -315,7 +315,7 @@ function DroneDied:OnEventDead(EventData)
 		local coalition = EventData.IniCoalition
 		local unitName = EventData.IniDCSUnitName
 		local unit = EventData.IniUnit		
-		local vec = EventData.IniUnit:GetVec2()        
+		local vec = unit:GetVec2()        
         local uavNearBase = utils.getNearestAirbase(vec, coalition, Airbase.Category.AIRDROME)		
 		if unit then
 			unit:LaseOff()	-- we turn off lasing for the RECON Airplane

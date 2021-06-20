@@ -1008,16 +1008,6 @@ function M.fileExists(name) --check if the file already exists for writing
     end 
 end
 
--- this needs to be improved or maybe not needed, still testing
-function M.defaultX()
-  return 166853.515625
-end
-
--- this needs to be improved or maybe not needed, still testing
-function M.defaultY()
-  return 43915.0546875
-end
-
 -- AW33COM this will help us find out if a specific unit type in on a base or in a zone. for example: we can check if Antenna or Mobile ATC is alive on the base
 -- this is tight to ground units only as Moose is inconsitent and has 1000000 diff categires unrelated to categories in DCS.  Moose is too big for it's own good
 function M.IsUnitTypeAliveInZone(zone, unit_type, coalition)
@@ -1889,8 +1879,8 @@ function M.createGroupDataForWarehouseAsset(warehouseName, asset, sideName)
 					["ETA"] = 0,
 					["alt_type"] = "BARO",
 					["formation_template"] = "",
-					["y"] = M.defaultY,
-					["x"] = M.defaultX,
+					["y"] = 0.0,
+					["x"] = 0.0,
 					["ETA_locked"] = true,
 					["speed"] = 0,
 					["action"] = "Turning Point",
@@ -1941,15 +1931,15 @@ function M.createGroupDataForWarehouseAsset(warehouseName, asset, sideName)
 				},
 				["skill"] = asset.skill,
 				["type"] = asset.name,
-				["x"] = M.defaultX,
-				["y"] = M.defaultY,
+				["x"] = 0.0,
+				["y"] = 0.0,
 				["name"] = warehouseName .. '_' .. asset.name,				
 				["heading"] = 0,
                 ["modulation"] = 0,
 			},
 		},
-		["x"] = M.defaultX,
-		["y"] = M.defaultY,
+		["x"] = 0.0,
+		["y"] = 0.0,
 		["name"] = warehouseGroupTag..'_'..sideName..'_'..warehouseName..'_'..asset.name,
 		["start_time"] = 0,
 		["uncontrollable"] = false,
@@ -1976,8 +1966,8 @@ function M.createGroupDataForWarehouseAsset(warehouseName, asset, sideName)
 					  }
 					},
 					["type"] = "Turning Point",
-					["x"] = M.defaultX,
-					["y"] = M.defaultY
+					["x"] = 0.0,
+					["y"] = 0.0
 				  } },
 				routeRelativeTOT = true
 			  },
@@ -1996,15 +1986,15 @@ function M.createGroupDataForWarehouseAsset(warehouseName, asset, sideName)
 					},					
 					["skill"] = asset.skill,
 					["type"] = asset.name,
-					["x"] = M.defaultX,
-					["y"] = M.defaultY,            
+					["x"] = 0.0,
+					["y"] = 0.0,            
 					["name"] = warehouseName .. '_' .. asset.name,
 					["playerCanDrive"] = true,
 					["heading"] = 0,				
 				},
 			},
-			["y"] = M.defaultY,
-			["x"] = M.defaultX,
+			["y"] = 0.0,
+			["x"] = 0.0,
 			["name"] = warehouseGroupTag..'_'..sideName..'_'..warehouseName..'_'..asset.name,
 			["start_time"] = 0,
 			["uncontrollable"] = false,

@@ -9,7 +9,7 @@ require("Moose")
 require("CTLD")
 require("CSAR")
 require("CONVOY_Menu")
---require("ReconDrones")
+require("ReconDrones")
 local logging = require("logging")
 local log = logging.Logger:new("RSR")
 
