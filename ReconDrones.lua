@@ -137,13 +137,13 @@ end
 local function getFullDetectionReport(coalition)		
 	local text = ""
 	local startText = "\nOur RECON Operation Status:\n\n"
-	local areReconsUp = false
+	local areReconsUpAndDetecting = false
 	if detectionStatus then		
-		for reconName, recon in pairs(detectionStatus) do
-			areReconsUp = true
+		for reconName, recon in pairs(detectionStatus) do			
 			if coalition == recon.coalition then				
 				for unitName, unit in pairs(recon.detected) do
 					if unit and unit:IsAlive() then -- can't show those we are killing, our detection will eventually remove the item from the list
+						areReconsUpAndDetecting = true
 						if coalition == 2 then
 							text = text..string.format("RECON: %s - %s - %s - Laser Code: %s\n", reconName, recon.airbase, unit:GetTypeName(), laserCodeBlue)
 						elseif coalition == 1 then
@@ -155,7 +155,7 @@ local function getFullDetectionReport(coalition)
 		end
 	end
 	
-	if areReconsUp then
+	if areReconsUpAndDetecting then
 		return startText..text
 	else
 		return startText..string.format("RECON airplanes are not detecting any enemy units near by, or there is no RECON airplane in the air.\n")		
