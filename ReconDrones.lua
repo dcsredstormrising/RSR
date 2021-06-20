@@ -122,14 +122,15 @@ local function getSimpleDetectionReport(coalition)
 				bases = bases..data.airbase..","				
 			end
 		end
-		bases = units:sub(1,-1)
+		bases = bases:sub(1,-1)
 		return simpleStart..bases..simpleEnd		
 	end	
 end
 
 local function getFullDetectionReport(coalition)		
-	local text = "\nRECON Airplane Detection Status:\n\n"		
+		local text = ""
 	if detectionStatus then
+		text = "\nOur RECON Operation Status:\n\n"
 		for reconName, recon in pairs(detectionStatus) do
 			if coalition == recon.coalition then				
 				for unitName, unit in pairs(recon.detected) do				
@@ -209,11 +210,19 @@ local function spawnUAV(group, rng, coalition, playerName)
 	local spawnVec2 = spawnPt:GetVec2()
 	if coalition == 1 then
 		Spawn_Red_UAV:SpawnFromVec2(spawnVec2)
-		redDroneCount = redDroneCount + 1
+		
+		if redDroneCount < droneMaxCountAtOnce -- that's right, Moose runs this thing and does not spawn it
+			redDroneCount = redDroneCount + 1
+		end
+		
 		spawnerName = playerName
 	elseif coalition == 2 then
 		Spawn_Blue_UAV:SpawnFromVec2(spawnVec2)
-		blueDroneCount = blueDroneCount + 1
+		
+		if redDroneCount < droneMaxCountAtOnce -- that's right, Moose runs this thing and does not spawn it
+			blueDroneCount = blueDroneCount + 1
+		end
+		
 		spawnerName = playerName
 	end
 end
