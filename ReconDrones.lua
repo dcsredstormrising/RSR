@@ -115,18 +115,22 @@ end
 -- stupid Moose does not keep detectedItems in their detection object we need to store out ourselfs if we want to have multiple RECONs and be able to 
 -- report the status
 local function getSimpleDetectionReport(coalition)	
-	local simpleStart = "\nEnemy units are on the way to attack "
-	local simpleEnd = " and it's surrounding territories. Deploy JTACs to the field and start Close Air Support coalition against the attack."
+	local text = "\n\nEnemy units are on the way to attack"
 	local bases = ""
-			
+					
 	if detectionStatus then
 		for reconName, data in pairs(detectionStatus) do
 			if coalition == data.coalition then
-				bases = bases..data.airbase..","				
+				bases = bases.." "..data.airbase..","				
 			end
 		end
 		bases = bases:sub(1,-1)
-		return simpleStart..bases..simpleEnd		
+		text = text..bases"		
+		text = text.." and it's surrounding territories. Deploy JTACs to the field and start Close Air Support coalition against the attack.\n\n"
+		text = text.."You may use the RECON menu to view the status of the RECON Operation.  The status will show you what units are being lased, where they are, and what laser codes to use.  "
+		text = text.."Enemy units are also smoked by default.\n\n"
+		
+		return text
 	end	
 end
 
