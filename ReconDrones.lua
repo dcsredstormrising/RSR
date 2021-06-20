@@ -31,8 +31,8 @@ local detectionStatus = {}
 DroneSpawned = EVENTHANDLER:New()
 DroneSpawned:HandleEvent(EVENTS.Birth)
 
-DroneDied = EVENTHANDLER:New()
-DroneDied:HandleEvent(EVENTS.Dead)
+DroneCrashed = EVENTHANDLER:New()
+DroneCrashed:HandleEvent(EVENTS.Crash)
 
 BlueHQ = GROUP:FindByName( "Northern Blue HQ" )
 BlueCommandCenter = COMMANDCENTER:New( BlueHQ, "Blue Command" )
@@ -310,17 +310,18 @@ function DroneSpawned:OnEventBirth(EventData)
 	end
 end
 
-function DroneDied:OnEventDead(EventData)
-	if string.find(inspect(EventData.IniDCSGroupName), "Pontiac") then 							
+function DroneCrashed:OnEventCrash(EventData)
+	if string.find(inspect(EventData.IniUnitName), "Pontiac") then		
 		local coalition = EventData.IniCoalition
 		local unitName = EventData.IniDCSUnitName
 		local unit = EventData.IniUnit		
-		local vec = unit:GetVec2()        
+		local vec = unit:GetVec2()
         local uavNearBase = utils.getNearestAirbase(vec, coalition, Airbase.Category.AIRDROME)		
 		if unit then
 			unit:LaseOff()	-- we turn off lasing for the RECON Airplane
-			detectionStatus[unitName] = nil	 -- we set the detection to nil for that RECON airplane
-			trigger.action.outTextForCoalition(coalition,"Our RECON Airplane "..unitName.." close to "..uavNearBase.." has been shut down.\nYour team has "..getDronesRemaining(coalition).." RECONS remaining.", 15)
+			detectionStatus[unitName] = nil	 -- we set the detection to nil for that RECON airplane			
+			trigger.action.outSoundForCoalition(coalition, "squelch.ogg")		
+			timer.scheduleFunction(SendMessage, {"Our RECON Airplane "..unitName.." close to "..uavNearBase.." has been shut down.\nYour team has "..getDronesRemaining(coalition).." RECONS remaining."}, timer.getTime() + 2)			
 		end
 	end
 end
