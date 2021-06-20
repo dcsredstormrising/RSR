@@ -31,6 +31,9 @@ local detectionStatus = {}
 DroneSpawned = EVENTHANDLER:New()
 DroneSpawned:HandleEvent(EVENTS.Birth)
 
+DroneDied = EVENTHANDLER:New()
+DroneDied:HandleEvent(EVENTS.Dead)
+
 BlueHQ = GROUP:FindByName( "Northern Blue HQ" )
 BlueCommandCenter = COMMANDCENTER:New( BlueHQ, "Blue Command" )
 
@@ -211,16 +214,20 @@ local function spawnUAV(group, rng, coalition, playerName)
 	if coalition == 1 then
 		Spawn_Red_UAV:SpawnFromVec2(spawnVec2)
 		
-		if redDroneCount < droneMaxCountAtOnce -- that's right, Moose runs this thing and does not spawn it
+		if redDroneCount < droneMaxCountAtOnce then -- that's right, Moose runs this thing and does not spawn it
 			redDroneCount = redDroneCount + 1
+		else
+			trigger.action.outTextForCoalition(coalition,"[TEAM] already has maximum allowed RECON Airplanes in the air.", 15)
 		end
 		
 		spawnerName = playerName
 	elseif coalition == 2 then
 		Spawn_Blue_UAV:SpawnFromVec2(spawnVec2)
 		
-		if redDroneCount < droneMaxCountAtOnce -- that's right, Moose runs this thing and does not spawn it
+		if redDroneCount < droneMaxCountAtOnce then -- that's right, Moose runs this thing and does not spawn it
 			blueDroneCount = blueDroneCount + 1
+		else
+			trigger.action.outTextForCoalition(coalition,"[TEAM] already has maximum allowed RECON Airplanes in the air.", 15)
 		end
 		
 		spawnerName = playerName
@@ -289,5 +296,15 @@ function DroneSpawned:OnEventBirth(EventData)
 		local vec = EventData.IniGroup:GetVec2()        
         local uavNearBase = utils.getNearestAirbase(vec, coalition, Airbase.Category.AIRDROME)
 		trigger.action.outTextForCoalition(coalition,"[TEAM] " ..spawnerName.. " called in a RECON Airplane close to "..uavNearBase.."\nYour team has "..getDronesRemaining(coalition).." remaining RECON Airplanes.", 15)
+	end
+end
+
+function DroneDied:OnEventDead(EventData)
+	if string.find(inspect(EventData.IniDCSGroupName), "Pontiac") then 							
+		local coalition = EventData.IniCoalition
+		local vec = EventData.IniGroup:GetVec2()        
+        local uavNearBase = utils.getNearestAirbase(vec, coalition, Airbase.Category.AIRDROME)
+		--detectionStatus[nearestRECON:GetName()] = nil  -- need to reset
+		trigger.action.outTextForCoalition(coalition,"Our RECON Airplane close to "..uavNearBase.." has been shut down.", 15)
 	end
 end
