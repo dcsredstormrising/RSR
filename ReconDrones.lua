@@ -15,11 +15,11 @@ local droneMaxCountAtOnce = 2
 local detectMaxCount = 5
 local detectionRange = 15000  --meters
 local maxLaseDistane = 60000 -- I need this becuase of Moose bugs, I need to find the closest RECON airplane that is detecting the units.  More than 60,000 is crazy and shuld not lase from that far
-local smokeInterval = 120 -- smoke will update in sec
+local smokeInterval = 30 -- smoke will update in sec
 local lastSmokedTime = timer.getTime()
-local detectInterval = 30  -- this is also lase duration that resets each time detection runs-- super simple way to update laser
+local detectInterval = 20  -- this is also lase duration that resets each time detection runs-- super simple way to update laser
 local lastNotifyTime = timer.getTime()
-local detectMessageInterval = 60
+local detectMessageInterval = 120
 blueDroneCount = 0
 redDroneCount = 0
 local spawnerName = nil
@@ -136,23 +136,30 @@ end
 
 local function getFullDetectionReport(coalition)		
 	local text = ""
-	if detectionStatus and #detectionStatus then
-		text = "\nOur RECON Operation Status:\n\n"
+	local startText = "\nOur RECON Operation Status:\n\n"
+	local areReconsUp = false
+	if detectionStatus then		
 		for reconName, recon in pairs(detectionStatus) do
+			areReconsUp = true
 			if coalition == recon.coalition then				
-				for unitName, unit in pairs(recon.detected) do				
-					if coalition == 2 then
-						text = text..string.format("RECON: %s - %s - %s - Laser Code: %s\n", reconName, recon.airbase, unit:GetTypeName(), laserCodeBlue)
-					elseif coalition == 1 then
-						text = text..string.format("RECON: %s - %s - %s - Laser Code: %s\n", reconName, recon.airbase, unit:GetTypeName(), laserCodeRed)
+				for unitName, unit in pairs(recon.detected) do
+					if unit and unit:IsAlive() then -- can't show those we are killing, our detection will eventually remove the item from the list
+						if coalition == 2 then
+							text = text..string.format("RECON: %s - %s - %s - Laser Code: %s\n", reconName, recon.airbase, unit:GetTypeName(), laserCodeBlue)
+						elseif coalition == 1 then
+							text = text..string.format("RECON: %s - %s - %s - Laser Code: %s\n", reconName, recon.airbase, unit:GetTypeName(), laserCodeRed)
+						end
 					end
 				end
 			end
 		end
+	end
+	
+	if areReconsUp then
+		return startText..text
 	else
-		text = text..string.format("RECON airplanes are not detecting any enemy units near by, or there is no RECON airplane in the air.\n")		
-	end	
-	return text
+		return startText..string.format("RECON airplanes are not detecting any enemy units near by, or there is no RECON airplane in the air.\n")		
+	end
 end
 
 local function smokeAndLase(DetectedUnits, coalition)
@@ -306,9 +313,14 @@ end
 function DroneDied:OnEventDead(EventData)
 	if string.find(inspect(EventData.IniDCSGroupName), "Pontiac") then 							
 		local coalition = EventData.IniCoalition
-		local vec = EventData.IniGroup:GetVec2()        
-        local uavNearBase = utils.getNearestAirbase(vec, coalition, Airbase.Category.AIRDROME)
-		--detectionStatus[nearestRECON:GetName()] = nil  -- need to reset
-		trigger.action.outTextForCoalition(coalition,"Our RECON Airplane close to "..uavNearBase.." has been shut down.", 15)
+		local unitName = EventData.IniDCSUnitName
+		local unit = EventData.IniUnit		
+		local vec = EventData.IniUnit:GetVec2()        
+        local uavNearBase = utils.getNearestAirbase(vec, coalition, Airbase.Category.AIRDROME)		
+		if unit then
+			unit:LaseOff()	-- we turn off lasing for the RECON Airplane
+			detectionStatus[unitName] = nil	 -- we set the detection to nil for that RECON airplane
+			trigger.action.outTextForCoalition(coalition,"Our RECON Airplane "..unitName.." close to "..uavNearBase.." has been shut down.\nYour team has "..getDronesRemaining(coalition).." RECONS remaining.", 15)
+		end
 	end
 end
