@@ -11,6 +11,7 @@ local utilsDynAddIndex = {[' air '] = 0, [' hel '] = 0, [' gnd '] = 0, [' bld ']
 M.nextGroupId = 1
 M.nextUnitId = 1
 local warehouseGroupTag = "Resupply"
+local warehouseGroupTag = "Resupply"
 
 -- this does not work like the old Evil Framework
 -- in the old framework the ids were across campaign, here they are kind of by session I think
@@ -1009,12 +1010,12 @@ end
 
 -- this needs to be improved or maybe not needed, still testing
 function M.defaultX()
-  return 122428.57142857
+  return 166853.515625
 end
 
 -- this needs to be improved or maybe not needed, still testing
 function M.defaultY()
-  return 420857.14285714
+  return 43915.0546875
 end
 
 -- AW33COM this will help us find out if a specific unit type in on a base or in a zone. for example: we can check if Antenna or Mobile ATC is alive on the base
@@ -1888,8 +1889,8 @@ function M.createGroupDataForWarehouseAsset(warehouseName, asset, sideName)
 					["ETA"] = 0,
 					["alt_type"] = "BARO",
 					["formation_template"] = "",
-					["y"] = 0.0,
-					["x"] = 0.0,
+					["y"] = M.defaultY,
+					["x"] = M.defaultX,
 					["ETA_locked"] = true,
 					["speed"] = 0,
 					["action"] = "Turning Point",
@@ -1940,15 +1941,15 @@ function M.createGroupDataForWarehouseAsset(warehouseName, asset, sideName)
 				},
 				["skill"] = asset.skill,
 				["type"] = asset.name,
-				["x"] = 0.0,
-				["y"] = 0.0,
+				["x"] = M.defaultX,
+				["y"] = M.defaultY,
 				["name"] = warehouseName .. '_' .. asset.name,				
 				["heading"] = 0,
                 ["modulation"] = 0,
 			},
 		},
-		["x"] = 0.0,
-		["y"] = 0.0,
+		["x"] = M.defaultX,
+		["y"] = M.defaultY,
 		["name"] = warehouseGroupTag..'_'..sideName..'_'..warehouseName..'_'..asset.name,
 		["start_time"] = 0,
 		["uncontrollable"] = false,
@@ -1975,8 +1976,8 @@ function M.createGroupDataForWarehouseAsset(warehouseName, asset, sideName)
 					  }
 					},
 					["type"] = "Turning Point",
-					["x"] = 0.0,
-					["y"] = 0.0
+					["x"] = M.defaultX,
+					["y"] = M.defaultY
 				  } },
 				routeRelativeTOT = true
 			  },
@@ -1995,15 +1996,15 @@ function M.createGroupDataForWarehouseAsset(warehouseName, asset, sideName)
 					},					
 					["skill"] = asset.skill,
 					["type"] = asset.name,
-					["x"] = 0.0,
-					["y"] = 0.0,            
+					["x"] = M.defaultX,
+					["y"] = M.defaultY,            
 					["name"] = warehouseName .. '_' .. asset.name,
 					["playerCanDrive"] = true,
 					["heading"] = 0,				
 				},
 			},
-			["y"] = 0.0,
-			["x"] = 0.0,
+			["y"] = M.defaultY,
+			["x"] = M.defaultX,
 			["name"] = warehouseGroupTag..'_'..sideName..'_'..warehouseName..'_'..asset.name,
 			["start_time"] = 0,
 			["uncontrollable"] = false,
