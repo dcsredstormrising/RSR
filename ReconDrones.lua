@@ -10,16 +10,16 @@ local inspect = require("inspect")
 ReconDrones = {}
 local laserCodeRed = 1686
 local laserCodeBlue = 1687
-local droneMaxCount = 4
+local droneMaxCount = 4 -- per session
 local droneMaxCountAtOnce = 2
-local detectMaxCount = 6
-local detectionRange = 18000  --meters
+local detectMaxCount = 5
+local detectionRange = 15000  --meters
 local maxLaseDistane = 60000 -- I need this becuase of Moose bugs, I need to find the closest RECON airplane that is detecting the units.  More than 60,000 is crazy and shuld not lase from that far
-local smokeInterval = 120
+local smokeInterval = 120 -- smoke will update in sec
 local lastSmokedTime = timer.getTime()
-local detectInterval = 20  -- this is also lase duration that resets each time detection runs-- super simple way to update laser
+local detectInterval = 30  -- this is also lase duration that resets each time detection runs-- super simple way to update laser
 local lastNotifyTime = timer.getTime()
-local detectMessageInterval = 30
+local detectMessageInterval = 60
 blueDroneCount = 0
 redDroneCount = 0
 local spawnerName = nil
@@ -95,16 +95,6 @@ local function findNearestRecce(detectedUnit, detectionSet)
 	return NearestRecce
 end
 
-local function getAirbaseUnderAttack(detector, coalition)
-	local airbase = nil		
-	if detector then
-		local vec = detector:GetVec2()
-		if vec ~= nil then
-			return utils.getNearestAirbase(vec, coalition, Airbase.Category.AIRDROME)
-		end
-	end
-end
-
 local function isReadyToSmokeAgain()
 	local diff = timer.getTime() - lastSmokedTime	
 	if diff > smokeInterval then		
@@ -119,52 +109,35 @@ local function isReadyToNotifyTeamAgain()
 	end
 end
 
-local function GetAttackingUnitTypes(DetectedUnits)
-	local units = ""
-	if DetectedUnits ~= nil then
-		for DetectedUnit,Detected in pairs(DetectedUnits)do		
-			units = units..Detected:GetDCSObject():getTypeName()..", "
-		end
-		units = units:sub(1,-3)
-	end
-	return units
-end
-
 -- stupid Moose does not keep detectedItems in their detection object we need to store out ourselfs if we want to have multiple RECONs and be able to 
 -- report the status
 local function getSimpleDetectionReport(coalition)	
-	local simpleStart = "Enemy units are on the way to attack "
-	local simpleEnd = " and it's surrounded territories. Deploy JTACs to the field and start Close Air Support coalition against the attack."
+	local simpleStart = "\nEnemy units are on the way to attack "
+	local simpleEnd = " and it's surrounding territories. Deploy JTACs to the field and start Close Air Support coalition against the attack."
 	local bases = ""
 			
 	if detectionStatus then
 		for reconName, data in pairs(detectionStatus) do
 			if coalition == data.coalition then
-				bases = bases..data.airbase.." "				
+				bases = bases..data.airbase..","				
 			end
 		end
+		bases = units:sub(1,-1)
 		return simpleStart..bases..simpleEnd		
 	end	
 end
 
-local function getFullDetectionReport(coalitionNumber)	
-	
-	local text = "RECON Airplane Detection Status:\n\n"
-		
+local function getFullDetectionReport(coalition)		
+	local text = "\nRECON Airplane Detection Status:\n\n"		
 	if detectionStatus then
-		env.info("AW got here 1")
-		for reconName, data in pairs(detectionStatus) do
-			if coalitionNumber == data.coalition then
-				env.info("AW got here 2")
-				for unitName, unit in pairs(data.detected) do				
+		for reconName, recon in pairs(detectionStatus) do
+			if coalition == recon.coalition then				
+				for unitName, unit in pairs(recon.detected) do				
 					if coalition == 2 then
-						env.info("AW got here 3")
-						text = text..string.format("RECON airplane: %s - Location: %s - Enemy Unit: %s  - Laser Code: %s", reconName, data.airbase, unit:GetTypeName(), laserCodeBlue)
+						text = text..string.format("RECON: %s - %s - %s - Laser Code: %s\n", reconName, recon.airbase, unit:GetTypeName(), laserCodeBlue)
 					elseif coalition == 1 then
-						env.info("AW got here 4")
-						text = text..string.format("RECON airplane: %s - Location: %s - Enemy Unit: %s  - Laser Code: %s", reconName, data.airbase, unit:GetTypeName(), laserCodeRed)					
+						text = text..string.format("RECON: %s - %s - %s - Laser Code: %s\n", reconName, recon.airbase, unit:GetTypeName(), laserCodeRed)
 					end
-					env.info("AW got here 5")
 				end
 			end
 		end
@@ -190,7 +163,7 @@ local function smokeAndLase(DetectedUnits, coalition)
 			nearestRECON = findNearestRecce(detectedUnit, detectionSet)			
 			if nearestRECON then
 				reconAirbase = utils.getNearestAirbase(nearestRECON:GetVec2(), coalition, Airbase.Category.AIRDROME)
-				detectionStatus[nearestRECON:GetName()] = nil -- reset
+				detectionStatus[nearestRECON:GetName()] = nil -- reset, this may need to run in OnAfterDetect to be able to remove the last item
 				detectionStatus[nearestRECON:GetName()] = {airbase = reconAirbase, detected = DetectedUnits, coalition = coalition}				
 			end			
 		end
@@ -276,9 +249,9 @@ local function showReconLocations(coalitionNumber)
      )  
   end       
   if reconCount > 0 then            
-    return string.format("Team has %i UAV RECON Drones in the air by: %s", reconCount, uavBases)    
+    return string.format("Team has %i RECON airplanes in the air by: %s", reconCount, uavBases)    
   else
-    return string.format("Team does not have any UAV RECON Drones in the air at the moment", reconCount)
+    return string.format("Team does not have any RECON Airplane in the air at the moment", reconCount)
   end  
 end
 
@@ -286,17 +259,17 @@ end
 function ReconDrones.AddMenu(playerGroup)
 	local playerName = playerGroup:GetPlayerName()
 	local coalitionNumber = playerGroup:GetCoalition()	
-	local menuRoot = MENU_GROUP:New(playerGroup, "UAV Reconnaissance")	
-	MENU_GROUP_COMMAND:New(playerGroup, "Spawn MQ-1 UAV 1 nm away", menuRoot, spawnUAV, playerGroup, 1, coalitionNumber, playerName)
-	MENU_GROUP_COMMAND:New(playerGroup, "Spawn MQ-1 UAV 5 nm away", menuRoot, spawnUAV, playerGroup, 5, coalitionNumber, playerName)
-	MENU_GROUP_COMMAND:New(playerGroup, "Spawn MQ-1 UAV 10 nm away", menuRoot, spawnUAV, playerGroup, 10, coalitionNumber, playerName)
-	MENU_GROUP_COMMAND:New(playerGroup, "UAV RECON Drones Remaining", menuRoot, function()
-		trigger.action.outTextForCoalition(coalitionNumber, "[TEAM] Has " ..getDronesRemaining(coalitionNumber).. " Remaining UAVs", 15)		
+	local menuRoot = MENU_GROUP:New(playerGroup, "RECON Operations")
+	MENU_GROUP_COMMAND:New(playerGroup, "Spawn RECON Airplane 1 nm away", menuRoot, spawnUAV, playerGroup, 1, coalitionNumber, playerName)
+	MENU_GROUP_COMMAND:New(playerGroup, "Spawn RECON Airplane 5 nm away", menuRoot, spawnUAV, playerGroup, 5, coalitionNumber, playerName)
+	MENU_GROUP_COMMAND:New(playerGroup, "Spawn RECON Airplane 10 nm away", menuRoot, spawnUAV, playerGroup, 10, coalitionNumber, playerName)
+	MENU_GROUP_COMMAND:New(playerGroup, "RECON Airplanes Remaining", menuRoot, function()
+		trigger.action.outTextForCoalition(coalitionNumber, "[TEAM] Has " ..getDronesRemaining(coalitionNumber).. " Remaining RECON Airplanes", 15)
 	end)
-	MENU_GROUP_COMMAND:New(playerGroup, "Show UAV RECON Drone Locations", menuRoot, function()
+	MENU_GROUP_COMMAND:New(playerGroup, "Show RECON Airplane Locations", menuRoot, function()
 		trigger.action.outTextForCoalition(coalitionNumber, showReconLocations(coalitionNumber), 15)		
 	end)
-	MENU_GROUP_COMMAND:New(playerGroup, "Show RECON Lasing Status", menuRoot, function()
+	MENU_GROUP_COMMAND:New(playerGroup, "Show RECON Airplane Lasing Status", menuRoot, function()
 		trigger.action.outTextForCoalition(coalitionNumber, getFullDetectionReport(coalitionNumber), 15)
 	end)
 end
@@ -306,6 +279,6 @@ function DroneSpawned:OnEventBirth(EventData)
 		local coalition = EventData.IniCoalition
 		local vec = EventData.IniGroup:GetVec2()        
         local uavNearBase = utils.getNearestAirbase(vec, coalition, Airbase.Category.AIRDROME)
-		trigger.action.outTextForCoalition(coalition,"[TEAM] " ..spawnerName.. " called in a UAV RECON Drone close to "..uavNearBase.."\nYour team has "..getDronesRemaining(coalition).." remaining UAVs", 10)		
+		trigger.action.outTextForCoalition(coalition,"[TEAM] " ..spawnerName.. " called in a RECON Airplane close to "..uavNearBase.."\nYour team has "..getDronesRemaining(coalition).." remaining RECON Airplanes.", 15)
 	end
 end
