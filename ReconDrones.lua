@@ -25,7 +25,7 @@ redDroneCount = 0
 local spawnerName = nil
 local BlueRecceDetection = {}
 local RedRecceDetection = {}
-local detectionStatus = nil
+local detectionStatus = {}
 
 -- setup
 DroneSpawned = EVENTHANDLER:New()
@@ -112,7 +112,7 @@ local function isReadyToNotifyTeamAgain()
 	end
 end
 
--- stupid Moose does not keep detectedItems in their detection object we need to store out ourselfs if we want to have multiple RECONs and be able to 
+-- stupid Moose does not keep detectedItems in their detection object we need to store it ourselfs if we want to have multiple RECONs and be able to 
 -- report the status
 local function getSimpleDetectionReport(coalition)	
 	local text = "\n\nEnemy units are on the way to attack"
@@ -125,7 +125,7 @@ local function getSimpleDetectionReport(coalition)
 			end
 		end
 		bases = bases:sub(1,-1)
-		text = text..bases"		
+		text = text..bases		
 		text = text.." and it's surrounding territories. Deploy JTACs to the field and start Close Air Support coalition against the attack.\n\n"
 		text = text.."You may use the RECON menu to view the status of the RECON Operation.  The status will show you what units are being lased, where they are, and what laser codes to use.  "
 		text = text.."Enemy units are also smoked by default.\n\n"
@@ -135,8 +135,8 @@ local function getSimpleDetectionReport(coalition)
 end
 
 local function getFullDetectionReport(coalition)		
-		local text = ""
-	if detectionStatus then
+	local text = ""
+	if detectionStatus and #detectionStatus then
 		text = "\nOur RECON Operation Status:\n\n"
 		for reconName, recon in pairs(detectionStatus) do
 			if coalition == recon.coalition then				
@@ -170,7 +170,7 @@ local function smokeAndLase(DetectedUnits, coalition)
 		if detectionSet then
 			nearestRECON = findNearestRecce(detectedUnit, detectionSet)			
 			if nearestRECON then
-				reconAirbase = utils.getNearestAirbase(nearestRECON:GetVec2(), coalition, Airbase.Category.AIRDROME)
+				reconAirbase = utils.getNearestAirbase(nearestRECON:GetVec2(), coalition, Airbase.Category.AIRDROME)				
 				detectionStatus[nearestRECON:GetName()] = nil -- reset, this may need to run in OnAfterDetect to be able to remove the last item
 				detectionStatus[nearestRECON:GetName()] = {airbase = reconAirbase, detected = DetectedUnits, coalition = coalition}				
 			end			
