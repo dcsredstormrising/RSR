@@ -285,7 +285,7 @@ local function spawnUAV(group, rng, coalition, playerName)
 	elseif coalition == 2 then
 		Spawn_Blue_UAV:SpawnFromVec2(spawnVec2)
 		
-		if redDroneCount < droneMaxCountAtOnce then -- that's right, Moose runs this thing and does not spawn it
+		if blueDroneCount < droneMaxCountAtOnce then -- that's right, Moose runs this thing and does not spawn it
 			blueDroneCount = blueDroneCount + 1
 		else
 			trigger.action.outTextForCoalition(coalition,"[TEAM] already has maximum allowed RECON Airplanes in the air.", 15)
