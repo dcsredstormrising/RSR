@@ -20,8 +20,8 @@ local lastSmokedTime = timer.getTime()
 local detectInterval = 20  -- this is also lase duration that resets each time detection runs-- super simple way to update laser
 local lastNotifyTime = timer.getTime()
 local detectMessageInterval = 60
-blueDroneCount = 0
-redDroneCount = 0
+local blueDroneCount = 0
+local redDroneCount = 0
 local spawnerName = nil
 local BlueRecceDetection = {}
 local RedRecceDetection = {}
@@ -322,7 +322,7 @@ function DroneCrashed:OnEventCrash(EventData)
 			unit:LaseOff()	-- we turn off lasing for the RECON Airplane
 			detectionStatus[unitName] = nil	 -- we set the detection to nil for that RECON airplane			
 			trigger.action.outSoundForCoalition(coalition, "squelch.ogg")		
-			timer.scheduleFunction(SendMessage, {"Our RECON Airplane "..unitName.." close to "..uavNearBase.." has been shut down.\nYour team has "..getDronesRemaining(coalition).." RECONS remaining."}, timer.getTime() + 2)			
+			timer.scheduleFunction(SendMessage, {"Our RECON Airplane "..unitName.." close to "..uavNearBase.." has been shut down.\nYour team has "..getDronesRemaining(coalition).." RECONS remaining.", coalition}, timer.getTime() + 2)			
 		end
 	end
 end
