@@ -188,9 +188,9 @@ local function smokeAndLase(DetectedUnits, coalition)
 			
 	if isReadyToSmokeAgain() then
 		local attackingCoalition = 0
-		if coalition == 2
+		if coalition == 2 then
 			attackingCoalition = 1
-		elseif coalition == 1
+		elseif coalition == 1 then
 			attackingCoalition = 2
 		end
 		utils.smokeUnits(DetectedUnits, attackingCoalition)
