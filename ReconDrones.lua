@@ -7,6 +7,7 @@
 -- like this: DetectedItem.NearestFAC will never work.
 local utils = require("utils")
 local inspect = require("inspect")
+local rsrConfig = require("RSR_config")
 ReconDrones = {}
 local droneMaxCount = 4 -- per session
 local droneMaxCountAtOnce = 2
