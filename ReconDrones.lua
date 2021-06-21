@@ -19,7 +19,7 @@ local smokeInterval = 30 -- smoke will update in sec
 local lastSmokedTime = timer.getTime()
 local detectInterval = 20  -- this is also lase duration that resets each time detection runs-- super simple way to update laser
 local lastNotifyTime = timer.getTime()
-local detectMessageInterval = 600
+local detectMessageInterval = 60
 blueDroneCount = 0
 redDroneCount = 0
 local spawnerName = nil
@@ -187,7 +187,8 @@ local function smokeAndLase(DetectedUnits, coalition)
 	end
 			
 	if isReadyToSmokeAgain() then
-		utils.smokeUnits(DetectedUnits, 2, detectMaxCount)
+		env.info("AW33COM isReadyToSmokeAgain")
+		utils.smokeUnits(DetectedUnits, 2)
 		lastSmokedTime = timer.getTime()
 	end	
 	
@@ -200,9 +201,9 @@ local function smokeAndLase(DetectedUnits, coalition)
 	
 	if nearestRECON then
 		if coalition == 2 then
-			utils.laseUnits(nearestRECON, DetectedUnits, detectInterval, laserCodeBlue, 1, detectMaxCount)
+			utils.laseUnits(nearestRECON, DetectedUnits, detectInterval, laserCodeBlue, 1)
 		elseif coalition == 1 then
-			utils.laseUnits(nearestRECON, DetectedUnits, detectInterval, laserCodeRed, 1, detectMaxCount)			
+			utils.laseUnits(nearestRECON, DetectedUnits, detectInterval, laserCodeRed, 1)			
 		end
 	end
 end

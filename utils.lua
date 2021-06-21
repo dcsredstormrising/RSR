@@ -2007,31 +2007,27 @@ function M.createGroupDataForWarehouseAsset(warehouseName, asset, sideName)
 	return groupData
 end
 
-function M.smokeUnits(units, coalition, detectMaxCount)	
-	if units ~= nil then
-		local runner = 0
+function M.smokeUnits(units, coalition)	
+	env.info("AW33COM utils.smokeUnits 1")
+	if units then
+		env.info("AW33COM utils.smokeUnits 2")		
 		for _,unit in pairs(units) do
-			runner = runner + 1
-			if runner <= detectMaxCount then			
-				if coalition == 2 then
-					unit:Smoke(trigger.smokeColor.Blue, 0, 2)				
-				elseif coalition == 1 then
-					unit:Smoke(trigger.smokeColor.Red, 0, 2)
-				end
+			env.info("AW33COM utils.smokeUnits 3")			
+			if coalition == 2 then
+				env.info("AW33COM utils.smokeUnits 6")
+				unit:Smoke(trigger.smokeColor.Blue, 0, 2)				
+			elseif coalition == 1 then
+				env.info("AW33COM utils.smokeUnits 7")
+				unit:Smoke(trigger.smokeColor.Red, 0, 2)
 			end
 		end
 	end
 end
 
-function M.laseUnits(laser, units, laseDuration, laserCode, coalition, detectMaxCount)
-	if units ~= nil then
-		local runner = 0
-		for _,unit in pairs(units) do
-			runner = runner + 1
-			if runner <= detectMaxCount then
-				env.info("AW33COM utils.laseUnits lasing")
-				laser:LaseUnit(unit, laserCode, laseDuration)
-			end
+function M.laseUnits(laser, units, laseDuration, laserCode, coalition)
+	if units then		
+		for _,unit in pairs(units) do			
+			laser:LaseUnit(unit, laserCode, laseDuration)
 		end
 	end
 end
