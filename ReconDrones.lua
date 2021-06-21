@@ -18,8 +18,10 @@ local maxLaseDistane = 60000 -- I need this becuase of Moose bugs, I need to fin
 local smokeInterval = 40 -- smoke will update in sec
 local lastSmokedTime = timer.getTime()
 local detectInterval = 20  -- this is also lase duration that resets each time detection runs-- super simple way to update laser
-local lastNotifyTime = timer.getTime()
-local detectMessageInterval = 120
+local lastNotifyTimeRed = timer.getTime()
+local lastNotifyTimeBlue = timer.getTime()
+local detectMessageIntervalRed = 120
+local detectMessageIntervalBlue = 120
 local blueDroneCount = 0
 local redDroneCount = 0
 local spawnerName = nil
@@ -105,10 +107,17 @@ local function isReadyToSmokeAgain()
 	end
 end
 
-local function isReadyToNotifyTeamAgain()
-	local diff = timer.getTime() - lastNotifyTime	
-	if diff > detectMessageInterval then		
-		return true
+local function isReadyToNotifyTeamAgain(coalition)
+	if coalition == 2 then
+		local diff = timer.getTime() - lastNotifyTimeRed	
+		if diff > detectMessageIntervalRed then		
+			return true
+		end
+	elseif coalition == 1 then
+		local diff = timer.getTime() - lastNotifyTimeBlue	
+		if diff > detectMessageIntervalBlue then		
+			return true
+		end
 	end
 end
 
@@ -201,11 +210,12 @@ local function smokeAndLase(DetectedUnits, coalition)
 		timer.scheduleFunction(resetSmokeTimer, nil, timer.getTime() + 5)	-- required for all instances of drones to run not just the first one	
 	end	
 	
-	if isReadyToNotifyTeamAgain() then			
+	if isReadyToNotifyTeamAgain(coalition) then		
+		--detectMessageIntervalBlue	
 		trigger.action.outSoundForCoalition(coalition, "squelch.ogg")		
 		timer.scheduleFunction(SendMessage, {getSimpleDetectionReport(coalition), coalition}, timer.getTime() + 2)
 		timer.scheduleFunction(PlaySound, {"siren.ogg", coalition}, timer.getTime() + 4)
-		lastNotifyTime = timer.getTime()
+		lastNotifyTimeRed = timer.getTime()
 	end
 	
 	if nearestRECON then
