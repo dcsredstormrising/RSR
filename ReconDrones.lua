@@ -137,10 +137,21 @@ local function resetSmokeTimer(coalition)
 	end
 end
 
+local function GetAttackingUnitTypes(DetectedUnits)
+	local units = ""
+	if DetectedUnits then
+		for _,Detected in pairs(DetectedUnits)do		
+			units = units..Detected:GetTypeName()..", "
+		end
+		units = units:sub(1,-3)
+	end
+	return units
+end
+
 -- stupid Moose does not keep detectedItems in their detection object we need to store it ourselfs if we want to have multiple RECONs and be able to 
 -- report the status
-local function getSimpleDetectionReport(coalition)	
-	local text = "\n\nEnemy units are on the way to attack"
+local function getSimpleDetectionReport(coalition, DetectedUnits)	
+	local text = "\n\nEnemy units {"..GetAttackingUnitTypes(DetectedUnits).."} are on the way to attack"
 	local bases = ""
 					
 	if detectionStatus then
@@ -224,7 +235,7 @@ local function smokeAndLase(DetectedUnits, coalition)
 	
 	if isReadyToNotifyTeamAgain(coalition) then		
 		trigger.action.outSoundForCoalition(coalition, "squelch.ogg")		
-		timer.scheduleFunction(SendMessage, {getSimpleDetectionReport(coalition), coalition}, timer.getTime() + 2)
+		timer.scheduleFunction(SendMessage, {getSimpleDetectionReport(coalition, DetectedUnits), coalition}, timer.getTime() + 2)
 		timer.scheduleFunction(PlaySound, {"siren.ogg", coalition}, timer.getTime() + 4)
 		
 		if coalition == 2 then
@@ -344,9 +355,9 @@ function DroneSpawned:OnEventBirth(EventData)
         local uavNearBase = utils.getNearestAirbase(vec, coalition, Airbase.Category.AIRDROME)
 		local text = "[TEAM] " ..spawnerName.. " called in a RECON Airplane close to "..uavNearBase.."\nYour team has "..getDronesRemaining(coalition).." remaining RECON Airplanes."
 		if coalition == 2 then
-			text = text.."\nYour RECON Airplane will be lasing with laser code: "..rsrConfig.ReconLaserCodeBlue
+			text = text.."\n\nYour RECON Airplane will be lasing with laser code: "..rsrConfig.ReconLaserCodeBlue
 		elseif coalition == 1 then
-			text = text.."\nYour RECON Airplane will be lasing with laser code: "..rsrConfig.ReconLaserCodeRed
+			text = text.."\n\nYour RECON Airplane will be lasing with laser code: "..rsrConfig.ReconLaserCodeRed
 		end
 		trigger.action.outTextForCoalition(coalition, text, 15)
 	end
