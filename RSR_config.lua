@@ -26,6 +26,8 @@ rsrConfig.baseDefenceActivationRadiusFARP = 2500
 -- this is a start, from now on we should use same 1 code for BLUE and 1 for RED.  There won't be problems like everyone is saying.
 rsrConfig.ReconLaserCodeRed = 1686
 rsrConfig.ReconLaserCodeBlue = 1687
+rsrConfig.JTACLaserCodeRed = 1686
+rsrConfig.JTACLaserCodeBlue = 1687
 
 -- restart schedule
 rsrConfig.firstRestartHour = 2 --this is UTC...apperently this is local machine time, setting it to 0100, had the server restart time calling at eastern.

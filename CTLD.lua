@@ -6341,7 +6341,7 @@ ctld.jtacGeneratedLaserCodes = {} -- keeps track of generated codes, cycles when
 ctld.jtacLaserPointCodes = {}
 
 function ctld.getLaserCode(_coalition)
-    return _coalition == coalition.side.RED and ctld.JTAC_laserCode_RED or ctld.JTAC_laserCode_BLUE
+    return _coalition == coalition.side.RED and rsrConfig.JTACLaserCodeRed or rsrConfig.JTACLaserCodeBlue
 end
 
 function ctld.JTACAutoLase(_jtacGroupName, _laserCode, _smoke, _lock, _colour)

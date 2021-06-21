@@ -8,8 +8,6 @@
 local utils = require("utils")
 local inspect = require("inspect")
 ReconDrones = {}
-local laserCodeRed = 1686
-local laserCodeBlue = 1687
 local droneMaxCount = 4 -- per session
 local droneMaxCountAtOnce = 2
 local detectMaxCount = 5
@@ -173,7 +171,7 @@ local function getFullDetectionReport(coalition)
 						if coalition == 2 then
 							text = text..string.format("RECON: %s - %s - %s - Laser Code: %s\n", reconName, recon.airbase, unit:GetTypeName(), rsrConfig.ReconLaserCodeBlue)
 						elseif coalition == 1 then
-							text = text..string.format("RECON: %s - %s - %s - Laser Code: %s\n", reconName, recon.airbase, unit:GetTypeName(), laserCodeRed)
+							text = text..string.format("RECON: %s - %s - %s - Laser Code: %s\n", reconName, recon.airbase, unit:GetTypeName(), rsrConfig.ReconLaserCodeRed)
 						end
 					end
 				end
