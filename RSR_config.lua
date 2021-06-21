@@ -21,6 +21,12 @@ rsrConfig.writeDelay = rsrConfig.devMode and 10 or 180  -- initial delay for per
 rsrConfig.baseDefenceActivationRadiusAirbase = 5000
 rsrConfig.baseDefenceActivationRadiusFARP = 2500
 
+-- laser codes
+-- =AW=33COM we need to standardize our laser codes, it's crazy that even developers don't know what the codes are in the game
+-- this is a start, from now on we should use same 1 code for BLUE and 1 for RED.  There won't be problems like everyone is saying.
+rsrConfig.ReconLaserCodeRed = 1686
+rsrConfig.ReconLaserCodeBlue = 1687
+
 -- restart schedule
 rsrConfig.firstRestartHour = 2 --this is UTC...apperently this is local machine time, setting it to 0100, had the server restart time calling at eastern.
 rsrConfig.missionDurationInHours = 6

@@ -15,13 +15,15 @@ local droneMaxCountAtOnce = 2
 local detectMaxCount = 5
 local detectionRange = 20000  --meters
 local maxLaseDistane = 60000 -- I need this becuase of Moose bugs, I need to find the closest RECON airplane that is detecting the units.  More than 60,000 is crazy and shuld not lase from that far
-local smokeInterval = 40 -- smoke will update in sec
-local lastSmokedTime = timer.getTime()
 local detectInterval = 20  -- this is also lase duration that resets each time detection runs-- super simple way to update laser
+local smokeIntervalRed = 40 -- smoke will update in sec
+local smokeIntervalBlue = 40 -- smoke will update in sec
+local lastSmokedTimeRed = timer.getTime()
+local lastSmokedTimeBlue = timer.getTime()
 local lastNotifyTimeRed = timer.getTime()
 local lastNotifyTimeBlue = timer.getTime()
-local detectMessageIntervalRed = 120
-local detectMessageIntervalBlue = 120
+local detectMessageIntervalRed = 60
+local detectMessageIntervalBlue = 60
 local blueDroneCount = 0
 local redDroneCount = 0
 local spawnerName = nil
@@ -101,9 +103,16 @@ local function findNearestRecce(detectedUnit, detectionSet)
 end
 
 local function isReadyToSmokeAgain()
-	local diff = timer.getTime() - lastSmokedTime	
-	if diff > smokeInterval then		
-		return true
+	if coalition == 2 then
+		local diff = timer.getTime() - lastSmokedTimeRed	
+		if diff > smokeIntervalRed then		
+			return true
+		end
+	elseif coalition == 1 then
+		local diff = timer.getTime() - lastSmokedTimeBlue	
+		if diff > smokeIntervalBlue then		
+			return true
+		end
 	end
 end
 
@@ -121,8 +130,12 @@ local function isReadyToNotifyTeamAgain(coalition)
 	end
 end
 
-local function resetSmokeTimer()
-	lastSmokedTime = timer.getTime()
+local function resetSmokeTimer(coalition)
+	if coalition == 2 then
+		lastSmokedTimeRed = timer.getTime()
+	elseif coalition == 1 then
+		lastSmokedTimeBlue = timer.getTime()
+	end
 end
 
 -- stupid Moose does not keep detectedItems in their detection object we need to store it ourselfs if we want to have multiple RECONs and be able to 
@@ -158,7 +171,7 @@ local function getFullDetectionReport(coalition)
 					if unit and unit:IsAlive() then -- can't show those we are killing, our detection will eventually remove the item from the list
 						areReconsUpAndDetecting = true
 						if coalition == 2 then
-							text = text..string.format("RECON: %s - %s - %s - Laser Code: %s\n", reconName, recon.airbase, unit:GetTypeName(), laserCodeBlue)
+							text = text..string.format("RECON: %s - %s - %s - Laser Code: %s\n", reconName, recon.airbase, unit:GetTypeName(), rsrConfig.ReconLaserCodeBlue)
 						elseif coalition == 1 then
 							text = text..string.format("RECON: %s - %s - %s - Laser Code: %s\n", reconName, recon.airbase, unit:GetTypeName(), laserCodeRed)
 						end
@@ -207,22 +220,26 @@ local function smokeAndLase(DetectedUnits, coalition)
 			attackingCoalition = 2
 		end
 		utils.smokeUnits(DetectedUnits, attackingCoalition)
-		timer.scheduleFunction(resetSmokeTimer, nil, timer.getTime() + 5)	-- required for all instances of drones to run not just the first one	
+		timer.scheduleFunction(resetSmokeTimer, coalition, timer.getTime() + 5)	-- required for all instances of drones to run not just the first one	
 	end	
 	
 	if isReadyToNotifyTeamAgain(coalition) then		
-		--detectMessageIntervalBlue	
 		trigger.action.outSoundForCoalition(coalition, "squelch.ogg")		
 		timer.scheduleFunction(SendMessage, {getSimpleDetectionReport(coalition), coalition}, timer.getTime() + 2)
 		timer.scheduleFunction(PlaySound, {"siren.ogg", coalition}, timer.getTime() + 4)
-		lastNotifyTimeRed = timer.getTime()
+		
+		if coalition == 2 then
+			lastNotifyTimeBlue = timer.getTime()
+		elseif coalition == 1 then
+			lastNotifyTimeRed = timer.getTime()
+		end
 	end
 	
 	if nearestRECON then
 		if coalition == 2 then
-			utils.laseUnits(nearestRECON, DetectedUnits, detectInterval, laserCodeBlue, 1)
+			utils.laseUnits(nearestRECON, DetectedUnits, detectInterval, rsrConfig.ReconLaserCodeBlue, 1)
 		elseif coalition == 1 then
-			utils.laseUnits(nearestRECON, DetectedUnits, detectInterval, laserCodeRed, 1)			
+			utils.laseUnits(nearestRECON, DetectedUnits, detectInterval, rsrConfig.ReconLaserCodeRed, 1)			
 		end
 	end
 end
@@ -326,7 +343,13 @@ function DroneSpawned:OnEventBirth(EventData)
 		local coalition = EventData.IniCoalition
 		local vec = EventData.IniGroup:GetVec2()        
         local uavNearBase = utils.getNearestAirbase(vec, coalition, Airbase.Category.AIRDROME)
-		trigger.action.outTextForCoalition(coalition,"[TEAM] " ..spawnerName.. " called in a RECON Airplane close to "..uavNearBase.."\nYour team has "..getDronesRemaining(coalition).." remaining RECON Airplanes.", 15)
+		local text = "[TEAM] " ..spawnerName.. " called in a RECON Airplane close to "..uavNearBase.."\nYour team has "..getDronesRemaining(coalition).." remaining RECON Airplanes."
+		if coalition == 2 then
+			text = text.."\nYour RECON Airplane will be lasing with laser code: "..rsrConfig.ReconLaserCodeBlue
+		elseif coalition == 1 then
+			text = text.."\nYour RECON Airplane will be lasing with laser code: "..rsrConfig.ReconLaserCodeRed
+		end
+		trigger.action.outTextForCoalition(coalition, text, 15)
 	end
 end
 
