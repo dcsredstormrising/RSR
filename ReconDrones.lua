@@ -187,8 +187,13 @@ local function smokeAndLase(DetectedUnits, coalition)
 	end
 			
 	if isReadyToSmokeAgain() then
-		env.info("AW33COM isReadyToSmokeAgain")
-		utils.smokeUnits(DetectedUnits, 2)
+		local attackingCoalition = 0
+		if coalition == 2
+			attackingCoalition = 1
+		elseif coalition == 1
+			attackingCoalition = 2
+		end
+		utils.smokeUnits(DetectedUnits, attackingCoalition)
 		lastSmokedTime = timer.getTime()
 	end	
 	
