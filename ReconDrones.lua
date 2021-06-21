@@ -116,12 +116,12 @@ local function isReadyToSmokeAgain()
 end
 
 local function isReadyToNotifyTeamAgain(coalition)
-	if coalition == 2 then
+	if coalition == 1 then
 		local diff = timer.getTime() - lastNotifyTimeRed	
 		if diff > detectMessageIntervalRed then		
 			return true
 		end
-	elseif coalition == 1 then
+	elseif coalition == 2 then
 		local diff = timer.getTime() - lastNotifyTimeBlue	
 		if diff > detectMessageIntervalBlue then		
 			return true
@@ -137,7 +137,7 @@ local function resetSmokeTimer(coalition)
 	end
 end
 
-local function GetAttackingUnitTypes(DetectedUnits)
+local function getAttackingUnitTypes(DetectedUnits)
 	local units = ""
 	if DetectedUnits then
 		for _,Detected in pairs(DetectedUnits)do		
@@ -151,7 +151,7 @@ end
 -- stupid Moose does not keep detectedItems in their detection object we need to store it ourselfs if we want to have multiple RECONs and be able to 
 -- report the status
 local function getSimpleDetectionReport(coalition, DetectedUnits)	
-	local text = "\n\nEnemy units {"..GetAttackingUnitTypes(DetectedUnits).."} are on the way to attack"
+	local text = "\n\nEnemy units {"..getAttackingUnitTypes(DetectedUnits).."} are on the way to attack"
 	local bases = ""
 					
 	if detectionStatus then
