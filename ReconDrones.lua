@@ -101,7 +101,7 @@ local function findNearestRecce(detectedUnit, detectionSet)
 	return NearestRecce
 end
 
-local function isReadyToSmokeAgain()
+local function isReadyToSmokeAgain(coalition)
 	if coalition == 2 then
 		local diff = timer.getTime() - lastSmokedTimeRed	
 		if diff > smokeIntervalRed then		
@@ -198,6 +198,9 @@ local function getFullDetectionReport(coalition)
 	end
 end
 
+-- very tricky logic in this fuction
+-- this runs for either blue or red and for every instance of the drone in the air
+-- since there is no way to find out when the last instance of the drone ran, there are some checks/tricks here that delayed smoking and messages
 local function smokeAndLase(DetectedUnits, coalition)
 	local unitAirbase = ""
 	local reconAirbase = ""
@@ -222,7 +225,7 @@ local function smokeAndLase(DetectedUnits, coalition)
 		break
 	end
 			
-	if isReadyToSmokeAgain() then
+	if isReadyToSmokeAgain(coalition) then
 		local attackingCoalition = 0
 		if coalition == 2 then
 			attackingCoalition = 1
