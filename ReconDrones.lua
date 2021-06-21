@@ -21,8 +21,8 @@ local lastSmokedTimeRed = timer.getTime()
 local lastSmokedTimeBlue = timer.getTime()
 local lastNotifyTimeRed = timer.getTime()
 local lastNotifyTimeBlue = timer.getTime()
-local detectMessageIntervalRed = 600
-local detectMessageIntervalBlue = 600
+local detectMessageIntervalRed = 60
+local detectMessageIntervalBlue = 60
 local blueDroneCount = 0
 local redDroneCount = 0
 local spawnerName = nil
@@ -166,7 +166,7 @@ local function getSimpleDetectionReport(coalition, DetectedUnits)
 		text = text.."You may use the RECON menu to view the status of the RECON Operation.  The status will show you what units are being lased, where they are, and what laser codes to use.  "
 		
 		if coalition == 2 then
-			text = text.."Enemy units are smoked RED and lased by default with laser code: "..rsrConfig.rsrConfig.ReconLaserCodeBlue.."\n\n"
+			text = text.."Enemy units are smoked RED and lased by default with laser code: "..rsrConfig.ReconLaserCodeBlue.."\n\n"
 		elseif coalition == 1 then
 			text = text.."Enemy units are smoked BLUE and lased by default with laser code: "..rsrConfig.ReconLaserCodeRed.."\n\n"
 		end
