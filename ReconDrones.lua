@@ -15,11 +15,11 @@ local droneMaxCountAtOnce = 2
 local detectMaxCount = 5
 local detectionRange = 20000  --meters
 local maxLaseDistane = 60000 -- I need this becuase of Moose bugs, I need to find the closest RECON airplane that is detecting the units.  More than 60,000 is crazy and shuld not lase from that far
-local smokeInterval = 30 -- smoke will update in sec
+local smokeInterval = 40 -- smoke will update in sec
 local lastSmokedTime = timer.getTime()
 local detectInterval = 20  -- this is also lase duration that resets each time detection runs-- super simple way to update laser
 local lastNotifyTime = timer.getTime()
-local detectMessageInterval = 60
+local detectMessageInterval = 120
 local blueDroneCount = 0
 local redDroneCount = 0
 local spawnerName = nil
@@ -112,6 +112,10 @@ local function isReadyToNotifyTeamAgain()
 	end
 end
 
+local function resetSmokeTimer()
+	lastSmokedTime = timer.getTime()
+end
+
 -- stupid Moose does not keep detectedItems in their detection object we need to store it ourselfs if we want to have multiple RECONs and be able to 
 -- report the status
 local function getSimpleDetectionReport(coalition)	
@@ -194,7 +198,7 @@ local function smokeAndLase(DetectedUnits, coalition)
 			attackingCoalition = 2
 		end
 		utils.smokeUnits(DetectedUnits, attackingCoalition)
-		lastSmokedTime = timer.getTime()
+		timer.scheduleFunction(resetSmokeTimer, nil, timer.getTime() + 5)	-- required for all instances of drones to run not just the first one	
 	end	
 	
 	if isReadyToNotifyTeamAgain() then			

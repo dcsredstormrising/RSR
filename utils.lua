@@ -2007,14 +2007,10 @@ function M.createGroupDataForWarehouseAsset(warehouseName, asset, sideName)
 	return groupData
 end
 
-function M.smokeUnits(units, coalition)	
-	env.info("AW33COM utils.smokeUnits 1")
+function M.smokeUnits(units, coalition)		
 	if units then
-		env.info("AW33COM utils.smokeUnits 2")		
 		for _,unit in pairs(units) do
-			env.info("AW33COM utils.smokeUnits 3")			
 			if coalition == 2 then
-				env.info("AW33COM utils.smokeUnits 6")
 				unit:Smoke(trigger.smokeColor.Blue, 0, 2)				
 			elseif coalition == 1 then
 				env.info("AW33COM utils.smokeUnits 7")
