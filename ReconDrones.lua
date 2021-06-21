@@ -309,7 +309,7 @@ local function getDronesRemaining(coalitionNumber)
 	return 0
 end
 
-local function showReconLocations(coalitionNumber)    
+local function showReconLocations(coalitionNumber)   -- this could be simpler by getting them from detectionStatus but I'm too lasy to write this
   local reconCount = 0
   local recons = nil  
   local uavBases = ""  
