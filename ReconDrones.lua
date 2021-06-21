@@ -9,20 +9,20 @@ local utils = require("utils")
 local inspect = require("inspect")
 local rsrConfig = require("RSR_config")
 ReconDrones = {}
-local droneMaxCount = 4 -- per session
+local droneMaxCount = 6 -- per session
 local droneMaxCountAtOnce = 2
-local detectMaxCount = 5
+local detectMaxCount = 10 -- not sure if this even works as it's not that easy to smoke, lase and detect correctly.  It would be a smoke mass if this actually worked.
 local detectionRange = 20000  --meters
 local maxLaseDistane = 60000 -- I need this becuase of Moose bugs, I need to find the closest RECON airplane that is detecting the units.  More than 60,000 is crazy and shuld not lase from that far
 local detectInterval = 20  -- this is also lase duration that resets each time detection runs-- super simple way to update laser
-local smokeIntervalRed = 40 -- smoke will update in sec
-local smokeIntervalBlue = 40 -- smoke will update in sec
+local smokeIntervalRed = 30 -- smoke will update in sec, must be greter than detect Interval
+local smokeIntervalBlue = 30 -- smoke will update in sec, must be greter than detect Interval
 local lastSmokedTimeRed = timer.getTime()
 local lastSmokedTimeBlue = timer.getTime()
 local lastNotifyTimeRed = timer.getTime()
 local lastNotifyTimeBlue = timer.getTime()
-local detectMessageIntervalRed = 60
-local detectMessageIntervalBlue = 60
+local detectMessageIntervalRed = 600
+local detectMessageIntervalBlue = 600
 local blueDroneCount = 0
 local redDroneCount = 0
 local spawnerName = nil
@@ -164,7 +164,12 @@ local function getSimpleDetectionReport(coalition, DetectedUnits)
 		text = text..bases		
 		text = text.." and it's surrounding territories. Deploy JTACs to the field and start Close Air Support coalition against the attack.\n\n"
 		text = text.."You may use the RECON menu to view the status of the RECON Operation.  The status will show you what units are being lased, where they are, and what laser codes to use.  "
-		text = text.."Enemy units are also smoked by default.\n\n"
+		
+		if coalition == 2 then
+			text = text.."Enemy units are smoked RED and lased by default with laser code: "..rsrConfig.rsrConfig.ReconLaserCodeBlue.."\n\n"
+		elseif coalition == 1 then
+			text = text.."Enemy units are smoked BLUE and lased by default with laser code: "..rsrConfig.ReconLaserCodeRed.."\n\n"
+		end
 		
 		return text
 	end	
