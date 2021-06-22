@@ -1,6 +1,9 @@
 --- Red Storm Rising DCS mission LUA code
 -- Add this dir and external paths (socket for calling n0xy's bot, luarocks systree for other dependencies)
 -- note default path does not end with ; but the cpath does
+-- this server runs the MiG29 Naval mod https://www.digitalcombatsimulator.com/en/files/3311481/
+-- this MiG29 mod works like this:  install the mod, put MiG29 on Carriers, remove the mod, MiG29 stays on Carriers.
+
 package.path = package.path .. ";" .. lfs.writedir() .. [[Scripts\RSR\?.lua;.\LuaSocket\?.lua]]
 package.cpath = package.cpath .. [[C:\dev\luarocks\lib\lua\5.1\?.dll]]
 
