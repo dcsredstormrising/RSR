@@ -54,10 +54,6 @@ local Spawn_Red_UAV = SPAWN:NewWithAlias("Red UAV-Recon-FAC","Pontiac 6-1")
 local BlueRecceSetGroup = SET_GROUP:New():FilterCoalitions("blue"):FilterPrefixes( {"Pontiac 1"} ):FilterStart()
 local RedRecceSetGroup = SET_GROUP:New():FilterCoalitions("red"):FilterPrefixes( {"Pontiac 6"} ):FilterStart()
 
-----Define the client to have the menu based on airplane type. I don't really agree with this, but that's how we want it, so let's do it.
-local blueClients = SET_CLIENT:New():FilterCoalitions("blue"):FilterPrefixes({" Blue Cargo", " Blue Helos"}):FilterOnce()
-local redClients = SET_CLIENT:New():FilterCoalitions("red"):FilterPrefixes({" Red Cargo", " Red Helos"}):FilterOnce()
-
 -- detection
 blueDetection = DETECTION_BASE:New(BlueRecceSetGroup)
 blueDetection:SetAcceptRange(detectionRange)
@@ -329,38 +325,24 @@ local function showReconLocations(coalitionNumber)   -- this could be simpler by
 end
 
 -- checks to see if the player that spawned is part of the heli or cargo gruop we build full RECON menus for
-local function isCargoOrHeli(playerGroupName, coalitionNumber)
+local function isCargoOrHeli(playerGroupName, coalitionNumber)	
 	if playerGroupName then
 		if coalitionNumber == 2 then
-			if blueClients then
-				blueClients:ForEachGroup(
-					function(grp)
-						local groupName = grp:GetName()
-						if string.find(groupName, playerGroupName) then
-							return true
-							break
-						end
-					end)				
-			end				
-		elseif coalitionNumber == 1 then
-			if redClients then
-				redClients:ForEachGroup(
-					function(grp)
-						local groupName = grp:GetName()
-						if string.find(groupName, playerGroupName) then
-							return true
-							break
-						end
-					end)
+			if string.find(playerGroupName, "blue helos") or string.find(playerGroupName, "blue cargo") or string.find(playerGroupName, "blue transport") then
+				return true
 			end
-		end	
+		elseif coalitionNumber == 1 then
+			if string.find(playerGroupName, "red helos") or string.find(playerGroupName, "red cargo") or string.find(playerGroupName, "red transport") then
+				return true
+			end
+		end
 	end
 end
 
 -- this is called from the global on birth event handler
 function ReconDrones.AddMenu(playerGroup)
 	local playerName = playerGroup:GetPlayerName()
-	local playerGroupName = playerGroup:GetName()
+	local playerGroupName = playerGroup:GetName():lower()
 	local coalitionNumber = playerGroup:GetCoalition()	
 	local menuRoot = MENU_GROUP:New(playerGroup, "RECON Operations")
 	
