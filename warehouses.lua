@@ -72,12 +72,7 @@ local warehouses =
         {name="Type_093", groupCat=Group.Category.SHIP, catName=Unit.Category.SHIP, iniSpawnCount=1, spawnCount=1, count=2, spawnDelay=10, respawnDelay=10, country=country.id.USA, skill=AI.Skill.EXCELLENT, EPLRS=false, hiddenOnMFD=false, enableEmission=true},
         {name="La_Combattante_II", groupCat=Group.Category.SHIP, catName=Unit.Category.SHIP, iniSpawnCount=1, spawnCount=1, count=2, spawnDelay=10, respawnDelay=10, country=country.id.USA, skill=AI.Skill.EXCELLENT, EPLRS=false, hiddenOnMFD=false, enableEmission=true},
         {name="USS_Arleigh_Burke_IIa", groupCat=Group.Category.SHIP, catName=Unit.Category.SHIP, iniSpawnCount=1, spawnCount=1, count=2, spawnDelay=10, respawnDelay=10, country=country.id.USA, skill=AI.Skill.EXCELLENT, EPLRS=false, hiddenOnMFD=false, enableEmission=true},
-      }},     
-    ["BAW"] = {displayName="Blue AirForce Warehouse", isActive=false, type=ArmedForce.AIRFORCE, spawnBy=SpawnType.DYNAMIC, country=country.id.USA, side=coalition.side.BLUE, sideName="BLUE", respawnDelay=10, zoneSize=300, coverageZone="BlueAirForceZone", spawnZone="BlueAirForceWarehouseSpawn", 
-      assets = {
-        {name="Ka-50", groupCat=Group.Category.HELICOPTER, catName=Unit.Category.HELICOPTER, iniSpawnCount=1, spawnCount=1, count=10, spawnDelay=10, respawnDelay=60, country=country.id.USA, skill=AI.Skill.EXCELLENT, EPLRS=false, hiddenOnMFD=false, enableEmission=false},       
-      }},
-            
+      }},            
     ["RNW"] = {displayName="Red Northern Warehouse", isActive=true, type=ArmedForce.ARMY, spawnBy=SpawnType.DYNAMIC, country=country.id.RUSSIA, side=coalition.side.RED, sideName="RED", respawnDelay=10, zoneSize=300, coverageZone="RedNorthZone", spawnZone="RedNorthWarehouseSpawn", 
       assets = {
         {name="BMP-2", groupCat=Group.Category.GROUND, catName=Unit.Category.GROUND_UNIT, iniSpawnCount=3, spawnCount=1, count=10, spawnDelay=10, respawnDelay=10, country=country.id.RUSSIA, skill=AI.Skill.EXCELLENT, EPLRS=false, hiddenOnMFD=false, enableEmission=false},
