@@ -11,7 +11,6 @@ local utilsDynAddIndex = {[' air '] = 0, [' hel '] = 0, [' gnd '] = 0, [' bld ']
 M.nextGroupId = 1
 M.nextUnitId = 1
 local warehouseGroupTag = "Resupply"
-local warehouseGroupTag = "Resupply"
 
 -- this does not work like the old Evil Framework
 -- in the old framework the ids were across campaign, here they are kind of by session I think
