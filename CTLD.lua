@@ -1040,11 +1040,7 @@ function ctld.IsGroupLimitReached(_args, _crateType, _coalition)
         -- we must remove ctld.UnitTypesOutsideOfGroupLimit (fuel trucks, EWRs, JTAC, CC crates are not part of the limit) from the list and then count it 
         -- to make sure we only count limited items
         local totalPlayerLimitedGroupCount = _playerSlungGroups:Count() - _groupsOfUnitsNotPartOfLimitCount
-        
-          --env.info("**=AW=33COM ctld.IsCrateLimitReached _playerSlungUnits count: [" .. inspect(_playerSlungGroups:Count()) .. "]")  
-          --env.info("**=AW=33COM ctld.IsCrateLimitReached _groupsOfUnitsNotPartOfLimitCount: [" .. inspect(_groupsOfUnitsNotPartOfLimitCount) .. "]")
-          --env.info("**=AW=33COM ctld.IsCrateLimitReached totalPlayerLimitedGroupCount: [" .. inspect(totalPlayerLimitedGroupCount) .. "]")  
-        
+                
         if totalPlayerLimitedGroupCount < ctld.GroupLimitCount then
           _limitReached = false            
         end
@@ -3037,32 +3033,15 @@ function ctld.findNearestAASystem(_heli, _aaSystem)
 
     local _closestHawkGroup = nil
     local _shortestDistance = -1
-    
-      --env.info("******=AW=33COM ctld.findNearestAASystem: _aaSystem ******")
-      --env.info(inspect(_aaSystem))      
-      --env.info("***=AW=33COM End:")
-      
-      --env.info("******=AW=33COM ctld.findNearestAASystem: ctld.completeAASystems ******")
-      --env.info(inspect(ctld.completeAASystems))
-      --env.info("***=AW=33COM End:")
-    
+        
     for _groupName, _hawkDetails in pairs(ctld.completeAASystems) do
-          
-      --env.info("******=AW=33COM ctld.findNearestAASystem: _groupName:" .. inspect(_groupName))
-    
+              
         local _hawkGroup = Group.getByName(_groupName)
         
-        --env.info("******=AW=33COM ctld.findNearestAASystem: _hawkGroup:" .. inspect(_groupName))
-
         if _hawkGroup ~= nil and _hawkGroup:getCoalition() == _heli:getCoalition() and _hawkDetails[1].system.name == _aaSystem.name then
         
-          --env.info("******=AW=33COM ctld.findNearestAASystem: _aaSystem.name:" .. inspect(_aaSystem.name))        
-          --env.info("******=AW=33COM ctld.findNearestAASystem: _hawkDetails[1].system.name:" .. inspect(_hawkDetails[1].system.name))
-
             local _units = _hawkGroup:getUnits()
             
-            --env.info("******=AW=33COM ctld.findNearestAASystem: _units: " .. inspect(_units))
-
             for _, _leader in pairs(_units) do
 
                 if _leader ~= nil and _leader:getLife() > 0 then
@@ -4579,14 +4558,10 @@ function ctld.repairAASystem(_heli, _nearestCrate, _aaSystem)
         ctld.completeAASystems[_nearestHawk.group:getName()] = nil
         _nearestHawk.group:destroy()
         
-        env.info("**=AW=33COM ctld.repairAASystem Removing AASystem " .. inspect(_nearestHawk.group:getName()))
-
         local _spawnedGroup = ctld.spawnCrateGroup(_heli, _points, _types, 1, true)
 
         ctld.completeAASystems[_spawnedGroup:getName()] = ctld.getAASystemDetails(_spawnedGroup, _aaSystem)
         
-        env.info("**=AW=33COM ctld.repairAASystem Adding AASystem " .. inspect(ctld.getAASystemDetails(_spawnedGroup, _aaSystem)))
-
         ctld.processCallback({ unit = _heli, crate = _nearestCrate, spawnedGroup = _spawnedGroup, action = "repair" })
 
         trigger.action.outTextForCoalition(_heli:getCoalition(), "[TEAM] " .. ctld.getPlayerNameOrType(_heli) .. " successfully repaired a full " .. _aaSystem.name .. " in the field", 10)
@@ -4812,11 +4787,9 @@ function ctld.spawnCrateGroup(_heli, _positions, _types, _unitQuantity, _isAASys
     -- this is the place where we define if the crate is part of the AA system, if we put that in the name, we will be able to recreate the 
     -- ctld.completeAASystems table and be able to always repair sams. _types[2] is the value that passes the ctld.completeAASystemsTag
     if _isAASystem then
-        env.info("**=AW=33COM YES, is this AASystem: " .. inspect(_isAASystem)) 
       _groupName = 'CTLD_' .. _types[1] .. '_' .. _id .. ' (' .. _playerName .. ')' .. ctld.completeAASystemsTag -- encountered some issues with using "type #number" on some servers
     end
        
-    env.info("**=AW=33COM " .. _groupName)
     log:info("_playerName: $1, _groupName: $2, _types[1]: $3", _playerName, _groupName, _types[1])
     
     local _group = {
@@ -7344,18 +7317,11 @@ end
 
 -- Here we update the AA System in CTLD upon each session start.
 function ctld.LoadAllExistingSystemsIntoCTLD(_spawnedGroup)    
-    --env.info("***=AW=33COM LoadAllExistingSystemsIntoCTLD")        
     if _spawnedGroup ~= nil and _spawnedGroup:getUnits() ~= nil and _spawnedGroup:getUnits()[1] ~= nil then
       local _units = _spawnedGroup:getUnits()  
-      local _firstUnitType = _units[1]:getTypeName()
-      --env.info("***=AW=33COM _spawnedGroup Name: " .. inspect(_spawnedGroup:getName()))            
+      local _firstUnitType = _units[1]:getTypeName()            
       local _aaSystemDetails = ctld.getAASystemDetails(_spawnedGroup, ctld.getAATemplate(_firstUnitType))      
-      ctld.completeAASystems[_spawnedGroup:getName()] = _aaSystemDetails      
-      --env.info("******=AW=33COM sgs_rsr.LoadAllExistingSystemsIntoCTLD: ctld.completeAASystems ******")
-      --env.info(inspect(ctld.completeAASystems))      
-      --env.info("***=AW=33COM End:")
-    else
-      env.info("***=AW=33COM _spawnedGroup is empty")
+      ctld.completeAASystems[_spawnedGroup:getName()] = _aaSystemDetails    
     end
  end 
  

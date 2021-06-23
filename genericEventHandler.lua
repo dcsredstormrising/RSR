@@ -30,13 +30,17 @@ end
 function PilotDeadEventHandler:OnEventPilotDead(EventData)
 end
 
-function LandEventHandler:OnEventLand(EventData)	
+function LandEventHandler:OnEventLand(EventData)
+	env.info("AW33COM LandEventHandler:OnEventLand 1")
 	if EventData.IniPlayerName then
-		--
+		env.info("AW33COM LandEventHandler:OnEventLand 2")
 	else
+		env.info("AW33COM LandEventHandler:OnEventLand 3")
 		local groupName = EventData.IniGroup:GetName()
 		local coalitionNumber = EventData.IniCoalition
+			env.info("AW33COM LandEventHandler:OnEventLand 4")
 		if string.match(groupName, "Convoy Transport") then
+			env.info("AW33COM LandEventHandler:OnEventLand 6")
 			Convoy.OnLand(coalitionNumber)
 		end
 	end
