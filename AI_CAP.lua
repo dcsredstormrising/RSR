@@ -160,7 +160,7 @@ if file_exists("RedGraveyard.lua") then
   env.info("RedGraveyard exists, loading ...")
   RedGraveyard = table.load( "RedGraveyard.lua" )
 else RedGraveyard = {
-   ["MiG-31"]=40,
+   ["MiG-31"]=80,
 }
   env.info("RedGraveyard does not exist, writing ...")
   table.save( RedGraveyard, "RedGraveyard.lua" )
@@ -171,7 +171,7 @@ if file_exists("BlueGraveyard.lua") then
   env.info("BlueGraveyard exists, loading ...")
   BlueGraveyard = table.load( "BlueGraveyard.lua" )
 else BlueGraveyard = {  
-   ["F-14B"]=40,
+   ["F-14B"]=80,
 }
   env.info("BlueGraveyard does not exist, writing ...")
   table.save( BlueGraveyard, "BlueGraveyard.lua" )
