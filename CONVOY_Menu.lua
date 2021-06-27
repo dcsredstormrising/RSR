@@ -112,7 +112,7 @@ local function SpawnTransport(playerGroup, coalitionNumber)
     env.info("CONVOY: Queue for team: " .. _Coalitions[coalitionNumber].String .. " is empty. Inserting " .. playerName .. "'s location and heading.")
     _Coalitions[coalitionNumber].Queue = {Heading = heading, Location = location, PlayerName = playerName, PlayerAirbase = playerAirbase}
     local spawnVec2 = TranslateAndReturnSpawnLocation(heading, location)	
-    _Coalitions[coalitionNumber].TransportGroup = _Coalitions[coalitionNumber].TransportSpawn:SpawnFromVec2(spawnVec2)	
+    _Coalitions[coalitionNumber].TransportGroup = _Coalitions[coalitionNumber].TransportSpawn:SpawnFromVec2(spawnVec2)
   elseif not playerAirbase then
     env.info("CONVOY: " .. playerName .. " is not at airbase, will not spawn convoy transport.")
     trigger.action.outTextForCoalition(coalitionNumber, "[TEAM] " .. playerName .. " Must be at airbase to spawn convoy.", 10)
