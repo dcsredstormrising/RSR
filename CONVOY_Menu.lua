@@ -78,11 +78,14 @@ local function TranslateAndReturnSpawnLocation(heading, location, range)
 end
 
 local function CleanUpConvoy(coalitionNumber)
+	env.info("CleanUpConvoy: Convoy Transport Deleting. Clearing queue.")
 	local transportGroup = _Coalitions[coalitionNumber].TransportGroup
 	if transportGroup then
-		env.info("AW33COM CleanUpConvoy Destory")
-		transportGroup:destroy()
+		env.info("CleanUpConvoy Destory")
+		transportGroup:Destroy(false)
 	end
+	_Coalitions[coalitionNumber].TransportGroup = nil	
+	_Coalitions[coalitionNumber].Queue = nil
 end
 
 local function SpawnConvoy(coalitionNumber)
@@ -96,9 +99,7 @@ local function SpawnConvoy(coalitionNumber)
   end
 
   -- DELETE TRANSPORT and DELETE Queued Information
-	env.info("AW33COM SpawnConvoy Before Destory")	
-	timer.scheduleFunction(CleanUpConvoy, coalitionNumber, timer.getTime() + 30)	
-	env.info("AW33COM SpawnConvoy After Destory")
+	timer.scheduleFunction(CleanUpConvoy, coalitionNumber, timer.getTime() + DELAY)
 end
 
 local function SpawnTransport(playerGroup, coalitionNumber)
@@ -110,10 +111,8 @@ local function SpawnTransport(playerGroup, coalitionNumber)
   if not _Coalitions[coalitionNumber].Queue and playerAirbase then
     env.info("CONVOY: Queue for team: " .. _Coalitions[coalitionNumber].String .. " is empty. Inserting " .. playerName .. "'s location and heading.")
     _Coalitions[coalitionNumber].Queue = {Heading = heading, Location = location, PlayerName = playerName, PlayerAirbase = playerAirbase}
-    local spawnVec2 = TranslateAndReturnSpawnLocation(heading, location)
-	env.info("AW33COM SpawnTransport spawnVec2 "..inspect(spawnVec2))	
-    _Coalitions[coalitionNumber].TransportGroup = _Coalitions[coalitionNumber].TransportSpawn:SpawnFromVec2(spawnVec2)
-	env.info("AW33COM SpawnTransport 33 ")
+    local spawnVec2 = TranslateAndReturnSpawnLocation(heading, location)	
+    _Coalitions[coalitionNumber].TransportGroup = _Coalitions[coalitionNumber].TransportSpawn:SpawnFromVec2(spawnVec2)	
   elseif not playerAirbase then
     env.info("CONVOY: " .. playerName .. " is not at airbase, will not spawn convoy transport.")
     trigger.action.outTextForCoalition(coalitionNumber, "[TEAM] " .. playerName .. " Must be at airbase to spawn convoy.", 10)
@@ -126,7 +125,7 @@ local function SpawnTransport(playerGroup, coalitionNumber)
 end
 
 -- HANDLES BIRTH EVENTS OF TRANSPORT HELOS AND CARGO, TRANSPORTS, AND CONVOY GROUPS
-function Convoy.AddMenu( playerGroup )
+function Convoy.AddMenu(playerGroup)
   local groupName = playerGroup:GetName()
   local coalitionNumber = playerGroup:GetCoalition()
 
@@ -156,8 +155,7 @@ end
 
 --HANDLES LAND EVENTS OF TRANSPORTS ONLY
 function landHandler:onEvent(event)
-	if event.id == world.event.S_EVENT_LAND then
-		env.info("AW33COM landHandler:onEvent")
+	if event.id == world.event.S_EVENT_LAND then		
 		local initiator = event.initiator
 		if initiator then
 			local groupName = initiator:getName()			
@@ -174,15 +172,12 @@ end
 
 function crashHandler:onEvent(event)
 	if event.id == world.event.S_EVENT_CRASH then
-		env.info("AW33COM crashHandler:onEvent")
 		local initiator = event.initiator
 		if initiator then
 			local groupName = initiator:getName()			
 			if string.match(groupName, "Convoy Transport") then
-				local coalitionNumber = event.IniCoalition		
-				env.info("CONVOY: Convoy Transport Deleting. Clearing queue.")
-				_Coalitions[coalitionNumber].TransportGroup = nil
-				_Coalitions[coalitionNumber].Queue = nil
+				local coalitionNumber = event.IniCoalition
+				CleanUpConvoy(coalitionNumber)
 			end
 		end
 	end
