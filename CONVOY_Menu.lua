@@ -77,6 +77,14 @@ local function TranslateAndReturnSpawnLocation(heading, location, range)
   return location:Translate(range, heading, true):GetVec2()
 end
 
+local function CleanUpConvoy(coalitionNumber)
+	local transportGroup = _Coalitions[coalitionNumber].TransportGroup
+	if transportGroup then
+		env.info("AW33COM CleanUpConvoy Destory")
+		transportGroup:destroy()
+	end
+end
+
 local function SpawnConvoy(coalitionNumber)
   local range = RANGE
   local queue = _Coalitions[coalitionNumber].Queue
@@ -88,7 +96,9 @@ local function SpawnConvoy(coalitionNumber)
   end
 
   -- DELETE TRANSPORT and DELETE Queued Information
-  _Coalitions[coalitionNumber].TransportGroup:Destroy(true, DELAY) 
+	env.info("AW33COM SpawnConvoy Before Destory")	
+	timer.scheduleFunction(CleanUpConvoy, coalitionNumber, timer.getTime() + 30)	
+	env.info("AW33COM SpawnConvoy After Destory")
 end
 
 local function SpawnTransport(playerGroup, coalitionNumber)
@@ -101,7 +111,9 @@ local function SpawnTransport(playerGroup, coalitionNumber)
     env.info("CONVOY: Queue for team: " .. _Coalitions[coalitionNumber].String .. " is empty. Inserting " .. playerName .. "'s location and heading.")
     _Coalitions[coalitionNumber].Queue = {Heading = heading, Location = location, PlayerName = playerName, PlayerAirbase = playerAirbase}
     local spawnVec2 = TranslateAndReturnSpawnLocation(heading, location)
+	env.info("AW33COM SpawnTransport spawnVec2 "..inspect(spawnVec2))	
     _Coalitions[coalitionNumber].TransportGroup = _Coalitions[coalitionNumber].TransportSpawn:SpawnFromVec2(spawnVec2)
+	env.info("AW33COM SpawnTransport 33 ")
   elseif not playerAirbase then
     env.info("CONVOY: " .. playerName .. " is not at airbase, will not spawn convoy transport.")
     trigger.action.outTextForCoalition(coalitionNumber, "[TEAM] " .. playerName .. " Must be at airbase to spawn convoy.", 10)
@@ -145,6 +157,7 @@ end
 --HANDLES LAND EVENTS OF TRANSPORTS ONLY
 function landHandler:onEvent(event)
 	if event.id == world.event.S_EVENT_LAND then
+		env.info("AW33COM landHandler:onEvent")
 		local initiator = event.initiator
 		if initiator then
 			local groupName = initiator:getName()			
@@ -161,6 +174,7 @@ end
 
 function crashHandler:onEvent(event)
 	if event.id == world.event.S_EVENT_CRASH then
+		env.info("AW33COM crashHandler:onEvent")
 		local initiator = event.initiator
 		if initiator then
 			local groupName = initiator:getName()			

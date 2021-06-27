@@ -67,11 +67,6 @@ function M.BIRTH_EVENTHANDLER:_AddJTACStatusMenu(groupId, unitName)
     end
 end
 
-function M.BIRTH_EVENTHANDLER:_AddWeaponsManagerMenus(groupId)
-    --missionCommands.addCommandForGroup(groupId, "Show weapons left", nil, weaponManager.printHowManyLeft, groupId)
-    --missionCommands.addCommandForGroup(groupId, "Validate Loadout", nil, weaponManager.validateLoadout, groupId)
-end
-
 function M.BIRTH_EVENTHANDLER:_AddTransportMenus(groupId, unitName, playerGroup)
     local _unit = ctld.getTransportUnit(unitName)
     local _unitActions = ctld.getUnitActions(_unit:getTypeName())
@@ -146,12 +141,16 @@ end
 
 function M.BIRTH_EVENTHANDLER:_NonPlayerRouter(event)
     --Make sure not static
+	env.info("AW33COM M.BIRTH_EVENTHANDLER:_NonPlayerRouter 1")
     if event.IniGroup then
         local groupName = event.IniGroup:GetName()
         local coalitionNumber = event.IniCoalition
+		env.info("AW33COM M.BIRTH_EVENTHANDLER:_NonPlayerRouter 2")
         if string.match(groupName, "Convoy Transport") then
+			env.info("AW33COM M.BIRTH_EVENTHANDLER:_NonPlayerRouter 3")
             Convoy.ConvoyTransportGroupBorn(coalitionNumber)
         elseif string.match(groupName, "Convoy Group 1") then
+			env.info("AW33COM M.BIRTH_EVENTHANDLER:_NonPlayerRouter 4")
             Convoy.ConvoyGroupBorn(coalitionNumber)
         end  
     end
