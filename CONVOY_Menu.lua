@@ -16,6 +16,7 @@
 -- 1. Complete any FIXME:s.
 ---
 local utils = require("utils")
+local inspect = require("inspect")
 
 -- Dont Remove
 Convoy = {}
@@ -44,6 +45,12 @@ local DELAY = 30
 --- END CONFIG ---
 
 --- LOCAL VARIABLES ---
+
+local landHandler = {}
+world.addEventHandler(landHandler)
+
+local crashHandler = {}
+world.addEventHandler(crashHandler)
 
 -- COALITION TABLE [1] Red [2] Blue
 local _Coalitions = {
@@ -136,17 +143,35 @@ function Convoy.ConvoyTransportGroupBorn( coalitionNumber )
 end
 
 --HANDLES LAND EVENTS OF TRANSPORTS ONLY
-function Convoy.OnLand( coalitionNumber )
-  env.info(_Coalitions[coalitionNumber].String .. " Transport Landed. Deploying convoy.")
-  SpawnConvoy(coalitionNumber)
-  trigger.action.outTextForCoalition(coalitionNumber,"[TEAM] " .. _Coalitions[coalitionNumber].String .." Resupply Mission Successful!", 10)
-  trigger.action.outTextForCoalition(coalitionNumber == 1 and 2 or 1,"[TEAM] Enemy Transport Faded.\nIntercept Mission Failed!", 10)
+function landHandler:onEvent(event)
+	if event.id == world.event.S_EVENT_LAND then
+		local initiator = event.initiator
+		if initiator then
+			local groupName = initiator:getName()			
+			if string.match(groupName, "Convoy Transport") then
+				local coalitionNumber = initiator:getCoalition()
+				env.info(_Coalitions[coalitionNumber].String .. " Transport Landed. Deploying convoy.")		
+				SpawnConvoy(coalitionNumber)
+				trigger.action.outTextForCoalition(coalitionNumber,"[TEAM] " .. _Coalitions[coalitionNumber].String .." Resupply Mission Successful!", 10)
+				trigger.action.outTextForCoalition(coalitionNumber == 1 and 2 or 1,"[TEAM] Enemy Transport Faded.\nIntercept Mission Failed!", 10)
+			end
+		end
+	end
 end
 
-function Convoy.OnTransportCrash ( coalitionNumber )
-  env.info("CONVOY: Convoy Transport Deleting. Clearing queue.")
-  _Coalitions[coalitionNumber].TransportGroup = nil
-  _Coalitions[coalitionNumber].Queue = nil
+function crashHandler:onEvent(event)
+	if event.id == world.event.S_EVENT_CRASH then
+		local initiator = event.initiator
+		if initiator then
+			local groupName = initiator:getName()			
+			if string.match(groupName, "Convoy Transport") then
+				local coalitionNumber = event.IniCoalition		
+				env.info("CONVOY: Convoy Transport Deleting. Clearing queue.")
+				_Coalitions[coalitionNumber].TransportGroup = nil
+				_Coalitions[coalitionNumber].Queue = nil
+			end
+		end
+	end
 end
 
 function Convoy.GetUpTransports( coalitionNumber )
@@ -156,5 +181,4 @@ end
 function Convoy.GetUpTransportBaseName( coalitionNumber )
   return not _Coalitions[coalitionNumber].TransportGroup and '' or _Coalitions[coalitionNumber].Queue.PlayerAirbase 
 end
-
 ---END FUNCTIONS---
