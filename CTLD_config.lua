@@ -757,7 +757,7 @@ ctld.AASystemTemplate = {
             { name = "Silkworm_SR", desc = "Silkworm Radar" },
         },
         repair = "Silkworm Repair",
-        systemType = "SR",
+        systemType = "LR",
     },	
     {
         name = "Kub SAM System",
