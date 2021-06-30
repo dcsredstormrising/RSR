@@ -143,7 +143,7 @@ function M.isUnitFromWarehouse(iniUnitName)
   local retVal = false
   
   if iniUnitName ~= nil then
-    if string.find(iniUnitName, "Resupply") then
+    if string.find(iniUnitName, warehouseGroupTag) then
       retVal = true
     end
   end
