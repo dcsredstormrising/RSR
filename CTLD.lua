@@ -4351,11 +4351,7 @@ function ctld.unpackAASystem(_heli, _nearestCrate, _nearbyCrates, _aaSystemTempl
                     table.insert(_typeArray, _name)					
                 end
             else								
-				if _name ~= "Patriot str" then
-					table.insert(_posArray, _systemPart.crate.crateUnit:getPoint())
-					table.insert(_typeArray, _name)
-					env.info("AW33COM Adding none STR Patriots parts")
-				elseif _name == "Patriot str" then				
+				if _name == "Patriot str" then
 					if not patriotSTRPartsAddedAlready then
 						env.info("AW33COM Adding 3 STR Patriots")
 						local strPoint = _systemPart.crate.crateUnit:getPoint()
@@ -4369,10 +4365,13 @@ function ctld.unpackAASystem(_heli, _nearestCrate, _nearbyCrates, _aaSystemTempl
 							strPoint = { x = strPoint.x + xOffset, y = strPoint.y, z = strPoint.z + yOffset }
 							table.insert(_posArray, strPoint)
 							table.insert(_typeArray, _name)		
-							table.insert(ctld.PatriotSTRandLauncherAngels, angel)
+							table.insert(ctld.PatriotSTRandLauncherAngels, angle)
 						end	
 						patriotSTRPartsAddedAlready = true
 					end
+				else					
+					table.insert(_posArray, _systemPart.crate.crateUnit:getPoint())
+					table.insert(_typeArray, _name)
 				end
             end            
         end
@@ -4890,7 +4889,7 @@ function ctld.spawnCrateGroup(_heli, _positions, _types, _unitQuantity, _isAASys
     --_dest = { x = _dest.x + 0.5, _y = _dest.y + 0.5, z = _dest.z + 0.5 }
 
     utils.setGroupControllerOptions(_spawnedGroup)
-    --ctld.orderGroupToMoveToPoint(_spawnedGroup:getUnit(1), _dest)
+    ctld.PatriotSTRandLauncherAngels = {}
 
     return _spawnedGroup
 end
