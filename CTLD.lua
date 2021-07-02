@@ -4181,6 +4181,8 @@ function ctld.aaGetLaunchersFromType(_aaTemplate)
         return ctld.aaMRLaunchers
     elseif _aaTemplate.systemType == "LR" then
         return ctld.aaLRLaunchers
+	elseif _aaTemplate.systemType == "SLR" then
+        return ctld.aaSLRLaunchers
     else
         return 1 -- in case system type is not included in template
     end
@@ -4284,9 +4286,8 @@ function ctld.countTableEntries(_table)
 end
 
 function ctld.unpackAASystem(_heli, _nearestCrate, _nearbyCrates, _aaSystemTemplate)
-
-    if ctld.rearmAASystem(_heli, _nearestCrate, _aaSystemTemplate) then
-        -- rearmed hawk
+	
+    if ctld.rearmAASystem(_heli, _nearestCrate, _aaSystemTemplate) then    
         return
     end
 
@@ -4295,7 +4296,7 @@ function ctld.unpackAASystem(_heli, _nearestCrate, _nearbyCrates, _aaSystemTempl
 
     --initialise list of parts
     for _, _part in pairs(_aaSystemTemplate.parts) do
-        _systemParts[_part.name] = { name = _part.name, desc = _part.desc, found = false }
+        _systemParts[_part.name] = { name = _part.name, desc = _part.desc, found = false }		
     end
 
     -- find all nearest crates and add them to the list if they're part of the AA System
@@ -4308,7 +4309,6 @@ function ctld.unpackAASystem(_heli, _nearestCrate, _nearbyCrates, _aaSystemTempl
 
                 _foundPart.found = true
                 _foundPart.crate = _nearbyCrate
-
                 _systemParts[_nearbyCrate.details.unit] = _foundPart
             end
         end
@@ -4318,46 +4318,57 @@ function ctld.unpackAASystem(_heli, _nearestCrate, _nearbyCrates, _aaSystemTempl
 
     local _posArray = {}
     local _typeArray = {}
+	local patriotSTRPartsAddedAlready = false
+	
     for _name, _systemPart in pairs(_systemParts) do
 
         if _systemPart.found == false then
             _txt = _txt .. "Missing " .. _systemPart.desc .. "\n"
         else
-
             local _launcherPart = ctld.getLauncherUnitFromAATemplate(_aaSystemTemplate)
-
-            --handle multiple launchers from one crate
-
             if (_launcherPart == _name and ctld.aaGetLaunchersFromType(_aaSystemTemplate) > 1) then
-                -- Ironwulf2000 modified to remove Hawk as special case, use systemType variable instead
-
-
                 --add multiple launcher
                 local _launchers = ctld.aaGetLaunchersFromType(_aaSystemTemplate)
-
-                --if _name == "Hawk ln" then
-                --    _launchers = ctld.hawkLaunchers
-                --end
-
+				
                 for _i = 1, _launchers do
-
                     -- spawn in a circle around the crate
                     local _angle = math.pi * 2 * (_i - 1) / _launchers
-                    local _xOffset = math.cos(_angle) * ctld.launcherRadius
-                    local _yOffset = math.sin(_angle) * ctld.launcherRadius
-
+					local radius = ctld.launcherRadius
+					
+					if _name == "Patriot ln" then
+						radius = 200
+					end
+					
+                    local _xOffset = math.cos(_angle) * radius
+                    local _yOffset = math.sin(_angle) * radius
                     local _point = _systemPart.crate.crateUnit:getPoint()
-
                     _point = { x = _point.x + _xOffset, y = _point.y, z = _point.z + _yOffset }
-
                     table.insert(_posArray, _point)
                     table.insert(_typeArray, _name)					
                 end
-            else
-                table.insert(_posArray, _systemPart.crate.crateUnit:getPoint())
-                table.insert(_typeArray, _name)
-            end
-            
+            else								
+				if _name ~= "Patriot str" then
+					table.insert(_posArray, _systemPart.crate.crateUnit:getPoint())
+					table.insert(_typeArray, _name)
+					env.info("AW33COM Adding none STR Patriots parts")
+				elseif _name == "Patriot str" then				
+					if not patriotSTRPartsAddedAlready then
+						env.info("AW33COM Adding 3 STR Patriots")
+						local strPoint = _systemPart.crate.crateUnit:getPoint()
+						local strCount = 3					
+						for i = 1, strCount do	-- spawn in a circle around the crate						
+							local angle = math.pi * 2 * (i - 1) / strCount
+							local xOffset = math.cos(angle) * ctld.patriotSTRRadius
+							local yOffset = math.sin(angle) * ctld.patriotSTRRadius
+							local strPoint = _systemPart.crate.crateUnit:getPoint()
+							strPoint = { x = strPoint.x + xOffset, y = strPoint.y, z = strPoint.z + yOffset }
+							table.insert(_posArray, strPoint)
+							table.insert(_typeArray, _name)					
+						end	
+						patriotSTRPartsAddedAlready = true
+					end
+				end
+            end            
         end
     end
 
@@ -4778,6 +4789,7 @@ function ctld.spawnStaticCrateGroup(_heli, _positions, _types, _unitQuantity)
     return _spawnedGroup
 end
 
+-- player heading will not work in Patriots at least.  We need to assign heading in a circle for Patriot launchers and STRs
 function ctld.spawnCrateGroup(_heli, _positions, _types, _unitQuantity, _isAASystem)		
     _unitQuantity = _unitQuantity or 1
     local _id = utils.getNextGroupId()

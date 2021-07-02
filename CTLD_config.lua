@@ -109,7 +109,9 @@ ctld.aaSR2Launchers = 2 -- controls how many launchers to add to Short Range Mis
 ctld.aaSRLaunchers = 3 -- controls how many launchers to add to Short Range Missile systems when spawned.
 ctld.aaMRLaunchers = 4 -- controls how many launchers to add to Medium Range Missile systems when spawned.
 ctld.aaLRLaunchers = 5 -- controls how many launchers to add to Long Range Missile systems when spawned.
+ctld.aaSLRLaunchers = 8 -- controls how many launchers to add to Super Long Range Missile systems when spawned. (Patriot)
 ctld.launcherRadius = 100 -- distance from crate for spawned launchers
+ctld.patriotSTRRadius = 100
 --END AA SYSTEM CONFIG --
 
 
@@ -792,7 +794,7 @@ ctld.AASystemTemplate = {
       { name = "Patriot EPP", desc = "Patriot EPP (internal)" },
     },
     repair = "Patriot Repair",
-    systemType = "LR",
+    systemType = "SLR",
   },
   {
     name = "S-300 SAM System",

@@ -241,18 +241,13 @@ end
 --When a unit dies we check if it came from the warhouse, if it did, we add a request to respawn it
 function Warehouse_Dead:OnEventDead(EventData)  
   if warehousesExistOnMap then
-	env.info("***=AW=33COM Warehouse_Dead:OnEventDead 1")
-    if EventData.IniTypeName ~= nil and EventData.IniUnitName ~= nil then      
-		env.info("***=AW=33COM Warehouse_Dead:OnEventDead 2")
+    if EventData.IniTypeName ~= nil and EventData.IniUnitName ~= nil then
       if utils.isUnitFromWarehouse(inspect(EventData.IniUnitName)) then      
         env.info("***=AW=33COM Unit is from the warehouse: IniTypeName: ".. inspect(EventData.IniTypeName) .. " IniUnitName:" .. inspect(EventData.IniUnitName) .. " - Add Request to Warehouse***")
-        local warehouse, warehouseName = getWarehouseForAsset(EventData.IniUnitName)
-		env.info("***=AW=33COM Warehouse_Dead:OnEventDead 3")
+        local warehouse, warehouseName = getWarehouseForAsset(EventData.IniUnitName)		
         if warehouse ~= nil then
-          local asset = getAssetTemplate(warehouseName, EventData.IniTypeName)
-			env.info("***=AW=33COM Warehouse_Dead:OnEventDead 4")		  
+          local asset = getAssetTemplate(warehouseName, EventData.IniTypeName)			
           if asset ~= nil then      
-			env.info("***=AW=33COM Warehouse_Dead:OnEventDead 5")
             warehouse:__AddRequest(asset.respawnDelay, warehouse, WAREHOUSE.Descriptor.GROUPNAME, getGroupName(warehouseName, asset), asset.spawnCount, WAREHOUSE.TransportType.SELFPROPELLED)
             warehouse:__Save(saveDelay,nil,warehouseName)
           end
