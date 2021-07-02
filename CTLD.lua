@@ -4340,7 +4340,7 @@ function ctld.unpackAASystem(_heli, _nearestCrate, _nearbyCrates, _aaSystemTempl
 					if _name == "Patriot ln" then
 						radius = 200
 						env.info("AW33COM Patriot Launcher Angel: "..inspect(_angle))
-						table.insert(PatriotSTRandLauncherAngels, _angle)
+						table.insert(ctld.PatriotSTRandLauncherAngels, _angle)
 					end
 					
                     local _xOffset = math.cos(_angle) * radius
@@ -4369,7 +4369,7 @@ function ctld.unpackAASystem(_heli, _nearestCrate, _nearbyCrates, _aaSystemTempl
 							strPoint = { x = strPoint.x + xOffset, y = strPoint.y, z = strPoint.z + yOffset }
 							table.insert(_posArray, strPoint)
 							table.insert(_typeArray, _name)		
-							table.insert(PatriotSTRandLauncherAngels, angel)
+							table.insert(ctld.PatriotSTRandLauncherAngels, angel)
 						end	
 						patriotSTRPartsAddedAlready = true
 					end
@@ -4822,7 +4822,6 @@ function ctld.spawnCrateGroup(_heli, _positions, _types, _unitQuantity, _isAASys
         ["task"] = {},
     }
     if #_positions == 1 then
-		env.info("AW33COM Patriot is unpacking here 1")
         for _i = 1, _unitQuantity do			
             local _unitId = utils.getNextUnitId()
             local _details = { type = _types[1], unitId = _unitId, name = string.format("Unpacked %s #%i", _types[1], _unitId) } -- we rely on that "Unpacked" name somewhere else in order to know if the unit is from CTLD
@@ -4850,28 +4849,26 @@ function ctld.spawnCrateGroup(_heli, _positions, _types, _unitQuantity, _isAASys
             _group.units[_i] = ctld.createUnit(_positions[1].x + _offset, _positions[1].z + _offset, _angle, _details)			
         end
     else
-		env.info("AW33COM Patriot is unpacking here 2")
+		
         for _i, _pos in ipairs(_positions) do
             local _unitId = utils.getNextUnitId()
             local _details = { type = _types[_i], unitId = _unitId, name = string.format("Unpacked %s #%i", _types[_i], _unitId) } -- we rely on that "Unpacked" name somewhere else in order to know if the unit is from CTLD
             local _playerHeading = utils.getHeading(_heli)
-
-			env.info("AW33COM _types[_i]: "..inspect(_types[_i]).." with _i: "..inspect(_i))
-			if _isAASystem and string.find(_types[1], "Patriot") and PatriotSTRandLauncherAngels then
-				env.info("AW33COM PatriotSTRandLauncherAngel: "..inspect(PatriotSTRandLauncherAngels[_i]).." with _i: "..inspect(_i))				
+			local _point = _playerHeading * 180 / math.pi			
+			if string.find(_types[1], "Patriot") then				
+				env.info("AW33COM PatriotSTRandLauncherAngel: "..inspect(PatriotSTRandLauncherAngels[_i]).." with _i: "..inspect(_i))
+				_angle == PatriotSTRandLauncherAngels[_i]
+			else
+				if _point <= 90 then
+				  _angle = 45
+				elseif _point >= 90 and _point <= 180 then
+				  _angle = 90
+				elseif _point >= 180 and _point <= 270 then
+				  _angle = 135
+				elseif _point >= 270 then
+				  _angle = 225
+				end
 			end
-			
-            local _point = _playerHeading * 180 / math.pi
-            if _point <= 90 then
-              _angle = 45
-            elseif _point >= 90 and _point <= 180 then
-              _angle = 90
-            elseif _point >= 180 and _point <= 270 then
-              _angle = 135
-            elseif _point >= 270 then
-              _angle = 225
-            end 
---            _group.units[_i] = ctld.createUnit(_pos.x + 5, _pos.z + 5, 120, _details)
             _group.units[_i] = ctld.createUnit(_pos.x + 5, _pos.z + 5, _angle, _details)
         end
     end
