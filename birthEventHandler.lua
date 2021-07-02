@@ -141,16 +141,12 @@ end
 
 function M.BIRTH_EVENTHANDLER:_NonPlayerRouter(event)
     --Make sure not static
-	env.info("AW33COM M.BIRTH_EVENTHANDLER:_NonPlayerRouter 1")
     if event.IniGroup then
         local groupName = event.IniGroup:GetName()
         local coalitionNumber = event.IniCoalition
-		env.info("AW33COM M.BIRTH_EVENTHANDLER:_NonPlayerRouter 2")
         if string.match(groupName, "Convoy Transport") then
-			env.info("AW33COM M.BIRTH_EVENTHANDLER:_NonPlayerRouter 3")
             Convoy.ConvoyTransportGroupBorn(coalitionNumber)
         elseif string.match(groupName, "Convoy Group 1") then
-			env.info("AW33COM M.BIRTH_EVENTHANDLER:_NonPlayerRouter 4")
             Convoy.ConvoyGroupBorn(coalitionNumber)
         end  
     end
