@@ -4812,11 +4812,8 @@ function ctld.spawnCrateGroup(_heli, _positions, _types, _unitQuantity, _isAASys
     
     local _group = {
         ["visible"] = false,
-        -- ["groupId"] = _id,
         ["hidden"] = false,
         ["units"] = {},
---                ["y"] = _positions[1].z,
---                ["x"] = _positions[1].x,
         ["name"] = _groupName,        
         ["playerCanDrive"] = true,
         ["task"] = {},
@@ -4825,8 +4822,6 @@ function ctld.spawnCrateGroup(_heli, _positions, _types, _unitQuantity, _isAASys
         for _i = 1, _unitQuantity do			
             local _unitId = utils.getNextUnitId()
             local _details = { type = _types[1], unitId = _unitId, name = string.format("Unpacked %s #%i", _types[1], _unitId) } -- we rely on that "Unpacked" name somewhere else in order to know if the unit is from CTLD
---            local _offset = (_i - 1) * 40 + 10
---            local _offset = (_i - 1) * 10 + 10
             local _playerHeading = utils.getHeading(_heli)
 
             local _point = _playerHeading * 180 / math.pi
@@ -4839,25 +4834,19 @@ function ctld.spawnCrateGroup(_heli, _positions, _types, _unitQuantity, _isAASys
             elseif _point >= 270 then
               _angle = 225
             end 
---            trigger.action.outText("DEBUG: _angle is " .. _angle, 10)
---            trigger.action.outText("DEBUG: _oClockDirection is " .. _clockdirection, 10)
---            trigger.action.outText("DEBUG: _playerHeading is " .. _playerHeading, 10)
---            trigger.action.outText("DEBUG: _point is " .. _point, 10)
             local _offset = (_i - 1) * 5 + 5
-            --Local _offset offsets multiple spawns, so they don't spawn on top of each other
---            _group.units[_i] = ctld.createUnit(_positions[1].x + _offset, _positions[1].z + _offset, 120, _details)
             _group.units[_i] = ctld.createUnit(_positions[1].x + _offset, _positions[1].z + _offset, _angle, _details)			
         end
-    else
-		
+    else		
         for _i, _pos in ipairs(_positions) do
             local _unitId = utils.getNextUnitId()
             local _details = { type = _types[_i], unitId = _unitId, name = string.format("Unpacked %s #%i", _types[_i], _unitId) } -- we rely on that "Unpacked" name somewhere else in order to know if the unit is from CTLD
             local _playerHeading = utils.getHeading(_heli)
-			local _point = _playerHeading * 180 / math.pi			
-			if string.find(_types[1], "Patriot") then				
-				env.info("AW33COM PatriotSTRandLauncherAngel: "..inspect(PatriotSTRandLauncherAngels[_i]).." with _i: "..inspect(_i))
-				_angle == PatriotSTRandLauncherAngels[_i]
+			local _point = _playerHeading * 180 / math.pi		
+
+			if _details.type == "Patriot ln" or _details.type == "Patriot str" then			
+				env.info("AW33COM PatriotSTRandLauncherAngel: "..inspect(ctld.PatriotSTRandLauncherAngels[_i]).." with _i: "..inspect(_i))
+				_angle = ctld.PatriotSTRandLauncherAngels[_i]
 			else
 				if _point <= 90 then
 				  _angle = 45
