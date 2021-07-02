@@ -4339,7 +4339,6 @@ function ctld.unpackAASystem(_heli, _nearestCrate, _nearbyCrates, _aaSystemTempl
 					
 					if _name == "Patriot ln" then
 						radius = 200
-						env.info("AW33COM Patriot Launcher Angel: "..inspect(_angle))
 						table.insert(ctld.PatriotSTRandLauncherAngels, _angle)
 					end
 					
@@ -4353,12 +4352,10 @@ function ctld.unpackAASystem(_heli, _nearestCrate, _nearbyCrates, _aaSystemTempl
             else								
 				if _name == "Patriot str" then
 					if not patriotSTRPartsAddedAlready then
-						env.info("AW33COM Adding 3 STR Patriots")
 						local strPoint = _systemPart.crate.crateUnit:getPoint()
 						local strCount = 3
 						for i = 1, strCount do	-- spawn in a circle around the crate						
 							local angle = math.pi * 2 * (i - 1) / strCount
-							env.info("AW33COM Patriot STR Angel: "..inspect(angle))
 							local xOffset = math.cos(angle) * ctld.patriotSTRRadius
 							local yOffset = math.sin(angle) * ctld.patriotSTRRadius
 							local strPoint = _systemPart.crate.crateUnit:getPoint()
@@ -4837,15 +4834,15 @@ function ctld.spawnCrateGroup(_heli, _positions, _types, _unitQuantity, _isAASys
             _group.units[_i] = ctld.createUnit(_positions[1].x + _offset, _positions[1].z + _offset, _angle, _details)			
         end
     else		
+		local runner = 1
         for _i, _pos in ipairs(_positions) do
             local _unitId = utils.getNextUnitId()
             local _details = { type = _types[_i], unitId = _unitId, name = string.format("Unpacked %s #%i", _types[_i], _unitId) } -- we rely on that "Unpacked" name somewhere else in order to know if the unit is from CTLD
             local _playerHeading = utils.getHeading(_heli)
-			local _point = _playerHeading * 180 / math.pi		
-
-			if _details.type == "Patriot ln" or _details.type == "Patriot str" then			
-				env.info("AW33COM PatriotSTRandLauncherAngel: "..inspect(ctld.PatriotSTRandLauncherAngels[_i]).." with _i: "..inspect(_i))
-				_angle = ctld.PatriotSTRandLauncherAngels[_i]
+			local _point = _playerHeading * 180 / math.pi
+			if _details.type == "Patriot ln" or _details.type == "Patriot str" then
+				_angle = ctld.PatriotSTRandLauncherAngels[runner]
+				runner = runner + 1
 			else
 				if _point <= 90 then
 				  _angle = 45
