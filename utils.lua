@@ -1861,7 +1861,7 @@ function M.closestBaseIsEnemyAndWithinRange(position, friendlySideName, range)
     return true
 end
 
-function M.createGroupDataForWarehouseAsset(warehouseName, asset, sideName)
+function M.createGroupDataForWarehouseAsset(warehouseName, asset, sideName, vec2)
 	local groupData = {}
   
 	if asset.groupCat == Group.Category.SHIP then
@@ -1878,8 +1878,8 @@ function M.createGroupDataForWarehouseAsset(warehouseName, asset, sideName)
 					["ETA"] = 0,
 					["alt_type"] = "BARO",
 					["formation_template"] = "",
-					["y"] = 0.0,
-					["x"] = 0.0,
+					["x"] = vec2.x,
+					["y"] = vec2.y,					
 					["ETA_locked"] = true,
 					["speed"] = 0,
 					["action"] = "Turning Point",
@@ -1911,15 +1911,15 @@ function M.createGroupDataForWarehouseAsset(warehouseName, asset, sideName)
 				},
 				["skill"] = asset.skill,
 				["type"] = asset.name,
-				["x"] = 0.0,
-				["y"] = 0.0,
+				["x"] = vec2.x,
+				["y"] = vec2.y,
 				["name"] = warehouseName .. '_' .. asset.name,				
 				["heading"] = 0,
                 ["modulation"] = 0,
 			},
 		},
-		["x"] = 0.0,
-		["y"] = 0.0,
+		["x"] = vec2.x,
+		["y"] = vec2.y,
 		["name"] = warehouseGroupTag..'_'..sideName..'_'..warehouseName..'_'..asset.name,
 		["start_time"] = 0,
 		["uncontrollable"] = false,
@@ -1946,8 +1946,8 @@ function M.createGroupDataForWarehouseAsset(warehouseName, asset, sideName)
 					  }
 					},
 					["type"] = "Turning Point",
-					["x"] = 0.0,
-					["y"] = 0.0
+					["x"] = vec2.x,
+					["y"] = vec2.y
 				  } },
 				routeRelativeTOT = true
 			  },
@@ -1966,15 +1966,15 @@ function M.createGroupDataForWarehouseAsset(warehouseName, asset, sideName)
 					},					
 					["skill"] = asset.skill,
 					["type"] = asset.name,
-					["x"] = 0.0,
-					["y"] = 0.0,            
+					["x"] = vec2.x,
+					["y"] = vec2.y,            
 					["name"] = warehouseName .. '_' .. asset.name,
 					["playerCanDrive"] = true,
 					["heading"] = 0,				
 				},
 			},
-			["y"] = 0.0,
-			["x"] = 0.0,
+			["x"] = vec2.x,
+			["y"] = vec2.y,			
 			["name"] = warehouseGroupTag..'_'..sideName..'_'..warehouseName..'_'..asset.name,
 			["start_time"] = 0,
 			["uncontrollable"] = false,

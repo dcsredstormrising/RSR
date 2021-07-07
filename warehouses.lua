@@ -127,11 +127,12 @@ local function addDynamicGroupsToDCSandMoose()
     for i, warehouse in pairs(warehouses) do
       if warehouse.isActive then
         if warehouse ~= nil and warehouse.assets ~= nil and warehouse.spawnBy == SpawnType.DYNAMIC then -- run this only for dynamic spawning and not late activation           
-          for j,asset in pairs (warehouse.assets) do
-            local groupData = utils.createGroupDataForWarehouseAsset(i, asset, warehouse.sideName)
+          for j,asset in pairs (warehouse.assets) do		  
+			local zoneGroup = GROUP:FindByName(warehouse.spawnZone)
+			local vec2 = ZONE_POLYGON:New(warehouse.spawnZone.."Poly", zoneGroup):GetRandomVec2()			
+            local groupData = utils.createGroupDataForWarehouseAsset(i, asset, warehouse.sideName, vec2)
             coalition.addGroup(asset.country, asset.groupCat, groupData) -- add to DCS memory          
-            _DATABASE:_RegisterGroupTemplate(groupData,warehouse.side,asset.catName,groupData.country,groupData.name) -- add to MOOSE memory, this is the entire MOOSE trick
-            --utils.setGroupControllerOptions(_myGroup) ? -- I may need this          
+            _DATABASE:_RegisterGroupTemplate(groupData,warehouse.side,asset.catName,groupData.country,groupData.name) -- add to MOOSE memory, this is the entire MOOSE trick                    
           end
         end
       end
