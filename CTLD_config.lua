@@ -113,6 +113,7 @@ ctld.aaSLRLaunchers = 8 -- controls how many launchers to add to Super Long Rang
 ctld.launcherRadius = 100 -- distance from crate for spawned launchers
 ctld.patriotSTRRadius = 100
 ctld.hawkSTRRadius = 100
+ctld.s300STRRadius = 100
 --END AA SYSTEM CONFIG --
 
 
