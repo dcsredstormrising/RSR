@@ -31,6 +31,7 @@ function ctld.checkNeutralCountry ()
 end
 
 ctld.PatriotSTRandLauncherAngels = {}
+ctld.HawkSTRandLauncherAngels = {}
 
 -- ***************************************************************
 -- **************** Mission Editor Functions *********************
@@ -4321,6 +4322,7 @@ function ctld.unpackAASystem(_heli, _nearestCrate, _nearbyCrates, _aaSystemTempl
     local _posArray = {}
     local _typeArray = {}	
 	local patriotSTRPartsAddedAlready = false
+	local hawkSTRPartsAddedAlready = false
 	
     for _name, _systemPart in pairs(_systemParts) do
 
@@ -4340,6 +4342,10 @@ function ctld.unpackAASystem(_heli, _nearestCrate, _nearbyCrates, _aaSystemTempl
 					if _name == "Patriot ln" then
 						radius = 200
 						table.insert(ctld.PatriotSTRandLauncherAngels, _angle)
+					end
+					
+					if _name == "Hawk ln" then
+						radius = 200
 					end
 					
                     local _xOffset = math.cos(_angle) * radius
@@ -4365,6 +4371,22 @@ function ctld.unpackAASystem(_heli, _nearestCrate, _nearbyCrates, _aaSystemTempl
 							table.insert(ctld.PatriotSTRandLauncherAngels, angle)
 						end	
 						patriotSTRPartsAddedAlready = true
+					end
+				elseif _name == "Hawk sr" then
+					if not hawkSTRPartsAddedAlready then
+						local strPoint = _systemPart.crate.crateUnit:getPoint()
+						local strCount = 2
+						for i = 1, strCount do	-- spawn in a circle around the crate						
+							local angle = math.pi * 2 * (i - 1) / strCount
+							local xOffset = math.cos(angle) * ctld.hawkSTRRadius
+							local yOffset = math.sin(angle) * ctld.hawkSTRRadius
+							local strPoint = _systemPart.crate.crateUnit:getPoint()
+							strPoint = { x = strPoint.x + xOffset, y = strPoint.y, z = strPoint.z + yOffset }
+							table.insert(_posArray, strPoint)
+							table.insert(_typeArray, _name)		
+							table.insert(ctld.HawkSTRandLauncherAngels, angle)
+						end	
+						hawkSTRPartsAddedAlready = true
 					end
 				else					
 					table.insert(_posArray, _systemPart.crate.crateUnit:getPoint())
@@ -4835,6 +4857,7 @@ function ctld.spawnCrateGroup(_heli, _positions, _types, _unitQuantity, _isAASys
         end
     else		
 		local runner = 1
+		local runner2 = 1
         for _i, _pos in ipairs(_positions) do
             local _unitId = utils.getNextUnitId()
             local _details = { type = _types[_i], unitId = _unitId, name = string.format("Unpacked %s #%i", _types[_i], _unitId) } -- we rely on that "Unpacked" name somewhere else in order to know if the unit is from CTLD
@@ -4843,6 +4866,9 @@ function ctld.spawnCrateGroup(_heli, _positions, _types, _unitQuantity, _isAASys
 			if _details.type == "Patriot ln" or _details.type == "Patriot str" then
 				_angle = ctld.PatriotSTRandLauncherAngels[runner]
 				runner = runner + 1
+			elseif _details.type == "Hawk ln" or _details.type == "Hawk sr" then
+				_angle = ctld.HawkSTRandLauncherAngels[runner]
+				runner2 = runner2 + 1
 			else
 				if _point <= 90 then
 				  _angle = 45
@@ -4887,6 +4913,7 @@ function ctld.spawnCrateGroup(_heli, _positions, _types, _unitQuantity, _isAASys
 
     utils.setGroupControllerOptions(_spawnedGroup)
     ctld.PatriotSTRandLauncherAngels = {}
+	ctld.HawkSTRandLauncherAngels = {}
 
     return _spawnedGroup
 end

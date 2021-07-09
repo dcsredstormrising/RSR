@@ -112,6 +112,7 @@ ctld.aaLRLaunchers = 5 -- controls how many launchers to add to Long Range Missi
 ctld.aaSLRLaunchers = 8 -- controls how many launchers to add to Super Long Range Missile systems when spawned. (Patriot)
 ctld.launcherRadius = 100 -- distance from crate for spawned launchers
 ctld.patriotSTRRadius = 100
+ctld.hawkSTRRadius = 100
 --END AA SYSTEM CONFIG --
 
 
