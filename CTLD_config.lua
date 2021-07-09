@@ -728,7 +728,7 @@ ctld.AASystemTemplate = {
             { name = "Hawk pcp", desc = "Hawk PCP" },
         },
         repair = "Hawk Repair",
-        systemType = "MR",
+        systemType = "LR",
     },
     {
         name = "Buk SAM System",
