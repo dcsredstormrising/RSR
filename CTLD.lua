@@ -4195,8 +4195,10 @@ function ctld.aaGetLaunchersFromType(_aaTemplate)
 
 end
 
+-- AW33COM, we should never use this method again.  REAR should be handled by REPAIR.  This logic below is insane, and no one was aware that bringing a launcher to the AA System
+-- triggers REARM and not Unpack.  
 function ctld.rearmAASystem(_heli, _nearestCrate, _aaSystemTemplate)
-
+	
     -- are we adding to existing aa system?
     -- check to see if the crate is a launcher
     if ctld.getLauncherUnitFromAATemplate(_aaSystemTemplate) == _nearestCrate.details.unit then
@@ -4292,11 +4294,7 @@ function ctld.countTableEntries(_table)
 end
 
 function ctld.unpackAASystem(_heli, _nearestCrate, _nearbyCrates, _aaSystemTemplate)
-	
-    if ctld.rearmAASystem(_heli, _nearestCrate, _aaSystemTemplate) then    
-        return
-    end
-
+	    
     -- are there all the pieces close enough together
     local _systemParts = {}
 
@@ -7369,12 +7367,12 @@ function ctld.getPositionString(_unit)
 end
 
 -- Here we update the AA System in CTLD upon each session start.
-function ctld.LoadAllExistingSystemsIntoCTLD(_spawnedGroup)    
-    if _spawnedGroup ~= nil and _spawnedGroup:getUnits() ~= nil and _spawnedGroup:getUnits()[1] ~= nil then
+function ctld.LoadAllExistingSystemsIntoCTLD(_spawnedGroup)
+    if _spawnedGroup ~= nil and _spawnedGroup:getUnits() ~= nil and _spawnedGroup:getUnits()[1] ~= nil then		
       local _units = _spawnedGroup:getUnits()  
-      local _firstUnitType = _units[1]:getTypeName()            
-      local _aaSystemDetails = ctld.getAASystemDetails(_spawnedGroup, ctld.getAATemplate(_firstUnitType))      
-      ctld.completeAASystems[_spawnedGroup:getName()] = _aaSystemDetails    
+      local _firstUnitType = _units[1]:getTypeName()	  
+      local _aaSystemDetails = ctld.getAASystemDetails(_spawnedGroup, ctld.getAATemplate(_firstUnitType))	  	  
+      ctld.completeAASystems[_spawnedGroup:getName()] = _aaSystemDetails
     end
  end 
  

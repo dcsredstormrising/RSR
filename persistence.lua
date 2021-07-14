@@ -83,8 +83,7 @@ end
 -- This is not the worst thing ever as we need to somehow re-spawn those objects,  problem is this is sometimes not consistent with what we do in CTLD.
 -- this is also outdated and is missing static spawning, which we will need in the future
 -- this has to be moved to CTLD and managed there
-function M.spawnGroup(groupData)
-	env.info("=AW=33COM Is this even running")
+function M.spawnGroup(groupData)	
     -- Currently this code replicates the actions from ctld.unpackCrates
     local sideName = getSideNameFromGroupData(groupData)
     local groupName = groupData.name
